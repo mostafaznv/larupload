@@ -1,0 +1,58 @@
+{
+    "name": "mostafaznv/larupload",
+    "description": "Larupload is a ORM based file uploader for laravel to upload image, video, audio and other known files.",
+    "keywords": [
+        "laravel",
+        "file",
+        "upload",
+        "image",
+        "video",
+        "media",
+        "file manager",
+        "storage",
+        "s3",
+        "sftp",
+        "file system",
+        "resize",
+        "crop",
+        "ffmpeg",
+        "mostafaznv"
+    ],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/mostafaznv/larupload/issues",
+        "source": "https://github.com/mostafaznv/larupload",
+        "docs": "https://github.com/mostafaznv/larupload/blob/master/README.md"
+    },
+    "authors": [
+        {
+            "name": "mostafaznv",
+            "email": "mostafa.zeinivand@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.1.3",
+        "laravel/framework": "5.5.* || 5.6.*",
+        "scotteh/php-dom-wrapper": ">=0.7.3",
+        "ksubileau/color-thief-php": "^1.3",
+        "imagine/imagine": "^0.7.1"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Mostafaznv\\Larupload\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Mostafaznv\\Larupload\\LaruploadServiceProvider"
+            ]
+        }
+    }
+}
