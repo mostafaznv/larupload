@@ -112,7 +112,7 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
   - [Upload by function](#upload-by-function)
   - [Deleting the existing file](#deleting-the-existing-file-and-the-value-in-the-database)
 - [Generate download link](#generate-the-download-link)
-- [Get additional information (Meta)](#get-additional-information-(meta))
+- [Get additional information (Meta)](#get-additional-information-meta)
 - [Customization](#customization)
   - [Customization by config file](#customization-by-config-file)
   - [Customization by model constructor](#customization-by-model-constructor)
