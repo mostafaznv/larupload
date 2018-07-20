@@ -31,12 +31,12 @@
 
 ## مراحل نصب
 
-1. ##### نصب کردن پکیج به وسیله کامپوزر:
+1. ##### نصب کردن پکیج به وسیله کامپوزر
     ```
     composer require mostafaznv/larupload
     ```
 
-2. ##### انتشار فایل تنظیمات:
+2. ##### انتشار فایل تنظیمات
     ```
     php artisan vendor:publish --provider="Mostafaznv\Larupload\LaruploadServiceProvider"
     ```
