@@ -100,8 +100,8 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
     ```
 
 ## Note 
-- All files are being uploaded in original style. you can add other styles, but the original file is being uploaded as original format.
-- Additional information such as name, size, format, and so on are stored in the database unless not storing them is enabled in the config file. 
+> - All files are being uploaded in original style. you can add other styles, but the original file is being uploaded as original format.
+> - Create column for heavy mode Additional information such as name, size, format, and so on are stored in the database unless not storing them is enabled in the config file. 
 
 ## Following instructions:
 - [Create column in the table using migration](#create-column-in-the-table-using-migration)
@@ -120,7 +120,7 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
 ## Create column in the table using migration 
 to make creating the columns required by Larupload easier, we have created an ability to easily make the columns you need in the table, with the help of the macro feature.
 
-1. ##### Create column for heavy mode
+1. ### Create column for heavy mode
     ```php
     Schema::create('uploads', function (Blueprint $table) {
         $table->increments('id');
@@ -129,7 +129,7 @@ to make creating the columns required by Larupload easier, we have created an ab
     });
     ```
 
-2. ##### Create column for light mode
+2. ### Create column for light mode
     ```php
     Schema::create('uploads', function (Blueprint $table) {
         $table->increments('id');
@@ -146,12 +146,12 @@ But in the light mode, only the **filename** is stored in its own column, and ot
 
 ## File upload methods
 There are several methods for uploading a file:
-1. ##### Upload by accessor
+1. ### Upload by accessor
     ```php
     $upload->file = $request->file;
     ```
     
-2. ##### Upload by function
+2. ### Upload by function
 
     With the `setUploadedFile` function, you can upload the file and the file cover (if needed)
     
@@ -166,7 +166,7 @@ There are several methods for uploading a file:
     $upload->setUploadedFile('file', $request->file, $request->cover);
     ```
 
-3. ##### Deleting the existing file and the value in the database
+3. ### Deleting the existing file and the value in the database
 
     If you want to delete the existing file, you can use `LARUPLOAD_NULL` 
     ```php
@@ -176,7 +176,7 @@ There are several methods for uploading a file:
 
 ## Generate the download link 
 You can use the following methods to access the uploaded file link:
-1. Get link for all styles
+1. ### Get link for all styles
     
     Code:
     ```php
@@ -191,7 +191,7 @@ You can use the following methods to access the uploaded file link:
     ]
     ```
 
-2. Get link for a particular style
+2. ### Get link for a particular style
     ```php
     echo $upload->url('file', 'thumbnail');
     ```
@@ -203,7 +203,7 @@ You can use the following methods to access the uploaded file link:
 ## Get additional information (Meta)
 The first argument is the filename , and the second argument is the desired Metadata
 
-1. Get all additional information of the file 
+1. ### Get all additional information of the file 
     
     Code:
     ```php
@@ -225,7 +225,7 @@ The first argument is the filename , and the second argument is the desired Meta
     ]
     ```
 
-2. Get the Meta by its name 
+2. ### Get the Meta by its name 
     
     Code:
     ```php
@@ -245,7 +245,7 @@ In larupload, we’ve put a lot of effort into making the package more customize
 
 
 ### Customization by config file
-- ##### Storage
+- #### Storage
     
     With this feature, you can set the driver to upload your file.
  
@@ -258,24 +258,24 @@ In larupload, we’ve put a lot of effort into making the package more customize
         > not tested and requires testing; but it doesn't seem to have any problem
 
 
-- ##### Mode
+- #### Mode
     
     There are two modes for storing the uploaded file information in Larupload. `heavy` mode and `light` mode 
     - Heavy mode stores every information and file details in its own column.
     - Light mode stores additional information as `json_encode` in a column named Meta. 
         > Note that the selection of each of these modes should fit the type of table created.
 
-- ##### Naming method 
+- #### Naming method 
     
     With this feature, you can specify the naming method for files as follows: 
     - **slug**: the name of the uploaded file is converted into slug. to prevent file from caching in different clients, a random number is always added to the end of the filename.
     - **hash_file**: using the `MD5` algorithm, the hash of uploaded file is used as the filename.
     - **time**: upload time is selected as the uploaded file name. 
 
-- ##### Lang 
+- #### Lang 
     This feature is used to name files when using the slug template. if you leave this section blank, we will use the application language (available in the `config/app.php` file).
 
-- ##### Image processing library 
+- #### Image processing library 
     You can specify Larupload to use which image processing library to perform crop and resize operations
     
     options:
@@ -283,7 +283,7 @@ In larupload, we’ve put a lot of effort into making the package more customize
     - Imagine\Imagick\Imagine
     - Imagine\Gmagick\Imagine
 
-- ##### Styles 
+- #### Styles 
     This section is used to define different styles on videos and photos. With this feature, you can create as many different copies of the original file as you want, also `crop` or `resize` them. 
     
     example:
@@ -314,10 +314,10 @@ In larupload, we’ve put a lot of effort into making the package more customize
         - auto
     - **type**: with this field, you can determine that the defined style is usable for what type of files, `image`, `video` or `both`.
 
-- ##### Generate cover
+- #### Generate cover
     Larupload allows you to automatically generate cover image from the uploaded image or video. With this field, you can enable or disable this feature.
 
-- ##### Cover style
+- #### Cover style
     With this field, you can manage the configuration of the created cover.
     ```php
     'cover_style' => [
@@ -327,30 +327,30 @@ In larupload, we’ve put a lot of effort into making the package more customize
     ]
     ```
 
-- ##### Dominant color
+- #### Dominant color
     With this feature, you can extract the dominant color of the image or video.
     > Note that if you disable cover generating, the color extraction of the video will be automatically disabled.
 
-- ##### Keep old files
+- #### Keep old files
     By enabling this feature, `prevent` old files from `deleting` while `updating` the database record.
 
-- ##### Preserve files flag
+- #### Preserve files flag
     Enabling this feature, `prevent` old files from `being deleted` when the database record is `deleted`. 
 
-- ##### Upload path
+- #### Upload path
     The address of the place where you want your files to be uploaded. This address uses the root of your file system driver, relatively.
 
-- ##### Allowed mime types
+- #### Allowed mime types
     You can validate the input files with this field and by using `MimeType`
     
     Example: `video/mp4`
 
-- ##### Allowed Mimes
+- #### Allowed Mimes
     With this field and by using the file format, you can validate the input files
     
     Example: `mp4`
     
-- ##### FFMPEG
+- #### FFMPEG
     If you keep this section empty, larupload will try to find the FFMPEG path using system environment. But you can manually specify the FFMPEG path this way.
     
     Example:
