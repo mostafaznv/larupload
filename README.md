@@ -1,7 +1,7 @@
 # Larupload
 **Larupload** will help you upload your files easily. in addition to uploading files, Larupload has interesting features for uploading `video`, `audio` and `image`.
  
-in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/filesystem); Thanks to laravel filesystem, it’s easy to switch between "any" desired driver (such as local, sftp, s3, etc.) 
+in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/filesystem). Thanks to laravel filesystem, it’s easy to switch between "any" desired driver (such as local, sftp, s3, etc.) 
 
 
 ## Some of the features for Larupload:
