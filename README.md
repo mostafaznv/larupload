@@ -30,21 +30,21 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
 
 ## Installation
 
-1. Install the package via composer:
+1. ##### Install the package via composer:
     ```shell
     composer require mostafaznv/larupload
     ```
 
-2. Publish config:
+2. ##### Publish config:
     ```shell
     php artisan vendor:publish --provider="Mostafaznv\Larupload\LaruploadServiceProvider"
     ```
 
-3. Done
+3. ##### Done
 
 
 ## Usage
-1. Add the corresponding columns to the desired table
+1. ##### Add the corresponding columns to the desired table
     ```php
     <?php
     
@@ -70,7 +70,7 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
     }
     ```
 
-2. Add Larupload trait to the model
+2. ##### Add Larupload trait to the model
     ```php
     <?php
     
@@ -92,7 +92,7 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
     }
     ```
 
-3. Upload file
+3. ##### Upload file
     ```php
     $upload = new Upload;
     $upload->file = $request->file;
@@ -155,7 +155,7 @@ There are several methods for uploading a file:
 
     With the `setUploadedFile` function, you can upload the file and the file cover (if needed)
     
-    **Input arguments of the function**
+    **Input arguments of the function:**
     - First: the `name` of the file column in the table *(required field)*
     - Second: the `file` that you want to upload *(required field)*
     - Third: `cover` file *(optional)*
