@@ -3,6 +3,7 @@
  
 in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/filesystem). Thanks to laravel filesystem, it’s easy to switch between "any" desired driver (such as local, sftp, s3, etc.) 
 
+> Note: farsi [documentation](README.fa.md)
 
 ## Some of the features for Larupload:
 - Using different drivers 
