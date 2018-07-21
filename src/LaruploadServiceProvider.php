@@ -12,6 +12,7 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - test s3
     // TODO - upload with url
     // TODO - write some tests
+    // TODO - return file type as string  ['image', 'video', 'audio', 'file']
 
     const VERSION = '0.0.1';
 
