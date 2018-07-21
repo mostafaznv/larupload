@@ -117,6 +117,7 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
 - [Customization](#customization)
   - [Customization by config file](#customization-by-config-file)
   - [Customization by model constructor](#customization-by-model-constructor)
+- [Some extra tricks](#some-extra-tricks)
 
 ## Create column in the table using migration 
 to make creating the columns required by Larupload easier, we have created an ability to easily make the columns you need in the table, with the help of the macro feature.
@@ -194,6 +195,8 @@ You can use the following methods to access the uploaded file link:
 
 2. ### Get link for a particular style
     ```php
+    echo $upload->file['thumbnail'];
+    // or
     echo $upload->url('file', 'thumbnail');
     ```
     > If you don’t send the second argument, the link to the original file will be automatically returned.
@@ -402,6 +405,48 @@ class Upload extends Model
     }
 }
 ```
+
+## Some extra tricks
+
+### Set Attribute
+Sometimes you need to set some extra attributes to save into database. It's `important` to call larupload initializer function: 
+
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use Mostafaznv\Larupload\Traits\Larupload;
+
+class Upload extends Model
+{
+    use Larupload;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->hasUploadFile('file');
+    }
+    
+    public function setAttribute($key, $value)
+    {
+        if (array_key_exists($key, $this->attachedFiles)) {
+            if ($value) {
+                $attachedFile = $this->attachedFiles[$key];
+                $attachedFile->setUploadedFile($value);
+    
+                $this->attributes['your_own_attribute'] = 'value';
+            }
+    
+            return;
+        }
+    
+        parent::setAttribute($key, $value);
+    }
+}
+``` 
 
 
 ## Contributors

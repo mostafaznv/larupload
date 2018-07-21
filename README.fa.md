@@ -121,7 +121,7 @@
 - شخصی سازی
     - شخصی سازی به وسیله فایل کانفیگ
     - شخصی سازی به وسیله سازنده مدل
-
+- ترفندهای اضافه
 
 ## ایجاد ستون در جدول به کمک مایگریشن
 برای ایجاد سهولت در ساختن ستون های مورد نیاز لارآپلود، با کمک گرفتن از قابلیت ماکرو امکانی را فراهم کردیم که به راحتی بتوانید ستونهای مورد نیاز خود را در جدول مورد نظر ایجاد کنید:
@@ -201,6 +201,8 @@
 
 2. ### دریافت لینک برای یک استایل خاص
     ```php
+    echo $upload->file['thumbnail'];
+    // or
     echo $upload->url('file', 'thumbnail');
     ```
     > در صورتی که آرگومان دوم را ارسال نکنید، به صورت اتوماتیک لینک مربوط به فایل اصلی (اوریجینال) باز گردانده میشود
@@ -454,6 +456,47 @@ class Upload extends Model
 }
 ```
 
+## ترفندهای اضافه
+
+### Set Attribute
+گاهی اوقات می خواهید که اطلاعات اضافه تری را به دیتابیس خود وارد کنید. باید توجه کنید که حتما باید تابع راه انداز لارآپلود را هم فراخوانی کنید.
+ 
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use Mostafaznv\Larupload\Traits\Larupload;
+
+class Upload extends Model
+{
+    use Larupload;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->hasUploadFile('file');
+    }
+    
+    public function setAttribute($key, $value)
+    {
+        if (array_key_exists($key, $this->attachedFiles)) {
+            if ($value) {
+                $attachedFile = $this->attachedFiles[$key];
+                $attachedFile->setUploadedFile($value);
+    
+                $this->attributes['your_own_attribute'] = 'value';
+            }
+    
+            return;
+        }
+    
+        parent::setAttribute($key, $value);
+    }
+}
+``` 
 
 
 ## توسعه دهنگان
