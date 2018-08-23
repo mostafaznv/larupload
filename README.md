@@ -118,6 +118,8 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
   - [Customization by config file](#customization-by-config-file)
   - [Customization by model constructor](#customization-by-model-constructor)
 - [Some extra tricks](#some-extra-tricks)
+  - [Set Attribute](#set-attribute)
+  - [Get Attribute](#get-attribute)
 
 ## Create column in the table using migration 
 to make creating the columns required by Larupload easier, we have created an ability to easily make the columns you need in the table, with the help of the macro feature.
