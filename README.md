@@ -453,7 +453,7 @@ class Upload extends Model
 ### Get Attribute
 Sometimes you want to return files in an API response or you want to use toArray()
 
-##### Return urls for all files:
+#### Return urls for all files:
 
 Code:
 ```php
@@ -503,7 +503,7 @@ Output:
 ]
 ```
 
-##### Return urls for specific file:
+#### Return urls for specific file:
 
 Code:
 ```php
