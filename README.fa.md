@@ -498,6 +498,102 @@ class Upload extends Model
 }
 ``` 
 
+### Get Attribute
+در صورتی که بخواهید رکورد را به آرایه تبدیل کنید یا اینکه مقدار رکورد را در یک ای‌پی‌آی بازگردانید، میتوانید از روش های زیر استفاده کنید
+
+##### برگرداندن تمام آدرس ها برای تمام فایل های موجود در مدل
+
+کد:
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use Mostafaznv\Larupload\Traits\Larupload;
+
+class Contact extends Model
+{
+    use Larupload;
+
+    protected $table = 'contacts';
+    protected $appends = ['media'];
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->hasUploadFile('image');
+        $this->hasUploadFile('profile_cover');
+    }
+
+    public function getMediaAttribute()
+    {
+        return $this->getFiles();
+    }
+}
+
+``` 
+
+نتیجه:
+```php
+"media" => array:1 [▼
+    "image" => array:3 [▼
+        "original" => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+        "cover" => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg"
+        "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+    ],
+    "profile_cover" => array:3 [▼
+        "original" => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+        "cover" => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg"
+        "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+    ]
+]
+```
+
+##### برگرداندن تمام آدرس ها فقط برای یکی از فایل های موجود در مدل
+
+کد:
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use Mostafaznv\Larupload\Traits\Larupload;
+
+class Contact extends Model
+{
+    use Larupload;
+
+    protected $table = 'contacts';
+    protected $appends = ['image'];
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->hasUploadFile('image');
+        $this->hasUploadFile('profile_cover');
+    }
+
+    public function getImageAttribute()
+    {
+        return $this->getFiles('image');
+    }
+}
+
+``` 
+
+نتیجه:
+```php
+"image" => array:3 [▼
+    "original" => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+    "cover" => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg"
+    "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+]
+```
+
 
 ## توسعه دهنگان
 - مصطفی زینی وند -  [@mostafaznv](https://github.com/mostafaznv)

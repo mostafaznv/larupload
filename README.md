@@ -448,6 +448,102 @@ class Upload extends Model
 }
 ``` 
 
+### Get Attribute
+Sometimes you want to return files in an API response or you want to use toArray()
+
+##### Return urls for all files:
+
+Code:
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use Mostafaznv\Larupload\Traits\Larupload;
+
+class Contact extends Model
+{
+    use Larupload;
+
+    protected $table = 'contacts';
+    protected $appends = ['media'];
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->hasUploadFile('image');
+        $this->hasUploadFile('profile_cover');
+    }
+
+    public function getMediaAttribute()
+    {
+        return $this->getFiles();
+    }
+}
+
+``` 
+
+Output:
+```php
+"media" => array:1 [▼
+    "image" => array:3 [▼
+        "original" => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+        "cover" => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg"
+        "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+    ],
+    "profile_cover" => array:3 [▼
+        "original" => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+        "cover" => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg"
+        "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+    ]
+]
+```
+
+##### Return urls for specific file:
+
+Code:
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use Mostafaznv\Larupload\Traits\Larupload;
+
+class Contact extends Model
+{
+    use Larupload;
+
+    protected $table = 'contacts';
+    protected $appends = ['image'];
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->hasUploadFile('image');
+        $this->hasUploadFile('profile_cover');
+    }
+
+    public function getImageAttribute()
+    {
+        return $this->getFiles('image');
+    }
+}
+
+``` 
+
+Output:
+```php
+"image" => array:3 [▼
+    "original" => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+    "cover" => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg"
+    "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+]
+```
+
 
 ## Contributors
 - Mostafa Zeinivand [@mostafaznv](https://github.com/mostafaznv)
