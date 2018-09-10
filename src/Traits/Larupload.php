@@ -139,10 +139,10 @@ trait Larupload
      *
      * @return mixed
      */
-    public function getAttributes()
+    /*public function getAttributes()
     {
         return array_merge(parent::getAttributes(), $this->attachedFiles);
-    }
+    }*/
 
     /**
      * Remove attachment from get dirty array.
