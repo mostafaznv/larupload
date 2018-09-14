@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## v0.0.3 - under construction
 - Fix a bug on calculate scale size
+- Make it easier to manipulate svg files for Imagick and Gmagick by change file name to jpg
+
 
 ## v0.0.2 - 2018/09/10
 - Support Laravel 5.7
