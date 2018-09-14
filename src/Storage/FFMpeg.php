@@ -25,6 +25,13 @@ class FFMpeg
     protected $config;
 
     /**
+     * Video Metadata.
+     *
+     * @var array
+     */
+    protected $meta = [];
+
+    /**
      * FFMPEG binary address.
      *
      * @var string
@@ -37,6 +44,14 @@ class FFMpeg
      * @var string
      */
     protected $ffprobe;
+
+    /**
+     * Default scale size.
+     * we use this value if width and height both were undefined.
+     *
+     * @var integer
+     */
+    const DEFAULT_SCALE = 850;
 
     /**
      * FFMpeg constructor.
@@ -65,37 +80,40 @@ class FFMpeg
      */
     public function getMeta()
     {
-        $meta = [
-            'width'    => null,
-            'height'   => null,
-            'duration' => null,
-        ];
+        if (empty($this->meta)) {
+            $meta = [
+                'width'    => null,
+                'height'   => null,
+                'duration' => null,
+            ];
 
-        try {
-            $path = $this->file->getRealPath();
-            $cmd = escapeshellcmd("{$this->ffprobe} -i $path -loglevel quiet -show_format -show_streams -print_format json");
+            try {
+                $path = $this->file->getRealPath();
+                $cmd = escapeshellcmd("{$this->ffprobe} -i $path -loglevel quiet -show_format -show_streams -print_format json");
 
-            $process = new Process($cmd);
-            $process->run();
-            $output = $process->getOutput();
+                $process = new Process($cmd);
+                $process->run();
+                $output = $process->getOutput();
 
-            if ($process->isSuccessful()) {
-                $output = json_decode($output);
-                if ($output !== null) {
-                    $stream = $output->streams[0];
+                if ($process->isSuccessful()) {
+                    $output = json_decode($output);
+                    if ($output !== null) {
+                        $stream = $output->streams[0];
 
-                    $meta['width'] = (isset($stream->width)) ? (int)$stream->width : null;
-                    $meta['height'] = (isset($stream->height)) ? (int)$stream->height : null;
-                    $meta['duration'] = (int)$stream->duration;
+                        $meta['width'] = (isset($stream->width)) ? (int)$stream->width : null;
+                        $meta['height'] = (isset($stream->height)) ? (int)$stream->height : null;
+                        $meta['duration'] = (int)$stream->duration;
+                    }
                 }
             }
-        }
-        catch (Exception $exception) {
-            // do nothing
+            catch (Exception $exception) {
+                // do nothing
+            }
+
+            $this->meta = $meta;
         }
 
-
-        return $meta;
+        return $this->meta;
     }
 
     /**
@@ -156,13 +174,7 @@ class FFMpeg
         $width = isset($style['width']) ? $style['width'] : null;
         $height = isset($style['height']) ? $style['height'] : null;
         $mode = isset($style['mode']) ? $style['mode'] : null;
-
-        if ($width)
-            $scale = $width;
-        else if ($height)
-            $scale = $height;
-        else
-            $scale = 850;
+        $scale = $this->calculateScale($width, $height);
 
 
         try {
@@ -170,12 +182,12 @@ class FFMpeg
 
             if ($mode == 'crop') {
                 if ($width and $height)
-                    $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=-1:$scale,crop=$width:$height");
+                    $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale,crop=$width:$height");
                 else
-                    $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=-1:$scale,crop=$scale:$scale");
+                    $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale,crop=$scale:$scale");
             }
             else
-                $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=-1:$scale");
+                $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale");
 
             $result = $this->run($cmd, $storage, $saveTo);
 
@@ -186,6 +198,41 @@ class FFMpeg
         }
 
         return false;
+    }
+
+
+    /**
+     * Calculate scale.
+     *
+     * @param $width
+     * @param $height
+     * @return string
+     */
+    protected function calculateScale($width = null, $height = null)
+    {
+        $meta = $this->getMeta();
+
+        if ($width) {
+            if ($width <= $meta['width'])
+                $scale = "$width:-1";
+            else
+                $scale = "{$meta['width']}:-1";
+        }
+        else if ($height) {
+            if ($height <= $meta['height'])
+                $scale = "-1:$height";
+            else
+                $scale = "-1:{$meta['height']}";
+        }
+        else {
+            $defaultScale = self::DEFAULT_SCALE;
+            if ($defaultScale < $meta['width'])
+                $scale = "$defaultScale:-1";
+            else
+                $scale = "{$meta['width']}:-1";
+        }
+
+        return $scale;
     }
 
 
