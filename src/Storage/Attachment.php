@@ -274,6 +274,7 @@ class Attachment
             }
 
             if ($name and $this->hasFile($model, $style)) {
+                $name = $this->fixExceptionNames($name, $style);
                 $path = $this->getPath($model->id, $style);
                 $path = "$path/$name";
 
@@ -568,8 +569,9 @@ class Attachment
                         continue;
 
                     $path = $this->getPath($id, $name);
+
                     Storage::disk($this->storage)->makeDirectory($path);
-                    $saveTo = $path . '/' . $this->output['name'];
+                    $saveTo = $path . '/' . $this->fixExceptionNames($this->output['name'], $style);
 
                     $image = new Image($this->file);
                     $image->resize($this->storage, $saveTo, $style);
@@ -691,5 +693,24 @@ class Attachment
         }
 
         return $path;
+    }
+
+    /**
+     * In some special cases we should use other file names instead of the original one.
+     * Example: when user uploads a svg image, we should change the converted format to jpg! so we have to manipulate file name.
+     *
+     * @param $name
+     * @param $style
+     * @return mixed
+     */
+    protected function fixExceptionNames($name, $style)
+    {
+        if (!in_array($style, ['original', 'cover'])) {
+            if (ends_with($name, 'svg')) {
+                $name = str_replace('svg', 'jpg', $name);
+            }
+        }
+
+        return $name;
     }
 }
