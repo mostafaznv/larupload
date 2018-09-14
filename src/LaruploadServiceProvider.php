@@ -13,6 +13,8 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - upload with url
     // TODO - write some tests
     // TODO - return file type as string  ['image', 'video', 'audio', 'file']
+    // TODO - crop/resize svg photos
+    // TODO - import php-ffmpeg package into the project
 
     const VERSION = '0.0.1';
 
