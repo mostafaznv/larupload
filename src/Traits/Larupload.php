@@ -96,6 +96,8 @@ trait Larupload
     {
         if (array_key_exists($key, $this->attachedFiles)) {
             if ($file) {
+                static::$uploaded = false;
+                
                 $attachedFile = $this->attachedFiles[$key];
                 $attachedFile->setUploadedFile($file, $cover);
             }
