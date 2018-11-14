@@ -355,7 +355,7 @@ class Attachment
      * @param UploadedFile $file
      * @return bool
      */
-    protected function validation(UploadedFile $file) : bool
+    protected function validation($file) : bool
     {
         if (count($this->allowedMimes)) {
             if (!in_array($file->getClientOriginalExtension(), $this->allowedMimes)) {
