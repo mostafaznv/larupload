@@ -225,17 +225,20 @@
     خروجی:
     ```php
     array:9 [▼
-      "name" => "64d65a4e98029c37e7fd510c6e0a34d6.png"
-      "size" => 93366
-      "type" => "image/png"
-      "cover" => "64d65a4e98029c37e7fd510c6e0a34d6.jpg"
-      "width" => 2560
-      "format" => "png"
-      "height" => 1600
-      "duration" => null
+      "name"           => "64d65a4e98029c37e7fd510c6e0a34d6.png"
+      "size"           => 93366
+      "type"           => "image"
+      "mime_type"      => "image/png"
+      "cover"          => "64d65a4e98029c37e7fd510c6e0a34d6.jpg"
+      "width"          => 2560
+      "format"         => "png"
+      "height"         => 1600
+      "duration"       => null
       "dominant_color" => "#c5ae0a"
     ]
     ```
+    
+    > **تایپ**: نوع فایل به صورت قابل خواندن برای انسان را باز میگرداند: <br>`image`, `video`, `audio`, `pdf`, `compressed`, `file`
 
 2. ### دریافت متا به وسیله نام آن
 

@@ -138,6 +138,7 @@ class Attachment
         'name'           => null,
         'size'           => null,
         'type'           => null,
+        'mime_type'      => null,
         'width'          => null,
         'height'         => null,
         'duration'       => null,
@@ -461,7 +462,8 @@ class Attachment
         $this->output['name'] = $name . "." . $format;
         $this->output['format'] = $format;
         $this->output['size'] = $this->file->getSize();
-        $this->output['type'] = $this->file->getClientMimeType();
+        $this->output['type'] = $this->getHumanReadableFileType($this->file->getClientMimeType());
+        $this->output['mime_type'] = $this->file->getClientMimeType();
     }
 
     /**
@@ -713,4 +715,32 @@ class Attachment
 
         return $name;
     }
+
+    /**
+     * Get human readable file type from mimetype.
+     *
+     * @param $mimeType
+     * @return null|string
+     */
+    protected function getHumanReadableFileType($mimeType)
+    {
+        if ($mimeType) {
+
+            if (strstr($mimeType, "image/"))
+                return 'image';
+            else if (strstr($mimeType, "video/"))
+                return 'video';
+            else if (strstr($mimeType, "audio/"))
+                return 'audio';
+            else if ($mimeType == 'application/pdf')
+                return 'pdf';
+            else if ($mimeType == 'application/zip' or $mimeType == 'application/x-rar-compressed')
+                return 'compressed';
+            else
+                return 'file';
+        }
+
+        return null;
+    }
+
 }

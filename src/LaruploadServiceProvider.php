@@ -12,7 +12,6 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - test s3
     // TODO - upload with url
     // TODO - write some tests
-    // TODO - return file type as string  ['image', 'video', 'audio', 'file']
     // TODO - upload stream videos
     // TODO - import php-ffmpeg package into the project [NOTICE: wait for a stable version]
 

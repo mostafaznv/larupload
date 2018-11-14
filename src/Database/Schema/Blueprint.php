@@ -22,6 +22,7 @@ class Blueprint
         if ($mode == 'heavy') {
             $table->integer("{$name}_file_size")->unsigned()->nullable();
             $table->string("{$name}_file_type", 85)->nullable();
+            $table->string("{$name}_file_mime_type", 85)->nullable();
             $table->string("{$name}_file_width")->nullable();
             $table->integer("{$name}_file_height")->unsigned()->nullable();
             $table->string("{$name}_file_duration", 85)->nullable();
@@ -62,12 +63,12 @@ class Blueprint
 
         if ($mode == 'heavy') {
             $coverColumns = [
-                "{$name}_file_size", "{$name}_file_type", "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration", "{$name}_file_format", "{$name}_file_cover"
+                "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type", "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration", "{$name}_file_format", "{$name}_file_cover"
             ];
         }
         else {
             $coverColumns = [
-                "{$name}_file_size", "{$name}_file_type", "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration", "{$name}_file_format", "{$name}_file_cover"
+                "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type", "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration", "{$name}_file_format", "{$name}_file_cover"
             ];
         }
 

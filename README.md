@@ -221,7 +221,8 @@ The first argument is the filename , and the second argument is the desired Meta
     array:9 [▼
       "name"           => "64d65a4e98029c37e7fd510c6e0a34d6.png"
       "size"           => 93366
-      "type"           => "image/png"
+      "type"           => "image"
+      "mime_type"      => "image/png"
       "cover"          => "64d65a4e98029c37e7fd510c6e0a34d6.jpg"
       "width"          => 2560
       "format"         => "png"
@@ -230,6 +231,8 @@ The first argument is the filename , and the second argument is the desired Meta
       "dominant_color" => "#c5ae0a"
     ]
     ```
+    
+    > **type**: returns human readable file type with this names: `image`, `video`, `audio`, `pdf`, `compressed`, `file` 
 
 2. ### Get the Meta by its name 
     
