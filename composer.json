@@ -17,6 +17,7 @@
         "resize",
         "crop",
         "ffmpeg",
+        "m3u8",
         "laravel",
         "mostafaznv"
     ],
