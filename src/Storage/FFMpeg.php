@@ -92,6 +92,7 @@ class FFMpeg
                 $cmd = escapeshellcmd("{$this->ffprobe} -i $path -loglevel quiet -show_format -show_streams -print_format json");
 
                 $process = new Process($cmd);
+                $process->setTimeout($this->config['ffmpeg-timeout']);
                 $process->run();
                 $output = $process->getOutput();
 
@@ -200,6 +201,80 @@ class FFMpeg
         return false;
     }
 
+    public function stream(array $styles, $storage, $basePath, $fileName)
+    {
+        $playlist = "#EXTM3U\n#EXT-X-VERSION:3\n";
+        $converted = [];
+
+        /*
+         * Generate multiple video qualities from uploaded video.
+         */
+        foreach ($styles as $name => $style) {
+            try {
+                $path = $this->file->getRealPath();
+                $width = $style['width'];
+                $height = $style['height'];
+                $audioBitRate = $style['bitrate']['audio'];
+                $videoBitRate = $style['bitrate']['video'];
+                $styleBasePath = "$basePath/$name-convert";
+
+                Storage::disk('local')->makeDirectory($styleBasePath);
+
+                $saveTo = "$styleBasePath/$name.mp4";
+
+                $cmd = escapeshellcmd("{$this->ffmpeg} -y -i $path -s {$width}x{$height} -y -strict experimental -acodec aac -b:a $audioBitRate -ac 2 -ar 48000 -vcodec libx264 -vprofile main -g 48 -b:v $videoBitRate -threads 64");
+                $convertResult = $this->run($cmd, 'local', $saveTo);
+
+
+                if ($convertResult) {
+                    $converted[$name] = [
+                        'path'      => $styleBasePath,
+                        'file'      => $saveTo,
+                        'bandwidth' => $videoBitRate,
+                        'width'     => $width,
+                        'height'    => $height,
+                    ];
+                }
+                else {
+                    Storage::disk('local')->deleteDirectory($styleBasePath);
+                }
+            }
+            catch (Exception $e) {
+                // do nothing
+            }
+        }
+
+        /*
+         * Convert generated videos to ts
+         */
+        foreach ($converted as $name => $value) {
+            try {
+                $m3u8 = 'chunk-list.m3u8';
+                $streamBasePath = "$basePath/$name";
+                Storage::disk($storage)->makeDirectory($streamBasePath);
+
+                $cmd = escapeshellcmd("{$this->ffmpeg} -y -i {$value['file']} -hls_time 9 -hls_segment_filename ':stream-path/file-sequence-%d.ts' -hls_playlist_type vod :stream-path/$m3u8");
+                $streamResult = $this->streamRun($cmd, $storage, $streamBasePath);
+
+                if ($streamResult) {
+                    $playlist .= "#EXT-X-STREAM-INF:BANDWIDTH={$value['bandwidth']},RESOLUTION={$value['width']}x{$value['height']}\n";
+                    $playlist .= "$name/$m3u8\n";
+                }
+
+                Storage::disk('local')->deleteDirectory($value['path']);
+            }
+            catch (Exception $e) {
+                Storage::disk('local')->deleteDirectory($value['path']);
+            }
+        }
+
+        if (count($converted)) {
+            Storage::disk($storage)->put("$basePath/$fileName", $playlist);
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Calculate scale.
@@ -252,6 +327,7 @@ class FFMpeg
         if ($driver == 'local') {
             $cmd = "$cmd $saveTo";
             $process = new Process($cmd);
+            $process->setTimeout($this->config['ffmpeg-timeout']);
             $process->run();
 
             if ($process->isSuccessful()) {
@@ -263,10 +339,11 @@ class FFMpeg
 
             $tempDir = Helper::tempDir();
             $tempName = time() . '-' . $name;
-            $temp = $tempDir . "/" . $tempName;
+            $temp = $tempDir . '/' . $tempName;
 
             $cmd = "$cmd $temp";
             $process = new Process($cmd);
+            $process->setTimeout($this->config['ffmpeg-timeout']);
             $process->run();
 
             if ($process->isSuccessful()) {
@@ -275,6 +352,63 @@ class FFMpeg
                 Storage::disk($storage)->putFileAs($path, $file, $name);
                 @unlink($temp);
 
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Run ffmpeg command for stream videos.
+     * Handle local/non-local drivers
+     *
+     * @param $cmd
+     * @param $storage
+     * @param $streamPath
+     * @return bool
+     */
+    protected function streamRun($cmd, $storage, $streamPath)
+    {
+        $driver = Helper::diskToDriver($storage);
+
+        if ($driver == 'local') {
+            $cmd = str_replace(':stream-path', $streamPath, $cmd);
+
+            $process = new Process($cmd);
+            $process->setTimeout($this->config['ffmpeg-timeout']);
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                return true;
+            }
+        }
+        else {
+            list($path, $name) = Helper::splitPath($streamPath);
+
+
+            $temp = $name . '-' . time();
+
+            Storage::disk('local')->makeDirectory($temp);
+
+            $cmd = str_replace(':stream-path', $temp, $cmd);
+
+            $process = new Process($cmd);
+            $process->setTimeout($this->config['ffmpeg-timeout']);
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                $files = Storage::disk('local')->files($temp);
+
+                foreach ($files as $file) {
+                    $fileObject = new File($file);
+
+                    Storage::disk($storage)->putFileAs($streamPath, $fileObject, $fileObject->getFilename());
+
+                    unset($fileObject);
+                }
+
+                Storage::disk('local')->deleteDirectory($temp);
                 return true;
             }
         }

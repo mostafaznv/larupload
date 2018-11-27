@@ -212,6 +212,10 @@ class Attachment
         if ($this->file) {
             if ($this->file == LARUPLOAD_NULL) {
                 $this->clean($model->id);
+
+                if ($this->mode == 'light') {
+                    $this->output = null;
+                }
             }
             else {
                 if (!$this->keepOldFiles)
@@ -259,13 +263,23 @@ class Attachment
             $name = null;
 
             if ($this->mode == 'heavy') {
-                if ($style == 'cover')
+                $type = $model->{"{$this->name}_file_type"};
+
+                if ($style == 'cover') {
                     $name = $model->{"{$this->name}_file_cover"};
-                else
+                }
+                else {
                     $name = $model->{"{$this->name}_file_name"};
+                }
             }
             else {
                 $details = json_decode($model->{"{$this->name}_file_meta"});
+                $type = null;
+
+                if ($details and isset($details->type)) {
+                    $type = $details->type;
+                }
+
                 if ($style == 'cover' and isset($details->cover) and $details->cover) {
                     $name = $details->cover;
                 }
@@ -274,7 +288,21 @@ class Attachment
                 }
             }
 
-            if ($name and $this->hasFile($model, $style)) {
+            if ($name and $style == 'stream') {
+                if ($type == 'video') {
+                    $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
+                    $path = $this->getPath($model->id, $style);
+
+                    $path = "$path/$name";
+
+                    return $this->storageUrl($path);
+                }
+                else {
+                    return null;
+                }
+
+            }
+            else if ($name and $this->hasFile($model, $style)) {
                 $name = $this->fixExceptionNames($name, $style);
                 $path = $this->getPath($model->id, $style);
                 $path = "$path/$name";
@@ -477,9 +505,9 @@ class Attachment
                 $ffmpeg = new FFMpeg($this->file);
                 $meta = $ffmpeg->getMeta();
 
-                $this->output['width'] = $meta['width'];
-                $this->output['height'] = $meta['height'];
-                $this->output['duration'] = $meta['duration'];
+                $this->output['width'] = (int)$meta['width'];
+                $this->output['height'] = (int)$meta['height'];
+                $this->output['duration'] = (int)$meta['duration'];
 
                 break;
 
@@ -489,8 +517,8 @@ class Attachment
 
                 $dominantColor = ($this->dominantColor) ? Image::dominant($this->file) : null;
 
-                $this->output['width'] = $meta['width'];
-                $this->output['height'] = $meta['height'];
+                $this->output['width'] = (int)$meta['width'];
+                $this->output['height'] = (int)$meta['height'];
                 $this->output['dominant_color'] = $dominantColor;
                 break;
         }
@@ -584,7 +612,7 @@ class Attachment
 
             case 'video':
                 foreach ($this->styles as $name => $style) {
-                    if (isset($style['type']) and !in_array($this->type, $style['type']))
+                    if ($name == 'stream' or (isset($style['type']) and !in_array($this->type, $style['type'])))
                         continue;
 
                     $path = $this->getPath($id, $name);
@@ -593,6 +621,20 @@ class Attachment
 
                     $ffmpeg = new FFMpeg($this->file);
                     $ffmpeg->manipulate($style, $this->storage, $saveTo);
+
+                    unset($ffmpeg);
+                }
+
+                if (isset($this->styles['stream'])) {
+                    $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME) . '.m3u8';
+
+                    $path = $this->getPath($id, 'stream');
+                    Storage::disk($this->storage)->makeDirectory($path);
+
+                    $ffmpeg = new FFMpeg($this->file);
+                    $ffmpeg->stream($this->styles['stream'], $this->storage, $path, $fileName);
+
+                    unset($ffmpeg);
                 }
 
                 break;
@@ -658,12 +700,12 @@ class Attachment
         if (array_key_exists($style, $this->styles)) {
             $mime = null;
             if ($this->mode == 'heavy') {
-                $mime = $model->{"{$this->name}_file_type"};
+                $mime = $model->{"{$this->name}_file_mime_type"};
             }
             else {
                 $details = json_decode($model->{"{$this->name}_file_meta"});
-                if (isset($details->type) and $details->type)
-                    $mime = $details->type;
+                if (isset($details->mime_type) and $details->mime_type)
+                    $mime = $details->mime_type;
             }
 
             if ($mime) {

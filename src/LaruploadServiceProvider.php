@@ -12,10 +12,12 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - test s3
     // TODO - upload with url
     // TODO - write some tests
-    // TODO - upload stream videos
     // TODO - import php-ffmpeg package into the project [NOTICE: wait for a stable version]
+    // TODO - add an ability to custom ffmpeg scripts (video and stream)
+    // TODO - fix a bug on crop videos (Invalid too big or non positive size for width '400' or height '400')
+    // TODO - check possibility of change video ffmpeg script to streaming one (none crop mode).
 
-    const VERSION = '0.0.1';
+    const VERSION = '0.0.3';
 
     public function boot()
     {

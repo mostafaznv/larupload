@@ -9,6 +9,7 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
 - Using different drivers 
 - Ability to resize/crop photos and videos
 - Ability to create multiple sizes of the videos and images
+- Ability to create HTTP Live Streaming (HLS) from video sources
 - Extract the width and height of the image
 - Extract width, height and duration of the video
 - Extract the duration of the audio
@@ -304,11 +305,41 @@ In larupload, we’ve put a lot of effort into making the package more customize
             'mode'   => 'crop',
             'type'   => ['image', 'video'], 
         ],
+      
         'medium' => [
             'height' => 1000,
             'width'  => 1000,
             'mode'   => 'auto',
             'type'   => ['image']
+        ],
+      
+        'stream' => [
+            '480p' => [
+                'width'   => 640,
+                'height'  => 480,
+                'bitrate' => [
+                    'audio' => '64k',
+                    'video' => '300000'
+                ]
+            ],
+
+            '720p' => [
+                'width'   => 1280,
+                'height'  => 720,
+                'bitrate' => [
+                    'audio' => '64k',
+                    'video' => '400000'
+                ]
+            ],
+
+            '1080p' => [
+                'width'   => 1920,
+                'height'  => 1080,
+                'bitrate' => [
+                    'audio' => '64k',
+                    'video' => '500000'
+                ]
+            ]
         ]
     ]
     ```
@@ -322,6 +353,17 @@ In larupload, we’ve put a lot of effort into making the package more customize
         - exact
         - auto
     - **type**: with this field, you can determine that the defined style is usable for what type of files, `image`, `video` or `both`.
+    - **stream**: if you want generate m3u8 files from video sources, you should use `stream`. for now larupload supports hls videos only on stream style.
+        - **key**: label for stream quality. highly recommended to use string labels like `720p`
+        - **width**: width of video. the width value should be `numeric` 
+        - **height**: height of video. the height value should be `numeric`
+        - **bitrate.audio**: audio bitrate. audio bitrate should be a valid bitrate value for ffmpeg commands.
+        - **bitrate.video**: video bitrate. video bitrate value should be `numeric`
+        
+    > Note: stream only works for videos. this style can generate cover image from video.
+        
+    > Note: all converted qualities for stream will be delete after generate `ts` files. so we can't use mp4 version for stream qualities. mp4 is `only` available for `original` size.
+       
 
 - #### Generate cover
     Larupload allows you to automatically generate cover image from the uploaded image or video. With this field, you can enable or disable this feature.
@@ -368,6 +410,14 @@ In larupload, we’ve put a lot of effort into making the package more customize
         'ffmpeg.binaries'  => '/usr/local/bin/ffmpeg',
         'ffprobe.binaries' => '/usr/local/bin/ffprobe'
     ],
+    ```
+    
+- #### FFMPEG Timeout
+    Set timeout to control ffmpeg max execution time.
+    
+    Example:
+    ```php
+    'ffmpeg-timeout' => 500
     ```
 
 ### Customization by model constructor 
@@ -480,6 +530,7 @@ class Contact extends Model
 
         $this->hasUploadFile('image');
         $this->hasUploadFile('profile_cover');
+        $this->hasUploadFile('video');
     }
 
     public function getMediaAttribute()

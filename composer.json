@@ -2,11 +2,12 @@
     "name": "mostafaznv/larupload",
     "description": "Larupload is a ORM based file uploader for laravel to upload image, video, audio and other known files.",
     "keywords": [
-        "laravel",
         "file",
         "upload",
         "image",
         "video",
+        "hls",
+        "stream",
         "media",
         "file manager",
         "storage",
@@ -16,6 +17,7 @@
         "resize",
         "crop",
         "ffmpeg",
+        "laravel",
         "mostafaznv"
     ],
     "license": "MIT",
