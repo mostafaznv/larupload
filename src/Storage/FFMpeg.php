@@ -201,6 +201,15 @@ class FFMpeg
         return false;
     }
 
+    /**
+     * Stream - Generate HLS video from source file.
+     *
+     * @param array $styles
+     * @param $storage
+     * @param $basePath
+     * @param $fileName
+     * @return bool
+     */
     public function stream(array $styles, $storage, $basePath, $fileName)
     {
         $playlist = "#EXTM3U\n#EXT-X-VERSION:3\n";
@@ -309,7 +318,6 @@ class FFMpeg
 
         return $scale;
     }
-
 
     /**
      * Run ffmpeg command.
