@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - Change type of columns in database
 - Return null for `meta` when value is LARUPLOAD_NULL
 - Streaming - HLS
+- Fix a bug on generate cover for transparent png images
 
 ## v0.0.2 - 2018/09/10
 - Support Laravel 5.7
