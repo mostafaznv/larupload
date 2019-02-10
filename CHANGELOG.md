@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## v0.0.3 - under construction
+## v0.0.3 - 2019/02/10
 - Fix a bug on calculate scale size
 - Make it easier to manipulate svg files for Imagick and Gmagick by change file name to jpg
 - Fix a bug on save file when we have multiple instances from a model
@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - Return null for `meta` when value is LARUPLOAD_NULL
 - Streaming - HLS
 - Fix a bug on generate cover for transparent png images
+- Improvement on crop/resize in ffmpeg scripts
 
 ## v0.0.2 - 2018/09/10
 - Support Laravel 5.7

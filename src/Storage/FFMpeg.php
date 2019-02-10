@@ -132,28 +132,33 @@ class FFMpeg
         $height = isset($style['height']) ? $style['height'] : null;
         $mode = isset($style['mode']) ? $style['mode'] : null;
 
-        if ($width)
+        if ($width) {
             $scale = $width;
-        else if ($height)
+        }
+        else if ($height) {
             $scale = $height;
-        else
+        }
+        else {
             $scale = 850;
+        }
 
 
         try {
             $path = $this->file->getRealPath();
             if ($mode == 'crop') {
-                if ($width and $height)
+                if ($width and $height) {
                     $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=-1:$scale,crop=$width:$height");
-                else
+                }
+                else {
                     $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=-1:$scale,crop=$scale:$scale");
+                }
             }
-            else
+            else {
                 $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=-1:$scale");
+            }
 
-            $result = $this->run($cmd, $storage, $saveTo);
 
-            return $result;
+            return $this->run($cmd, $storage, $saveTo);
         }
         catch (Exception $exception) {
             // do nothing
@@ -175,27 +180,27 @@ class FFMpeg
         $width = isset($style['width']) ? $style['width'] : null;
         $height = isset($style['height']) ? $style['height'] : null;
         $mode = isset($style['mode']) ? $style['mode'] : null;
-        $scale = $this->calculateScale($width, $height);
-
+        $scale = $this->calculateScale($mode, $width, $height);
 
         try {
             $path = $this->file->getRealPath();
 
             if ($mode == 'crop') {
-                if ($width and $height)
-                    $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale,crop=$width:$height");
-                else
-                    $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale,crop=$scale:$scale");
+                if ($scale) {
+                    $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale,crop=$width:$height,setsar=1");
+                }
+                else {
+                    $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf crop=$width:$height,setsar=1");
+                }
             }
-            else
-                $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale");
+            else {
+                $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale,setsar=1");
+            }
 
-            $result = $this->run($cmd, $storage, $saveTo);
-
-            return $result;
+            return $this->run($cmd, $storage, $saveTo);
         }
         catch (Exception $exception) {
-            // do nothing
+            //
         }
 
         return false;
@@ -288,32 +293,49 @@ class FFMpeg
     /**
      * Calculate scale.
      *
+     * @param $mode
      * @param $width
      * @param $height
-     * @return string
+     * @return float|string
      */
-    protected function calculateScale($width = null, $height = null)
+    protected function calculateScale($mode, $width, $height)
     {
         $meta = $this->getMeta();
 
-        if ($width) {
-            if ($width <= $meta['width'])
-                $scale = "$width:-1";
-            else
-                $scale = "{$meta['width']}:-1";
-        }
-        else if ($height) {
-            if ($height <= $meta['height'])
-                $scale = "-1:$height";
-            else
-                $scale = "-1:{$meta['height']}";
+        if ($mode == 'crop') {
+            if ($width >= $meta['width'] or $height >= $meta['height']) {
+                if ($meta['width'] >= $meta['height']) {
+                    $scale = ceil(($meta['width'] * $height) / $meta['height']);
+                    //dd($scale, $width, $height, $meta);
+                    if ($scale < $width) {
+                        $scale = $width;
+                    }
+
+                    $scale = "$scale:-2";
+                }
+                else {
+                    $scale = ceil(($meta['height'] * $width) / $meta['width']);
+                    if ($scale < $height) {
+                        $scale = $height;
+                    }
+
+                    $scale = "-2:$scale";
+                }
+            }
+            else {
+                $scale = '';
+            }
         }
         else {
-            $defaultScale = self::DEFAULT_SCALE;
-            if ($defaultScale < $meta['width'])
-                $scale = "$defaultScale:-1";
-            else
-                $scale = "{$meta['width']}:-1";
+            if ($width) {
+                $scale = "$width:-2";
+            }
+            else if ($height) {
+                $scale = "-2:$height";
+            }
+            else {
+                $scale = self::DEFAULT_SCALE . ':-2';
+            }
         }
 
         return $scale;

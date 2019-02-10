@@ -71,8 +71,8 @@ class Helper
 
             'styles'          => 'array',
             'styles.*'        => 'array',
-            'styles.*.height' => 'numeric',
-            'styles.*.width'  => 'numeric',
+            'styles.*.height' => 'numeric|nullable|required_if:styles.*.mode,crop',
+            'styles.*.width'  => 'numeric|nullable|required_if:styles.*.mode,crop',
             'styles.*.mode'   => 'string:in:landscape,portrait,crop,exact,auto',
             'styles.*.type'   => 'array:in:image,video',
 
