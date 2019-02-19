@@ -25,7 +25,7 @@ class Blueprint
             $table->string("{$name}_file_mime_type", 85)->nullable();
             $table->integer("{$name}_file_width")->nullable();
             $table->integer("{$name}_file_height")->unsigned()->nullable();
-            $table->integer("{$name}_file_duration", 85)->nullable();
+            $table->integer("{$name}_file_duration")->nullable();
             $table->string("{$name}_file_dominant_color", 7)->nullable();
             $table->string("{$name}_file_format", 85)->nullable();
             $table->string("{$name}_file_cover", 85)->nullable();
