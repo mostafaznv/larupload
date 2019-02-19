@@ -1,4 +1,4 @@
-![larupload-banner](https://user-images.githubusercontent.com/7619687/52747439-07754980-2ff9-11e9-8bb6-0e7fe2b13b00.png)
+![larupload-banner](https://user-images.githubusercontent.com/7619687/53000850-837af180-343e-11e9-90a1-c30ff435b0b1.png)
 
 
 # Larupload
