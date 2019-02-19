@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.0.4 - 2019/02/19
+- Fix a bug on defining file duration as an integer value
+- Set banner for readme
+
 ## v0.0.3 - 2019/02/10
 - Fix a bug on calculate scale size
 - Make it easier to manipulate svg files for Imagick and Gmagick by change file name to jpg
