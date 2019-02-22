@@ -267,7 +267,7 @@ class FFMpeg
                 $streamBasePath = "$basePath/$name";
                 Storage::disk($storage)->makeDirectory($streamBasePath);
 
-                $cmd = escapeshellcmd("{$this->ffmpeg} -y -i {$value['file']} -hls_time 9 -hls_segment_filename ':stream-path/file-sequence-%d.ts' -hls_playlist_type vod :stream-path/$m3u8");
+                $cmd = escapeshellcmd("{$this->ffmpeg} -y -i {$value['file']} -hls_time 9 -hls_segment_filename :stream-path/file-sequence-%d.ts -hls_playlist_type vod :stream-path/$m3u8");
                 $streamResult = $this->streamRun($cmd, $storage, $streamBasePath);
 
                 if ($streamResult) {
