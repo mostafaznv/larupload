@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.0.5 - 2019/05/06
+- Support Laravel 5.7
+
 ## v0.0.4 - 2019/02/22
 - Fix a bug on defining file duration as an integer value
 - Set banner for readme
