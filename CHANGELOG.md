@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.0.6 - 2019/05/23
+- Queue FFMpeg Process
+- Bugfix
+
 ## v0.0.5 - 2019/05/06
 - Support Laravel 5.7
 
