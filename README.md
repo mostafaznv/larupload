@@ -497,11 +497,11 @@ You can enable this feature with `ffmpeg-queue` configuration key. so we just up
 
 > If you exceeded maximum amount of available queues, we will redirect back to the previous url with a message to inform your user that queue limitation is exceeded.
 
-#### Larupload have some new features with Queue FFMpeg:
+### Larupload have some new features with Queue FFMpeg:
 - An event to inform you when background job finished.
 - Two relationships to show current status of ffmpeg queue process and history of all processes.
 
-#### FFMpeg Queue Listen Finished Event
+### FFMpeg Queue Listen Finished Event
 After finish background job, we will fire an event to inform you that ffmpeg process is done and you can use it now.
 So you need to implement an listener to listen this event.
 
@@ -534,7 +534,7 @@ So you need to implement an listener to listen this event.
     }
     ```
 
-#### FFMpeg Queue Relationships
+### FFMpeg Queue Relationships
 In all Eloquent models that are using larupload, you can use these relationships:
 
 - **laruploadQueue**: Return status of latest queued process.
