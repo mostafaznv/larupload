@@ -127,6 +127,9 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
 - [Customization](#customization)
   - [Customization by config file](#customization-by-config-file)
   - [Customization by model constructor](#customization-by-model-constructor)
+- [Queue FFMpeg](#queue-ffmpeg)
+  - [Listen Finished Event](#ffmpeg-queue-listen-finished-event)
+  - [Relationships](#ffmpeg-queue-relationships)
 - [Some extra tricks](#some-extra-tricks)
   - [Set Attribute](#set-attribute)
   - [Get Attribute](#get-attribute)
@@ -498,7 +501,7 @@ You can enable this feature with `ffmpeg-queue` configuration key. so we just up
 - An event to inform you when background job finished.
 - Two relationships to show current status of ffmpeg queue process and history of all processes.
 
-#### FFMpeg Queue Finished Event
+#### FFMpeg Queue Listen Finished Event
 After finish background job, we will fire an event to inform you that ffmpeg process is done and you can use it now.
 So you need to implement an listener to listen this event.
 
