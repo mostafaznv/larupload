@@ -556,7 +556,7 @@ class Upload extends Model
  
 1. ##### ایجاد listener
     ```php
-    php artisan make:event LaruploadFFMpegQueueFinished 
+    php artisan make:listener LaruploadFFMpegQueueNotification 
     ```
 
 2. ##### ثبت لیسنر

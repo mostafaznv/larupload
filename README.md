@@ -507,7 +507,7 @@ So you need to implement an listener to listen this event.
 
 1. ##### Create Listener
     ```php
-    php artisan make:event LaruploadFFMpegQueueFinished 
+    php artisan make:listener LaruploadFFMpegQueueNotification 
     ```
 
 2. ##### Register Listener
