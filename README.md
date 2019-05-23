@@ -26,6 +26,7 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
 - Validates the input files by file format and file type
 - Ability to set the configuration publicly or privately for each model
 - Has 2 modes for storage: *heavy* mode and *light* mode
+- Queue FFMpeg processes and finish them in background.
 
 ## Requirements:
 - Laravel 5.5 or higher
@@ -40,12 +41,17 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
     composer require mostafaznv/larupload
     ```
 
-2. ##### Publish config:
+2. ##### Publish config and migrations:
     ```shell
     php artisan vendor:publish --provider="Mostafaznv\Larupload\LaruploadServiceProvider"
     ```
 
-3. ##### Done
+3. ##### Create Tables:
+    ```shell
+    php artisan migrate
+    ```
+
+4. ##### Done
 
 
 ## Usage
@@ -422,6 +428,23 @@ In larupload, we’ve put a lot of effort into making the package more customize
     ```php
     'ffmpeg-timeout' => 500
     ```
+    
+- #### FFMPEG Queue
+    Sometimes ffmpeg process is very heavy, so you have to queue process and do it in background
+    
+    Example:
+    ```php
+    'ffmpeg-queue' => false
+    ```
+    
+- #### Number of max available FFMPEG Queues
+    Set maximum Larupload instances that currently are queued.
+    > Package Will redirect back an error response if maximum limitation exceeded.
+    
+    Example:
+    ```php
+    'ffmpeg-max-queue-num' => 1
+    ```
 
 ### Customization by model constructor 
 In addition to using the config file, that is responsible for Larupload general configuration, you can customize each model by Its constructor
@@ -463,6 +486,63 @@ class Upload extends Model
     }
 }
 ```
+
+## Queue FFMpeg
+> Note: If you are reading this, we assume you know what is [laravel queue](https://laravel.com/docs/queues). if not, please read laravel's documentation first.
+
+You can enable this feature with `ffmpeg-queue` configuration key. so we just upload original file and then, we start to handle all ffmpeg styles (like crop, resize and stream) in the background.
+
+> If you exceeded maximum amount of available queues, we will redirect back to the previous url with a message to inform your user that queue limitation is exceeded.
+
+#### Larupload have some new features with Queue FFMpeg:
+- An event to inform you when background job finished.
+- Two relationships to show current status of ffmpeg queue process and history of all processes.
+
+#### FFMpeg Queue Finished Event
+After finish background job, we will fire an event to inform you that ffmpeg process is done and you can use it now.
+So you need to implement an listener to listen this event.
+
+1. ##### Create Listener
+    ```php
+    php artisan make:event LaruploadFFMpegQueueFinished 
+    ```
+
+2. ##### Register Listener
+    You should register your listener in EventServiceProvider
+    ```php
+    protected $listen = [
+        ...
+
+        'Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished' => [
+            'App\Listeners\LaruploadFFMpegQueueNotification',
+        ],
+    ];
+    ```
+
+2. ##### Handle Event
+    In the created listener file, you should get the event.
+    ```php
+    class LaruploadFFMpegQueueNotification
+    {
+        public function handle(LaruploadFFMpegQueueFinished $event)
+        {
+            info("larupload queue finished. id: $event->id, model: $event->model, statusId: $event->statusId");
+        }
+    }
+    ```
+
+#### FFMpeg Queue Relationships
+In all Eloquent models that are using larupload, you can use these relationships:
+
+- **laruploadQueue**: Return status of latest queued process.
+- **laruploadQueues**: Return history of all queued processes.
+
+```php
+use App/Upload;
+
+Upload::where('id', 21)->with('laruploadQueue', 'laruploadQueues')->first();
+```
+
 
 ## Some extra tricks
 

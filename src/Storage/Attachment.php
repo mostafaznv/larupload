@@ -3,10 +3,14 @@
 namespace Mostafaznv\Larupload\Storage;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Mostafaznv\Larupload\Helpers\Helper;
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Helpers\Str;
+use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
 
 class Attachment
 {
@@ -16,6 +20,20 @@ class Attachment
      * @var string
      */
     protected $name;
+
+    /**
+     * Folder Name (table name).
+     *
+     * @var string
+     */
+    protected $folder;
+
+    /**
+     * Options on the Fly.
+     *
+     * @var string
+     */
+    protected $injectedOptions;
 
     /**
      * File path.
@@ -158,10 +176,12 @@ class Attachment
      */
     public function __construct($name, $folder, Array $options = [])
     {
-
         $this->config = config('larupload');
 
         if (Helper::validate($options)) {
+            $this->folder = $folder;
+            $this->injectedOptions = $options;
+
             $options = Helper::arrayMergeRecursiveDistinct($this->getDefaultOptions(), $options);
 
             $this->name = $name;
@@ -218,14 +238,15 @@ class Attachment
                 }
             }
             else {
-                if (!$this->keepOldFiles)
+                if (!$this->keepOldFiles) {
                     $this->clean($model->id);
+                }
 
                 $this->setBasicDetails();
 
                 $this->setMediaDetails();
 
-                $this->handleStyles($model->id);
+                $this->handleStyles($model->id, $model->getMorphClass());
 
                 $this->setCover($model->id);
             }
@@ -379,12 +400,46 @@ class Attachment
     }
 
     /**
+     * Handle FFMpeg queue on running ffmpeg queue:work
+     *
+     * @param $id
+     * @param $meta
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function handleFFMpegQueue($id, $meta)
+    {
+        $shouldDeletePath = null;
+        $path = $this->getPath($id, 'original');
+
+        if ($this->storage == 'local') {
+            $path = Storage::disk($this->storage)->path("$path/{$meta['name']}");
+        }
+        else {
+            $shouldDeletePath = $this->getPath($id, '');
+
+            $path = Storage::disk('local')->path("$path/{$meta['name']}");
+        }
+
+        $file = new UploadedFile($path, $meta['name'], $meta['mime_type']);
+        $this->file = $file;
+
+        $this->type = $this->getFileType($file);
+        $this->setBasicDetails();
+
+        $this->handleVideoStyles($id, $file);
+
+        if ($shouldDeletePath) {
+            Storage::disk('local')->deleteDirectory($shouldDeletePath);
+        }
+    }
+
+    /**
      * Validate files with mime type and file extension.
      *
      * @param UploadedFile $file
      * @return bool
      */
-    protected function validation($file) : bool
+    protected function validation($file): bool
     {
         if (count($this->allowedMimes)) {
             if (!in_array($file->getClientOriginalExtension(), $this->allowedMimes)) {
@@ -585,8 +640,9 @@ class Attachment
      * resize, crop and generate styles from original file.
      *
      * @param $id
+     * @param $class
      */
-    protected function handleStyles($id)
+    protected function handleStyles($id, $class)
     {
         // Handle original.
         $path = $this->getPath($id, 'original');
@@ -613,33 +669,69 @@ class Attachment
 
 
             case 'video':
-                foreach ($this->styles as $name => $style) {
-                    if ($name == 'stream' or (isset($style['type']) and !in_array($this->type, $style['type'])))
-                        continue;
+                if ($this->config['ffmpeg-queue']) {
+                    $availableQueues = DB::table('larupload_ffmpeg_queue')->where('status', 0)->count();
 
-                    $path = $this->getPath($id, $name);
-                    Storage::disk($this->storage)->makeDirectory($path);
-                    $saveTo = $path . '/' . $this->output['name'];
+                    if ($availableQueues >= $this->config['ffmpeg-max-queue-num']) {
+                        throw new HttpResponseException(redirect(URL::previous())->withErrors([
+                            'ffmpeg_queue_max_num' => 'larupload queue limitation exceeded.'
+                        ]));
+                    }
+                    else {
+                        // Save a copy of original file to use it on process ffmpeg queue, then delete it.
+                        Storage::disk('local')->putFileAs($path, $this->file, $this->output['name']);
 
-                    $ffmpeg = new FFMpeg($this->file);
-                    $ffmpeg->manipulate($style, $this->storage, $saveTo);
+                        $statusId = DB::table('larupload_ffmpeg_queue')->insertGetId([
+                            'record_id'    => $id,
+                            'record_class' => $class,
+                            'created_at'   => now(),
+                        ]);
 
-                    unset($ffmpeg);
+                        ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class, $this->folder, $this->injectedOptions, $this->output)->delay(now()->addSeconds(1));
+                    }
+
                 }
-
-                if (isset($this->styles['stream'])) {
-                    $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME) . '.m3u8';
-
-                    $path = $this->getPath($id, 'stream');
-                    Storage::disk($this->storage)->makeDirectory($path);
-
-                    $ffmpeg = new FFMpeg($this->file);
-                    $ffmpeg->stream($this->styles['stream'], $this->storage, $path, $fileName);
-
-                    unset($ffmpeg);
+                else {
+                    $this->handleVideoStyles($id, $this->file);
                 }
 
                 break;
+        }
+    }
+
+    /**
+     * Handle styles for videos.
+     *
+     * @param $id
+     * @param $file
+     */
+    protected function handleVideoStyles($id, $file)
+    {
+        foreach ($this->styles as $name => $style) {
+            if ($name == 'stream' or (isset($style['type']) and !in_array($this->type, $style['type']))) {
+                continue;
+            }
+
+            $path = $this->getPath($id, $name);
+            Storage::disk($this->storage)->makeDirectory($path);
+            $saveTo = $path . '/' . $this->output['name'];
+
+            $ffmpeg = new FFMpeg($file);
+            $ffmpeg->manipulate($style, $this->storage, $saveTo);
+
+            unset($ffmpeg);
+        }
+
+        if (isset($this->styles['stream'])) {
+            $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME) . '.m3u8';
+
+            $path = $this->getPath($id, 'stream');
+            Storage::disk($this->storage)->makeDirectory($path);
+
+            $ffmpeg = new FFMpeg($file);
+            $ffmpeg->stream($this->styles['stream'], $this->storage, $path, $fileName);
+
+            unset($ffmpeg);
         }
     }
 
@@ -652,8 +744,10 @@ class Attachment
      */
     protected function getPath($id, $folder = null)
     {
-        if ($folder)
+        if ($folder) {
             return $this->path . '/' . $id . '/' . $this->name . '/' . $folder;
+        }
+
         return $this->path . '/' . $id . '/' . $this->name;
     }
 
@@ -724,6 +818,12 @@ class Attachment
         return true;
     }
 
+    /**
+     * Convert path to URL based on storage driver
+     *
+     * @param $path
+     * @return string
+     */
     protected function storageUrl($path)
     {
         $storage = $this->storage;

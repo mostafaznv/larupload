@@ -43,7 +43,7 @@ return [
     */
 
     'naming_method' => 'slug',
-    'lang' => null,
+    'lang'          => null,
 
     /*
     |--------------------------------------------------------------------------
@@ -113,9 +113,9 @@ return [
     */
 
     'cover_style' => [
-        'width' => 500,
+        'width'  => 500,
         'height' => 500,
-        'mode' => 'crop',
+        'mode'   => 'crop',
     ],
 
     /*
@@ -227,5 +227,30 @@ return [
     'ffmpeg-timeout' => 60,
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | FFMPEG Queue
+    |--------------------------------------------------------------------------
+    |
+    | Sometimes ffmpeg process is very heavy, so you have to queue process and do it in background
+    | For now, queue is available only for manipulate and stream videos.
+    |
+    */
 
+
+    'ffmpeg-queue' => false,
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FFMPEG Max Queue Number
+    |--------------------------------------------------------------------------
+    |
+    | Set maximum Larupload instances that currently are queued.
+    | Package Will redirect back an error response if maximum limitation exceeded.
+    |
+    */
+
+
+    'ffmpeg-max-queue-num' => 1,
 ];

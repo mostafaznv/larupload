@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Traits;
 
+use Mostafaznv\Larupload\Models\LaruploadFFMpegQueue;
 use Mostafaznv\Larupload\Storage\Attachment;
 
 trait Larupload
@@ -97,7 +98,7 @@ trait Larupload
         if (array_key_exists($key, $this->attachedFiles)) {
             if ($file) {
                 static::$uploaded = false;
-                
+
                 $attachedFile = $this->attachedFiles[$key];
                 $attachedFile->setUploadedFile($file, $cover);
             }
@@ -227,5 +228,25 @@ trait Larupload
         }
 
         return ($key) ? null : [];
+    }
+
+    /**
+     * Retrieve latest status log for ffmpeg queue process.
+     *
+     * @return mixed
+     */
+    public function laruploadQueue()
+    {
+        return $this->hasOne(LaruploadFFMpegQueue::class, 'record_id')->where('record_class', self::class)->orderBy('id', 'desc');
+    }
+
+    /**
+     * Retrieve all status logs for ffmpeg queue process.
+     *
+     * @return mixed
+     */
+    public function laruploadQueues()
+    {
+        return $this->hasMany(LaruploadFFMpegQueue::class, 'record_id')->where('record_class', self::class)->orderBy('id', 'desc');
     }
 }

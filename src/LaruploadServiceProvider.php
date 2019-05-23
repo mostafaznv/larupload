@@ -16,12 +16,15 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - add an ability to custom ffmpeg scripts (video and stream)
     // TODO - check possibility of change video ffmpeg script to streaming one (none crop mode).
 
-    const VERSION = '0.0.3';
+    const VERSION = '0.0.6';
 
     public function boot()
     {
-        if ($this->app->runningInConsole())
+        if ($this->app->runningInConsole()) {
+
             $this->publishes([__DIR__ . '/../config/config.php' => config_path('larupload.php')], 'config');
+            $this->publishes([__DIR__ . '/../migrations/' => database_path('migrations')], 'migrations');
+        }
     }
 
     public function register()

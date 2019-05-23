@@ -181,6 +181,7 @@ class FFMpeg
         $height = isset($style['height']) ? $style['height'] : null;
         $mode = isset($style['mode']) ? $style['mode'] : null;
         $scale = $this->calculateScale($mode, $width, $height);
+        $saveTo = Storage::disk($storage)->path($saveTo);
 
         try {
             $path = $this->file->getRealPath();
@@ -233,8 +234,7 @@ class FFMpeg
                 $styleBasePath = "$basePath/$name-convert";
 
                 Storage::disk('local')->makeDirectory($styleBasePath);
-
-                $saveTo = "$styleBasePath/$name.mp4";
+                $saveTo = Storage::disk('local')->path("$styleBasePath/$name.mp4");
 
                 $cmd = escapeshellcmd("{$this->ffmpeg} -y -i $path -s {$width}x{$height} -y -strict experimental -acodec aac -b:a $audioBitRate -ac 2 -ar 48000 -vcodec libx264 -vprofile main -g 48 -b:v $videoBitRate -threads 64");
                 $convertResult = $this->run($cmd, 'local', $saveTo);
@@ -266,6 +266,7 @@ class FFMpeg
                 $m3u8 = 'chunk-list.m3u8';
                 $streamBasePath = "$basePath/$name";
                 Storage::disk($storage)->makeDirectory($streamBasePath);
+                $streamBasePath = Storage::disk($storage)->path($streamBasePath);
 
                 $cmd = escapeshellcmd("{$this->ffmpeg} -y -i {$value['file']} -hls_time 9 -hls_segment_filename :stream-path/file-sequence-%d.ts -hls_playlist_type vod :stream-path/$m3u8");
                 $streamResult = $this->streamRun($cmd, $storage, $streamBasePath);
@@ -408,6 +409,7 @@ class FFMpeg
             $process = new Process($cmd);
             $process->setTimeout($this->config['ffmpeg-timeout']);
             $process->run();
+
 
             if ($process->isSuccessful()) {
                 return true;
