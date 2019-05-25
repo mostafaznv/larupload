@@ -248,9 +248,10 @@ return [
     |
     | Set maximum Larupload instances that currently are queued.
     | Package Will redirect back an error response if maximum limitation exceeded.
+    | If you want to ignore this feature and queue uploaded files unlimited, just set 0 for ffmpeg-max-queue-num
     |
     */
 
 
-    'ffmpeg-max-queue-num' => 1,
+    'ffmpeg-max-queue-num' => 0,
 ];

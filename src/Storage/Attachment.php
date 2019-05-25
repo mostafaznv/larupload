@@ -670,14 +670,22 @@ class Attachment
 
             case 'video':
                 if ($this->config['ffmpeg-queue']) {
-                    $availableQueues = DB::table('larupload_ffmpeg_queue')->where('status', 0)->count();
+                    $maxQueueNum = $this->config['ffmpeg-max-queue-num'];
+                    $flag = false;
 
-                    if ($availableQueues >= $this->config['ffmpeg-max-queue-num']) {
-                        throw new HttpResponseException(redirect(URL::previous())->withErrors([
-                            'ffmpeg_queue_max_num' => 'larupload queue limitation exceeded.'
-                        ]));
+                    if ($maxQueueNum == 0) {
+                        $flag = true;
                     }
                     else {
+                        $availableQueues = DB::table('larupload_ffmpeg_queue')->where('status', 0)->count();
+
+                        if ($availableQueues < $maxQueueNum) {
+                            $flag = true;
+                        }
+                    }
+
+
+                    if ($flag) {
                         // Save a copy of original file to use it on process ffmpeg queue, then delete it.
                         Storage::disk('local')->putFileAs($path, $this->file, $this->output['name']);
 
@@ -688,6 +696,11 @@ class Attachment
                         ]);
 
                         ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class, $this->folder, $this->injectedOptions, $this->output)->delay(now()->addSeconds(1));
+                    }
+                    else {
+                        throw new HttpResponseException(redirect(URL::previous())->withErrors([
+                            'ffmpeg_queue_max_num' => 'larupload queue limitation exceeded.'
+                        ]));
                     }
 
                 }

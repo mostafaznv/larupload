@@ -444,9 +444,11 @@ In larupload, we’ve put a lot of effort into making the package more customize
     Set maximum Larupload instances that currently are queued.
     > Package Will redirect back an error response if maximum limitation exceeded.
     
+    > If you want to ignore this feature and queue uploaded files unlimited, just set 0 for `ffmpeg-max-queue-num`
+    
     Example:
     ```php
-    'ffmpeg-max-queue-num' => 1
+    'ffmpeg-max-queue-num' => 0
     ```
 
 ### Customization by model constructor 
