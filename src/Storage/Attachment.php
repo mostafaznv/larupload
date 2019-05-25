@@ -699,7 +699,7 @@ class Attachment
                     }
                     else {
                         throw new HttpResponseException(redirect(URL::previous())->withErrors([
-                            'ffmpeg_queue_max_num' => 'larupload queue limitation exceeded.'
+                            'ffmpeg_queue_max_num' => trans('larupload::messages.max-queue-num-exceeded')
                         ]));
                     }
 

@@ -210,9 +210,7 @@ return [
     |
     */
 
-
     'ffmpeg' => [],
-
 
     /*
     |--------------------------------------------------------------------------
@@ -223,9 +221,7 @@ return [
     |
     */
 
-
     'ffmpeg-timeout' => 60,
-
 
     /*
     |--------------------------------------------------------------------------
@@ -237,9 +233,7 @@ return [
     |
     */
 
-
     'ffmpeg-queue' => false,
-
 
     /*
     |--------------------------------------------------------------------------
@@ -251,7 +245,6 @@ return [
     | If you want to ignore this feature and queue uploaded files unlimited, just set 0 for ffmpeg-max-queue-num
     |
     */
-
 
     'ffmpeg-max-queue-num' => 0,
 ];

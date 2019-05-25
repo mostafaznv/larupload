@@ -20,10 +20,12 @@ class LaruploadServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        if ($this->app->runningInConsole()) {
+        $this->loadTranslationsFrom(__DIR__ . '/../translations', 'larupload');
 
+        if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__ . '/../config/config.php' => config_path('larupload.php')], 'config');
             $this->publishes([__DIR__ . '/../migrations/' => database_path('migrations')], 'migrations');
+            $this->publishes([__DIR__ . '/../translations/' => resource_path('lang/vendor/larupload')]);
         }
     }
 

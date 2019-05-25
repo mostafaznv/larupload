@@ -41,7 +41,7 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
     composer require mostafaznv/larupload
     ```
 
-2. ##### Publish config and migrations:
+2. ##### Publish config, migrations and translations:
     ```shell
     php artisan vendor:publish --provider="Mostafaznv\Larupload\LaruploadServiceProvider"
     ```
