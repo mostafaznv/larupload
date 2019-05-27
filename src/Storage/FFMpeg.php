@@ -131,6 +131,7 @@ class FFMpeg
         $width = isset($style['width']) ? $style['width'] : null;
         $height = isset($style['height']) ? $style['height'] : null;
         $mode = isset($style['mode']) ? $style['mode'] : null;
+        $saveTo = Storage::disk($storage)->path($saveTo);
 
         if ($width) {
             $scale = $width;
