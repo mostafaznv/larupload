@@ -88,6 +88,7 @@ class Image
      */
     public function resize($storage, $saveTo, $style)
     {
+        $saveTo = Storage::disk($storage)->path($saveTo);
         list($width, $height, $option) = $this->parseStyleDimensions($style);
         $method = 'resize' . ucfirst($option);
 
