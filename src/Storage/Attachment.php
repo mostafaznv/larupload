@@ -653,8 +653,9 @@ class Attachment
         switch ($this->type) {
             case 'image':
                 foreach ($this->styles as $name => $style) {
-                    if (isset($style['type']) and !in_array($this->type, $style['type']))
+                    if ($name == 'stream' or (isset($style['type']) and !in_array($this->type, $style['type']))) {
                         continue;
+                    }
 
                     $path = $this->getPath($id, $name);
 
