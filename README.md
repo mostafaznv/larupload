@@ -424,6 +424,23 @@ In larupload, we’ve put a lot of effort into making the package more customize
     ],
     ```
     
+- #### FFMPEG Capture Frame
+    Set Capture frame in second
+    
+    example: null, 0.1, 2
+    
+    When the value is null, larupload will capture a frame from center of video file.
+    
+    Example 1:
+    ```php
+    'ffmpeg-capture-frame' => null,
+    ```
+    
+    Example 2:
+    ```php
+    'ffmpeg-capture-frame' => '0.1',
+    ```
+    
 - #### FFMPEG Timeout
     Set timeout to control ffmpeg max execution time.
     
@@ -687,13 +704,6 @@ Output:
     "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg"
 ]
 ```
-
-
-## Contributors
-- Mostafa Zeinivand [@mostafaznv](https://github.com/mostafaznv)
-- Faezeh Ghorbannezhad [@Ghorbannezhad](https://github.com/Ghorbannezhad)
-- SamssonApps [@SamssonApps](https://github.com/SamssonApps)
-
 
 ## Changelog
 Refer to the [Changelog](CHANGELOG.md) for a full history of the project.

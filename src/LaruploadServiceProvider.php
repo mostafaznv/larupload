@@ -8,9 +8,11 @@ use Mostafaznv\Larupload\Database\Schema\Blueprint;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
+    // TODO - Return Meta Object on Light Mode when attached file is null
+    // TODO - upload with url
+    // TODO - add an ability to upload files without orm.
     // TODO - dpi for resized/cropped images and videos
     // TODO - test s3
-    // TODO - upload with url
     // TODO - write some tests
     // TODO - import php-ffmpeg package into the project [NOTICE: wait for a stable version]
     // TODO - add an ability to custom ffmpeg scripts (video and stream)

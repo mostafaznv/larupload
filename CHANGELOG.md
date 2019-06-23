@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.0.6 - ????
+- Set FFMpeg capture frame (in second)
+
 ## v0.0.6 - 2019/05/23
 - Queue FFMpeg Process
 - Bugfix

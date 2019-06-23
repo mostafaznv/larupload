@@ -472,6 +472,23 @@ video/mp4
     'ffprobe.binaries' => '/usr/local/bin/ffprobe'
 ],
 ```
+    
+- #### FFMPEG Capture Frame
+    تعیین فریمی که برای گرفتن تصویر نمایه از ویدیو انتخاب میشود.
+    
+    مثال: null, 0.1, 2
+    
+    وقتی که مقدار را برابر نال قرار میدهید، لارآپلود به صورت اتوماتیک فریم وسط ویدیو را انتخاب میکند.
+    
+    مثال یک:
+    ```php
+    'ffmpeg-capture-frame' => null,
+    ```
+    
+    مثال دو:
+    ```php
+    'ffmpeg-capture-frame' => '0.1',
+    ```
 
 - #### FFMPEG Timeout
     به وسیله این قابلیت میتوانید ماکزیمم زمان اجرای دستورات اف‌اف‌ام‌پگ را تنظیم کنید
@@ -732,13 +749,6 @@ class Contact extends Model
     "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg"
 ]
 ```
-
-
-## توسعه دهنگان
-- مصطفی زینی وند -  [@mostafaznv](https://github.com/mostafaznv)
-- فائزه قربان نژاد - [@Ghorbannezhad](https://github.com/Ghorbannezhad)
-- تیم سمسون اپز [@SamssonApps](https://github.com/SamssonApps)
-
 
 ## لیست تغییرات
 

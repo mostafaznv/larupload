@@ -87,6 +87,11 @@ class Helper
             'preserve_files'     => 'boolean',
             'allowed_mime_types' => 'array',
             'allowed_mimes'      => 'array',
+
+            'ffmpeg-capture-frame' => 'nullable|between:0,99999.99',
+            'ffmpeg-timeout'       => 'nullable|numeric',
+            'ffmpeg-queue'         => 'nullable|boolean',
+            'ffmpeg-max-queue-num' => 'nullable|numeric',
         ];
 
         $validator = Validator::make($config, $rules);

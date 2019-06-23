@@ -610,7 +610,7 @@ class Attachment
                     $saveTo = $path . "/$name";
 
                     $ffmpeg = new FFMpeg($this->file);
-                    $result = $ffmpeg->capture('0.1', $this->coverStyle, $this->storage, $saveTo);
+                    $result = $ffmpeg->capture($this->config['ffmpeg-capture-frame'], $this->coverStyle, $this->storage, $saveTo);
 
                     if ($result) {
                         $this->output['cover'] = $name;

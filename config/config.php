@@ -214,6 +214,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | FFMPEG Capture Frame
+    |--------------------------------------------------------------------------
+    |
+    | Set Capture frame in second
+    |
+    | example: null, 0.1, 2
+    | When the value is null, larupload will capture a frame from center of video file.
+    |
+    */
+
+    'ffmpeg-capture-frame' => null,
+
+    /*
+    |--------------------------------------------------------------------------
     | FFMPEG Timeout
     |--------------------------------------------------------------------------
     |

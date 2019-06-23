@@ -143,6 +143,11 @@ class FFMpeg
             $scale = 850;
         }
 
+        if (is_null($fromSecond)) {
+            $meta = $this->getMeta();
+            $fromSecond = floor($meta['duration'] / 2);
+            $fromSecond = number_format($fromSecond, 1);
+        }
 
         try {
             $path = $this->file->getRealPath();
