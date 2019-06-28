@@ -235,8 +235,8 @@ class FFMpeg
                 $path = $this->file->getRealPath();
                 $width = $style['width'];
                 $height = $style['height'];
-                $audioBitRate = $style['bitrate']['audio'];
-                $videoBitRate = $style['bitrate']['video'];
+                $audioBitRate = $this->shortNumberToInteger($style['bitrate']['audio']);
+                $videoBitRate = $this->shortNumberToInteger($style['bitrate']['video']);
                 $styleBasePath = "$basePath/$name-convert";
 
                 Storage::disk('local')->makeDirectory($styleBasePath);
@@ -452,5 +452,30 @@ class FFMpeg
         }
 
         return false;
+    }
+
+    /**
+     * Convert short number formats to integer.
+     * Example: 1M -> 1000000
+     *
+     * @param $number
+     * @return int
+     */
+    protected function shortNumberToInteger($number)
+    {
+        $number = strtoupper($number);
+
+        $units = [
+            'M' => '1000000',
+            'K' => '1000',
+        ];
+
+        $unit = substr($number, -1);
+
+        if (!array_key_exists($unit, $units)) {
+            return (int)$number;
+        }
+
+        return (int)$number * $units[$unit];
     }
 }
