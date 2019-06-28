@@ -476,6 +476,7 @@ class FFMpeg
             return (int)$number;
         }
 
-        return (int)$number * $units[$unit];
+        $number = (float)$number * $units[$unit];
+        return (int)$number;
     }
 }
