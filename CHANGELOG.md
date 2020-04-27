@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## v0.0.6 - ????
+## v0.0.8 - 2019/04/27
+- Support Laravel 7.*
+- Delete unused trait (sluggable)
+
+## v0.0.7 - 2019/10/11
+- Support Laravel 6.* 
+
+## v0.0.6 - 2019/06/28
 - Set FFMpeg capture frame (in second)
 - Minor Bugfix
 

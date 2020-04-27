@@ -6,7 +6,6 @@ namespace Mostafaznv\Larupload\Helpers;
  * Str Helper
  * some functions used from https://github.com/spatie/laravel-sluggable
  *
- * @package Mostafaznv\Larupload\Traits\Support\Slug
  */
 class Str
 {
