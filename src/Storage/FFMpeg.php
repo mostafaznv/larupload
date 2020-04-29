@@ -89,7 +89,8 @@ class FFMpeg
 
             try {
                 $path = $this->file->getRealPath();
-                $cmd = escapeshellcmd("{$this->ffprobe} -i $path -loglevel quiet -show_format -show_streams -print_format json");
+
+                $cmd = $this->cmd("{$this->ffprobe} -i $path -loglevel quiet -show_format -show_streams -print_format json");
 
                 $process = new Process($cmd);
                 $process->setTimeout($this->config['ffmpeg-timeout']);
@@ -362,7 +363,7 @@ class FFMpeg
         $driver = Helper::diskToDriver($storage);
 
         if ($driver == 'local') {
-            $cmd = "$cmd $saveTo";
+            $cmd = $this->cmd("$cmd $saveTo");
             $process = new Process($cmd);
             $process->setTimeout($this->config['ffmpeg-timeout']);
             $process->run();
@@ -378,7 +379,7 @@ class FFMpeg
             $tempName = time() . '-' . $name;
             $temp = $tempDir . '/' . $tempName;
 
-            $cmd = "$cmd $temp";
+            $cmd = $this->cmd("$cmd $temp");
             $process = new Process($cmd);
             $process->setTimeout($this->config['ffmpeg-timeout']);
             $process->run();
@@ -410,7 +411,7 @@ class FFMpeg
         $driver = Helper::diskToDriver($storage);
 
         if ($driver == 'local') {
-            $cmd = str_replace(':stream-path', $streamPath, $cmd);
+            $cmd = $this->cmd(str_replace(':stream-path', $streamPath, $cmd));
 
             $process = new Process($cmd);
             $process->setTimeout($this->config['ffmpeg-timeout']);
@@ -429,7 +430,7 @@ class FFMpeg
 
             Storage::disk('local')->makeDirectory($temp);
 
-            $cmd = str_replace(':stream-path', $temp, $cmd);
+            $cmd = $this->cmd(str_replace(':stream-path', $temp, $cmd));
 
             $process = new Process($cmd);
             $process->setTimeout($this->config['ffmpeg-timeout']);
@@ -478,5 +479,16 @@ class FFMpeg
 
         $number = (float)$number * $units[$unit];
         return (int)$number;
+    }
+
+    /**
+     * Make Normal CMD
+     *
+     * @param $cmd
+     * @return array
+     */
+    protected function cmd($cmd)
+    {
+        return explode(' ', escapeshellcmd($cmd));
     }
 }

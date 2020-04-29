@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.0.8 [hotfix] - 2019/04/29
+- change new Process($cmd) from string to array
+string cmd deprecated in symfony/process v5.*
+
 ## v0.0.8 - 2019/04/27
 - Support Laravel 7.*
 - Delete unused trait (sluggable)
