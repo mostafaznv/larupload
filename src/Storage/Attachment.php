@@ -866,7 +866,7 @@ class Attachment
     protected function fixExceptionNames($name, $style)
     {
         if (!in_array($style, ['original', 'cover'])) {
-            if (ends_with($name, 'svg')) {
+            if (Str::endsWith($name, 'svg')) {
                 $name = str_replace('svg', 'jpg', $name);
             }
         }

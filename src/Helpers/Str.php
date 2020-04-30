@@ -15,6 +15,7 @@ class Str
      * Init Sluggable.
      *
      * Sluggable constructor.
+     *
      * @param null $lang
      */
     public function __construct($lang = null)
@@ -30,16 +31,17 @@ class Str
      */
     protected function setLang($lang = null)
     {
-        if ($lang)
+        if ($lang) {
             return $lang;
+        }
         return config('app.locale');
     }
 
     /**
      * Removes unsafe characters from file name and convert none english words to english (configurable)
      *
-     * @param  string $string Path unsafe file name
-     * @param  string $separator
+     * @param string $string Path unsafe file name
+     * @param string $separator
      * @return string         Path Safe file name
      *
      */
@@ -70,22 +72,25 @@ class Str
      *
      * @see https://github.com/laravel/framework/blob/5.6/README.md
      *
-     * @param  string $value
-     * @param  string $language
+     * @param string $value
+     * @param string $language
      * @return string
      */
     protected function ascii($value, $language = 'en')
     {
         $languageSpecific = $this->languageSpecificCharsArray($language);
 
-        if (!is_null($languageSpecific))
+        if (!is_null($languageSpecific)) {
             $value = str_replace($languageSpecific[0], $languageSpecific[1], $value);
+        }
 
-        foreach ($this->charsArray($language) as $key => $val)
+        foreach ($this->charsArray($language) as $key => $val) {
             $value = str_replace($val, $key, $value);
+        }
 
-        if (in_array($language, ['fa', 'ar']))
+        if (in_array($language, ['fa', 'ar'])) {
             return $this->faRegex($value);
+        }
 
         return preg_replace('/[^\x20-\x7E]/u', '', $value);
     }
@@ -108,7 +113,7 @@ class Str
      *
      * @see https://github.com/danielstjules/Stringy/blob/3.1.0/LICENSE.txt
      *
-     * @param  string $language
+     * @param string $language
      * @return array|null
      */
     protected function languageSpecificCharsArray($language)
@@ -144,8 +149,9 @@ class Str
     {
         static $charsArray;
 
-        if (isset($charsArray))
+        if (isset($charsArray)) {
             return $charsArray;
+        }
 
         if (in_array($language, ['fa', 'ar'])) {
             return $charsArray = [
@@ -1213,5 +1219,24 @@ class Str
                 ],
             ];
         }
+    }
+
+    /**
+     * Determine if a given string ends with a given substring.
+     * credit: Laravel
+     *
+     * @param string $haystack
+     * @param string|string[] $needles
+     * @return bool
+     */
+    public static function endsWith($haystack, $needles)
+    {
+        foreach ((array)$needles as $needle) {
+            if (substr($haystack, -strlen($needle)) === (string)$needle) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
