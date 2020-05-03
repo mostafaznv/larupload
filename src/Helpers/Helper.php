@@ -18,17 +18,21 @@ class Helper
     {
         $path = null;
 
-        if (is_file(base_path('vendor/mostafaznv/larupload/config/config.php')))
+        if (is_file(base_path('vendor/mostafaznv/larupload/config/config.php'))) {
             $path = base_path('vendor/mostafaznv/larupload/config/config.php');
-        else if (is_file(base_path('packages/mostafaznv/larupload/config/config.php')))
+        }
+        else if (is_file(base_path('packages/mostafaznv/larupload/config/config.php'))) {
             $path = base_path('packages/mostafaznv/larupload/config/config.php');
+        }
 
         if ($path) {
             $config = File::getRequire(base_path('packages/mostafaznv/larupload/config/config.php'));
-            if ($key and isset($config[$key]))
+            if ($key and isset($config[$key])) {
                 return $config[$key];
+            }
             return $config;
         }
+
         return [];
     }
 
@@ -73,15 +77,15 @@ class Helper
             'styles.*'        => 'array',
             'styles.*.height' => 'numeric|nullable|required_if:styles.*.mode,crop',
             'styles.*.width'  => 'numeric|nullable|required_if:styles.*.mode,crop',
-            'styles.*.mode'   => 'string:in:landscape,portrait,crop,exact,auto',
-            'styles.*.type'   => 'array:in:image,video',
+            'styles.*.mode'   => 'string|nullable|in:landscape,portrait,crop,exact,auto',
+            'styles.*.type'   => 'array|nullable|in:image,video',
 
             'dominant_color'     => 'boolean',
             'generate_cover'     => 'boolean',
             'cover_style'        => 'array',
             'cover_style.width'  => 'numeric',
             'cover_style.height' => 'numeric',
-            'cover_style.mode'   => 'string:in:landscape,portrait,crop,exact,auto',
+            'cover_style.mode'   => 'string|in:landscape,portrait,crop,exact,auto',
 
             'keep_old_files'     => 'boolean',
             'preserve_files'     => 'boolean',
