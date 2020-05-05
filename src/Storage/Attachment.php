@@ -210,14 +210,13 @@ class Attachment
     public function setUploadedFile($file, $cover = null)
     {
         if (($file instanceof UploadedFile or $file == LARUPLOAD_NULL) and ($cover instanceof UploadedFile or $cover == null)) {
-            if ($this->validation($file)) {
-                $this->file = $file;
-
-                if ($file != LARUPLOAD_NULL) {
-                    $this->cover = $cover;
-                    $this->type = $this->getFileType($file);
-                }
-            }
+	        if ( $file == LARUPLOAD_NULL ) {
+		        $this->file = $file;
+	        } elseif ( $this->validation( $file ) ) {
+		        $this->file = $file;
+		        $this->cover = $cover;
+		        $this->type = $this->getFileType($file);
+	        }
         }
     }
 
