@@ -210,12 +210,13 @@ class Attachment
     public function setUploadedFile($file, $cover = null)
     {
         if (($file instanceof UploadedFile or $file == LARUPLOAD_NULL) and ($cover instanceof UploadedFile or $cover == null)) {
-	        if ( $file == LARUPLOAD_NULL ) {
+	        if ($this->validation($file)) {
 		        $this->file = $file;
-	        } elseif ( $this->validation( $file ) ) {
-		        $this->file = $file;
-		        $this->cover = $cover;
-		        $this->type = $this->getFileType($file);
+
+		        if ($file != LARUPLOAD_NULL) {
+			        $this->cover = $cover;
+			        $this->type = $this->getFileType($file);
+		        }
 	        }
         }
     }
@@ -438,22 +439,24 @@ class Attachment
      * @param UploadedFile $file
      * @return bool
      */
-    protected function validation($file): bool
-    {
-        if (count($this->allowedMimes)) {
-            if (!in_array($file->getClientOriginalExtension(), $this->allowedMimes)) {
-                return false;
-            }
-        }
+	protected function validation($file): bool
+	{
+		if ($file != LARUPLOAD_NULL) {
+			if (count($this->allowedMimes)) {
+				if (!in_array($file->getClientOriginalExtension(), $this->allowedMimes)) {
+					return false;
+				}
+			}
 
-        if (count($this->allowedMimeTypes)) {
-            if (!in_array($file->getClientMimeType(), $this->allowedMimeTypes)) {
-                return false;
-            }
-        }
+			if (count($this->allowedMimeTypes)) {
+				if (!in_array($file->getClientMimeType(), $this->allowedMimeTypes)) {
+					return false;
+				}
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 
     /**
      * Get default larupload options.
