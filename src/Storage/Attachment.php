@@ -793,7 +793,7 @@ class Attachment
             }
         }
         else {
-            $model->{"{$this->name}_file_name"} = $this->output['name'];
+            $model->{"{$this->name}_file_name"} = $this->output['name'] ?? null;
             $model->{"{$this->name}_file_meta"} = json_encode($this->output);
         }
 
