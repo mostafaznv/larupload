@@ -8,36 +8,36 @@ use Mostafaznv\Larupload\Storage\Attachment;
 trait Larupload
 {
     /**
-     * Holds the hash value for the current LARUPLOAD_NULL constant.
+     * Holds the hash value for the current LARUPLOAD_NULL constant
      *
      * @var string
      */
     protected static $laruploadNull;
 
     /**
-     * Uploaded flag to prevent infinite loop.
+     * Uploaded flag to prevent infinite loop
      *
      * @var bool
      */
     protected static $uploaded = false;
 
     /**
-     * All of the model's current file attachments.
+     * All of the model's current file attachments
      *
      * @var array
      */
     protected $attachedFiles = [];
 
     /**
-     * Default Larupload options.
+     * Default Larupload options
      *
      * @var
      */
     protected $defaultOptions = [];
 
     /**
-     * Boot the Larupload trait for the model.
-     * Register eloquent event handlers.
+     * Boot the Larupload trait for the model
+     * Register eloquent event handlers
      *
      */
     public static function bootLarupload()
@@ -62,15 +62,16 @@ trait Larupload
 
         static::deleted(function($model) {
             foreach ($model->attachedFiles as $name => $attachedFile) {
-                if ($model->forceDeleting)
+                if ($model->forceDeleting) {
                     $attachedFile->deleted($model);
+                }
             }
         });
     }
 
     /**
-     * Add a new file attachment type to the list of available attachments.
-     * This function acts as a quasi constructor for this trait.
+     * Add a new file attachment type to the list of available attachments
+     * This function acts as a quasi constructor for this trait
      *
      * @param $name
      * @param array $options
@@ -85,7 +86,7 @@ trait Larupload
     }
 
     /**
-     * Assign file and cover to registered fields.
+     * Assign file and cover to registered fields
      *
      * @param $key
      * @param $file
@@ -109,19 +110,20 @@ trait Larupload
     }
 
     /**
-     * Handle the dynamic setting of attachment objects.
+     * Handle the dynamic setting of attachment objects
      *
      * @param string $key
      * @param mixed $value
      */
     public function setAttribute($key, $value)
     {
-        if (!$this->setUploadedFile($key, $value))
+        if (!$this->setUploadedFile($key, $value)) {
             parent::setAttribute($key, $value);
+        }
     }
 
     /**
-     * Handle the dynamic retrieval of attachment objects.
+     * Handle the dynamic retrieval of attachment objects
      *
      * @param string $key
      * @return mixed
@@ -130,15 +132,17 @@ trait Larupload
     {
         if (array_key_exists($key, $this->attachedFiles)) {
             $attributes = $this->getFiles();
-            if (isset($attributes[$key]))
+            if (isset($attributes[$key])) {
                 return $attributes[$key];
+            }
             return null; // $this->attachedFiles[$key]
         }
+
         return parent::getAttribute($key);
     }
 
     /**
-     * Get all of the current attributes and attachment objects on the model.
+     * Get all of the current attributes and attachment objects on the model
      *
      * @return mixed
      */
@@ -148,7 +152,7 @@ trait Larupload
     }*/
 
     /**
-     * Remove attachment from get dirty array.
+     * Remove attachment from get dirty array
      * Fix for getAttributes()
      *
      * @return array
@@ -163,7 +167,7 @@ trait Larupload
     }
 
     /**
-     * Get URL for specified style of attachable field.
+     * Get URL for specified style of attachable field
      *
      * @param $name
      * @param string $style
@@ -179,7 +183,7 @@ trait Larupload
     }
 
     /**
-     * Get URL for specified style of attachable field.
+     * Get URL for specified style of attachable field
      *
      * @param $name
      * @param string $style
@@ -191,16 +195,24 @@ trait Larupload
     }
 
     /**
-     * Get All styles (original, cover and ...) for attached field.
+     * Get All styles (original, cover and ...) for attached field
      *
      * @param null $name
-     * @return array|null
+     * @param boolean $withMeta
+     * @return object|array|null
      */
-    public function getFiles($name = null)
+    public function getFiles($name = null, $withMeta = false)
     {
         if ($name) {
-            if (isset($this->attachedFiles[$name]))
-                return $this->attachedFiles[$name]->getFiles($this);
+            if (isset($this->attachedFiles[$name])) {
+                $file = $this->attachedFiles[$name]->getFiles($this);
+
+                if ($withMeta) {
+                    $file->meta = $this->meta($name);
+                }
+
+                return $file;
+            }
 
             return null;
         }
@@ -215,11 +227,11 @@ trait Larupload
     }
 
     /**
-     * Get meta data as an array or object.
+     * Get meta data as an array or object
      *
      * @param $name
      * @param null $key
-     * @return array|null
+     * @return object|null
      */
     public function meta($name, $key = null)
     {
@@ -227,11 +239,11 @@ trait Larupload
             return $this->attachedFiles[$name]->getMeta($this, $key);
         }
 
-        return ($key) ? null : [];
+        return ($key) ? null : new \stdClass();
     }
 
     /**
-     * Retrieve latest status log for ffmpeg queue process.
+     * Retrieve latest status log for ffmpeg queue process
      *
      * @return mixed
      */
@@ -241,7 +253,7 @@ trait Larupload
     }
 
     /**
-     * Retrieve all status logs for ffmpeg queue process.
+     * Retrieve all status logs for ffmpeg queue process
      *
      * @return mixed
      */

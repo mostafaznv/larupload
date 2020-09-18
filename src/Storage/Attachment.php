@@ -15,77 +15,77 @@ use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
 class Attachment
 {
     /**
-     * Column name.
+     * Column name
      *
      * @var string
      */
     protected $name;
 
     /**
-     * Folder Name (table name).
+     * Folder Name (table name)
      *
      * @var string
      */
     protected $folder;
 
     /**
-     * Options on the Fly.
+     * Options on the Fly
      *
      * @var string
      */
     protected $injectedOptions;
 
     /**
-     * File path.
+     * File path
      *
      * @var string
      */
     protected $path;
 
     /**
-     * Larupload configurations.
+     * Larupload configurations
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Storage driver.
+     * Storage driver
      *
      * @var string
      */
     protected $storage;
 
     /**
-     * Details mode, light or heavy.
+     * Details mode, light or heavy
      *
      * @var string
      */
     protected $mode;
 
     /**
-     * Naming method.
+     * Naming method
      *
      * @var string
      */
     protected $namingMethod;
 
     /**
-     * Style options.
+     * Style options
      *
      * @var array
      */
     protected $styles;
 
     /**
-     * dominant color flag.
+     * dominant color flag
      *
      * @var boolean
      */
     protected $dominantColor;
 
     /**
-     * Generate cover flag.
+     * Generate cover flag
      *
      * @var boolean
      */
@@ -99,56 +99,56 @@ class Attachment
     protected $coverStyle;
 
     /**
-     * Keep old files or not.
+     * Keep old files or not
      *
      * @var boolean
      */
     protected $keepOldFiles;
 
     /**
-     * Preserve files or not.
+     * Preserve files or not
      *
      * @var boolean
      */
     protected $preserveFiles;
 
     /**
-     * Allowed mime types.
+     * Allowed mime types
      *
      * @var array
      */
     protected $allowedMimeTypes;
 
     /**
-     * Allowed file extensions.
+     * Allowed file extensions
      *
      * @var array
      */
     protected $allowedMimes;
 
     /**
-     * File object.
+     * File object
      *
      * @var object
      */
     protected $file;
 
     /**
-     * Predefined cover file by user.
+     * Predefined cover file by user
      *
      * @var object
      */
     protected $cover;
 
     /**
-     * Type to get type of attached file.
+     * Type to get type of attached file
      *
      * @var string
      */
     protected $type;
 
     /**
-     * Output array to save in database.
+     * Output array to save in database
      *
      * @var array
      */
@@ -167,7 +167,7 @@ class Attachment
 
 
     /**
-     * Attachment constructor.
+     * Attachment constructor
      *
      * @param $name
      * @param $folder
@@ -202,7 +202,7 @@ class Attachment
     }
 
     /**
-     * Set uploaded file.
+     * Set uploaded file
      *
      * @param UploadedFile $file
      * @param UploadedFile|null $cover
@@ -258,7 +258,7 @@ class Attachment
     }
 
     /**
-     * After delete event to delete files.
+     * After delete event to delete files
      *
      * @param Model $model
      */
@@ -271,8 +271,8 @@ class Attachment
     }
 
     /**
-     * Generate URL for attached file.
-     * Remember, if you are using the local driver, all files that should be publicly accessible should be placed in the storage/app/public directory. Furthermore, you should create a symbolic link at public/storage which points to the  storage/app/public directory.
+     * Generate URL for attached file
+     * Remember, if you are using the local driver, all files that should be publicly accessible should be placed in the storage/app/public directory. Furthermore, you should create a symbolic link at public/storage which points to the  storage/app/public directory
      *
      * @param Model $model
      * @param string $style
@@ -338,30 +338,30 @@ class Attachment
     }
 
     /**
-     * Get All styles (original, cover and ...) for attached field.
+     * Get All styles (original, cover and ...) for attached field
      *
      * @param Model $model
-     * @return array
+     * @return object
      */
     public function getFiles(Model $model)
     {
         $styleNames = array_merge(['original', 'cover'], array_keys($this->styles));
-        $styles = [];
+        $styles = new \stdClass();
 
         foreach ($styleNames as $style) {
             if ($style == 'cover' and $this->generateCover == false) {
-                $styles[$style] = null;
+                $styles->{$style} = null;
                 continue;
             }
 
-            $styles[$style] = $this->url($model, $style);
+            $styles->{$style} = $this->url($model, $style);
         }
 
         return $styles;
     }
 
     /**
-     * Get meta data as an array or object.
+     * Get meta data as an array or object
      *
      * @param Model $model
      * @param null $key
@@ -370,10 +370,10 @@ class Attachment
     public function getMeta(Model $model, $key = null)
     {
         if ($this->mode == 'heavy') {
-            $meta = $this->output;
+            $meta = (object)$this->output;
 
             if ($key) {
-                if (array_key_exists($key, $meta)) {
+                if (property_exists($meta, $key)) {
                     return $model->{"{$this->name}_file_$key"};
                 }
 
@@ -381,17 +381,17 @@ class Attachment
             }
             else {
                 foreach ($meta as $index => $item) {
-                    $meta[$index] = $model->{"{$this->name}_file_$index"};
+                    $meta->{$index} = $model->{"{$this->name}_file_$index"};
                 }
 
                 return $meta;
             }
         }
         else {
-            $meta = json_decode($model->{"{$this->name}_file_meta"}, true);
+            $meta = json_decode($model->{"{$this->name}_file_meta"});
 
             if ($key) {
-                return (isset($meta[$key])) ? $meta[$key] : null;
+                return property_exists($meta, $key) ? $meta->{$key} : null;
             }
             else {
                 return $meta;
@@ -434,7 +434,7 @@ class Attachment
     }
 
     /**
-     * Validate files with mime type and file extension.
+     * Validate files with mime type and file extension
      *
      * @param UploadedFile $file
      * @return bool
@@ -459,7 +459,7 @@ class Attachment
 	}
 
     /**
-     * Get default larupload options.
+     * Get default larupload options
      *
      * @return array
      */
@@ -483,7 +483,7 @@ class Attachment
     }
 
     /**
-     * Get file type.
+     * Get file type
      *
      * @param UploadedFile $file
      * @return null|string
@@ -500,7 +500,7 @@ class Attachment
     }
 
     /**
-     * Convert MimeType to human readable type.
+     * Convert MimeType to human readable type
      *
      * @param $mime
      * @return string
@@ -518,7 +518,7 @@ class Attachment
     }
 
     /**
-     * Set some basic details.
+     * Set some basic details
      */
     protected function setBasicDetails()
     {
@@ -552,7 +552,7 @@ class Attachment
     }
 
     /**
-     * Set media details.
+     * Set media details
      */
     protected function setMediaDetails()
     {
@@ -582,7 +582,7 @@ class Attachment
     }
 
     /**
-     * Set cover photo.
+     * Set cover photo
      * Generate cover photo automatically from photos and videos, if cover file was null
      *
      * @param $id
@@ -638,20 +638,20 @@ class Attachment
     }
 
     /**
-     * Handle styles.
-     * resize, crop and generate styles from original file.
+     * Handle styles
+     * resize, crop and generate styles from original file
      *
      * @param $id
      * @param $class
      */
     protected function handleStyles($id, $class)
     {
-        // Handle original.
+        // Handle original
         $path = $this->getPath($id, 'original');
         Storage::disk($this->storage)->putFileAs($path, $this->file, $this->output['name']);
 
 
-        // Handle styles by file type.
+        // Handle styles by file type
         switch ($this->type) {
             case 'image':
                 foreach ($this->styles as $name => $style) {
@@ -689,7 +689,7 @@ class Attachment
 
 
                     if ($flag) {
-                        // Save a copy of original file to use it on process ffmpeg queue, then delete it.
+                        // Save a copy of original file to use it on process ffmpeg queue, then delete it
                         Storage::disk('local')->putFileAs($path, $this->file, $this->output['name']);
 
                         $statusId = DB::table('larupload_ffmpeg_queue')->insertGetId([
@@ -716,7 +716,7 @@ class Attachment
     }
 
     /**
-     * Handle styles for videos.
+     * Handle styles for videos
      *
      * @param $id
      * @param $file
@@ -752,7 +752,7 @@ class Attachment
     }
 
     /**
-     * Path Helper to generate relative path string.
+     * Path Helper to generate relative path string
      *
      * @param $id
      * @param null $folder
@@ -768,7 +768,7 @@ class Attachment
     }
 
     /**
-     * Clean directory before upload.
+     * Clean directory before upload
      *
      * @param $id
      */
@@ -779,7 +779,7 @@ class Attachment
     }
 
     /**
-     * Set attributes before saving event.
+     * Set attributes before saving event
      *
      * @param Model $model
      * @return Model
@@ -801,7 +801,7 @@ class Attachment
     }
 
     /**
-     * Check if style has file.
+     * Check if style has file
      *
      * @param Model $model
      * @param $style
@@ -858,8 +858,8 @@ class Attachment
     }
 
     /**
-     * In some special cases we should use other file names instead of the original one.
-     * Example: when user uploads a svg image, we should change the converted format to jpg! so we have to manipulate file name.
+     * In some special cases we should use other file names instead of the original one
+     * Example: when user uploads a svg image, we should change the converted format to jpg! so we have to manipulate file name
      *
      * @param $name
      * @param $style
@@ -877,7 +877,7 @@ class Attachment
     }
 
     /**
-     * Get human readable file type from mimetype.
+     * Get human readable file type from mimetype
      *
      * @param $mimeType
      * @return null|string

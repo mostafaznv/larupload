@@ -8,6 +8,7 @@ use Mostafaznv\Larupload\Database\Schema\Blueprint;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
+    // TODO - type hint for function argument and return type for responses (it needs upgrade minimum php/laravel version)
     // TODO - Return Meta Object on Light Mode when attached file is null
     // TODO - upload with url
     // TODO - add an ability to upload files without orm.
