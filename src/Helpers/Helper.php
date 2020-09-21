@@ -2,14 +2,13 @@
 
 namespace Mostafaznv\Larupload\Helpers;
 
-use Exception;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
 class Helper
 {
     /**
-     * Return Original config file.
+     * Return Original config file
      *
      * @param null $key
      * @return array|mixed
@@ -37,7 +36,7 @@ class Helper
     }
 
     /**
-     * Merge two array recursively.
+     * Merge two array recursively
      *
      * @param array $array1
      * @param array $array2
@@ -60,63 +59,102 @@ class Helper
     }
 
     /**
-     * Validate files options.
+     * Validate files options
      *
      * @param array $config
-     * @return bool
-     * @throws Exception
+     * @return array
      */
-    public static function validate(Array $config = [])
+    public static function validate(array $config = []): array
     {
         $rules = [
             'storage'       => 'string',
             'mode'          => 'string|in:light,heavy',
             'naming_method' => 'string|in:slug,hash_file,time',
 
-            'styles'          => 'array',
-            'styles.*'        => 'array',
+            'styles'          => 'array|min:1',
+            'styles.*'        => ['array', 'min:1', function($attribute, $value, $fail) {
+                $key = str_replace('styles.', '', $attribute);
+                return self::notNumericKeyRule($attribute, $key, $fail);
+            }],
             'styles.*.height' => 'numeric|nullable|required_if:styles.*.mode,crop',
             'styles.*.width'  => 'numeric|nullable|required_if:styles.*.mode,crop',
             'styles.*.mode'   => 'string|nullable|in:landscape,portrait,crop,exact,auto',
             'styles.*.type'   => 'array|nullable|in:image,video',
 
-            'dominant_color'     => 'boolean',
-            'generate_cover'     => 'boolean',
-            'cover_style'        => 'array',
-            'cover_style.width'  => 'numeric',
-            'cover_style.height' => 'numeric',
+            'styles.stream'                 => 'nullable|array|min:1',
+            'styles.stream.*'               => ['array', 'min:1', function($attribute, $value, $fail) {
+                $key = str_replace('styles.stream.', '', $attribute);
+                return self::notNumericKeyRule($attribute, $key, $fail);
+            }],
+            'styles.stream.*.height'        => 'required|numeric',
+            'styles.stream.*.width'         => 'required|numeric',
+            'styles.stream.*.bitrate'       => 'required|array|min:1',
+            'styles.stream.*.bitrate.audio' => ['required', function($attribute, $value, $fail) {
+                return self::numericBitrateRule($attribute, $value, $fail);
+            }],
+            'styles.stream.*.bitrate.video' => ['required', function($attribute, $value, $fail) {
+                return self::numericBitrateRule($attribute, $value, $fail);
+            }],
+
+            'dominant_color'     => 'nullable|boolean',
+            'generate_cover'     => 'nullable|boolean',
+            'cover_style'        => 'nullable|array',
+            'cover_style.width'  => 'nullable|numeric|required_if:cover_style.mode,crop',
+            'cover_style.height' => 'nullable|numeric|required_if:cover_style.mode,crop',
             'cover_style.mode'   => 'string|in:landscape,portrait,crop,exact,auto',
 
-            'keep_old_files'     => 'boolean',
-            'preserve_files'     => 'boolean',
-            'allowed_mime_types' => 'array',
-            'allowed_mimes'      => 'array',
+            'keep_old_files'     => 'nullable|boolean',
+            'preserve_files'     => 'nullable|boolean',
+            'allowed_mime_types' => 'nullable|array',
+            'allowed_mimes'      => 'nullable|array',
 
-            'ffmpeg-capture-frame' => 'nullable|between:0,99999.99',
-            'ffmpeg-timeout'       => 'nullable|numeric',
+            'ffmpeg-capture-frame' => 'nullable|numeric|min:0|between:0,99999.99',
+            'ffmpeg-timeout'       => 'nullable|numeric|min:0',
             'ffmpeg-queue'         => 'nullable|boolean',
-            'ffmpeg-max-queue-num' => 'nullable|numeric',
+            'ffmpeg-max-queue-num' => 'nullable|numeric|min:1',
         ];
 
         $validator = Validator::make($config, $rules);
 
         if ($validator->fails()) {
-            $errors = $validator->errors()->getMessages();
-            $fields = implode(', ', array_keys($errors));
-
-            throw new Exception("invalid fields: $fields");
+            return $validator->errors()->getMessages();
         }
 
-        return true;
+        return [];
     }
 
     /**
-     * Convert disk name to driver name.
+     * Validation rule to check attribute is not numeric
+     *
+     * @param $attribute
+     * @param $key
+     * @param $fail
+     * @return mixed
+     */
+    public static function notNumericKeyRule($attribute, $key, $fail)
+    {
+        if (is_numeric($key)) {
+            return $fail($attribute . ' is not a valid string');
+        }
+    }
+
+    public static function numericBitrateRule($attribute, $value, $fail)
+    {
+        $units = ['k', 'm'];
+        $value = str_ireplace($units, '', $value);
+
+        if (!is_numeric($value)) {
+            return $fail($attribute . ' is not a valid bitrate');
+        }
+    }
+
+    /**
+     * Convert disk name to driver name
      *
      * @param $disk
-     * @return \Illuminate\Config\Repository|mixed
+     * @return string
      */
-    public static function diskToDriver($disk)
+    public static function diskToDriver($disk): string
     {
         return config("filesystems.disks.$disk.driver");
     }
