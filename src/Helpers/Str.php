@@ -20,21 +20,23 @@ class Str
      */
     public function __construct($lang = null)
     {
-        $this->setLang();
+        $this->setLang($lang);
     }
 
     /**
-     * Set slug language.
+     * Set slug language
      *
      * @param null $lang
-     * @return \Illuminate\Config\Repository|mixed|null
+     * @return void
      */
-    protected function setLang($lang = null)
+    protected function setLang($lang = null): void
     {
         if ($lang) {
-            return $lang;
+            $this->lang = $lang;
+            return;
         }
-        return config('app.locale');
+
+        $this->lang = config('app.locale');
     }
 
     /**
