@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Storage;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
@@ -172,13 +173,14 @@ class Attachment
      * @param $name
      * @param $folder
      * @param array $options
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($name, $folder, Array $options = [])
     {
         $this->config = config('larupload');
+        $errors = Helper::validate($options);
 
-        if (Helper::validate($options)) {
+        if (empty($errors)) {
             $this->folder = $folder;
             $this->injectedOptions = $options;
 
@@ -198,6 +200,11 @@ class Attachment
             $this->preserveFiles = $options['preserve_files'];
             $this->allowedMimeTypes = $options['allowed_mime_types'];
             $this->allowedMimes = $options['allowed_mimes'];
+        }
+        else {
+            $fields = implode(', ', array_keys($errors));
+
+            throw new Exception("invalid fields: $fields");
         }
     }
 
@@ -572,7 +579,7 @@ class Attachment
                 $image = new Image($this->file);
                 $meta = $image->getMeta();
 
-                $dominantColor = ($this->dominantColor) ? Image::dominant($this->file) : null;
+                $dominantColor = $this->dominantColor ? Image::dominant($this->file) : null;
 
                 $this->output['width'] = (int)$meta['width'];
                 $this->output['height'] = (int)$meta['height'];
