@@ -615,7 +615,12 @@ class Attachment
         $pathInfo = pathinfo($this->output['name']);
         $fileName = $pathInfo['filename'];
 
-        $name = "$fileName." . ($this->type == 'image' ? $pathInfo['extension'] : 'jpg');
+        if ($this->type == 'image') {
+            $name = "$fileName." . ($pathInfo['extension'] == 'svg' ? 'png' : $pathInfo['extension']);
+        }
+        else {
+            $name = "$fileName.jpg";
+        }
 
         if ($this->cover and ($this->cover instanceof UploadedFile) and ($this->mimeToType($this->cover->getClientMimeType()) == 'image')) {
             Storage::disk($this->storage)->putFileAs($path, $this->cover, $name);
