@@ -130,7 +130,7 @@ class Attachment
     /**
      * File object
      *
-     * @var object
+     * @var UploadedFile
      */
     protected $file;
 
@@ -175,7 +175,7 @@ class Attachment
      * @param array $options
      * @throws Exception
      */
-    public function __construct($name, $folder, Array $options = [])
+    public function __construct($name, $folder, array $options = [])
     {
         $this->config = config('larupload');
         $errors = Helper::validate($options);
@@ -217,14 +217,14 @@ class Attachment
     public function setUploadedFile($file, $cover = null)
     {
         if (($file instanceof UploadedFile or $file == LARUPLOAD_NULL) and ($cover instanceof UploadedFile or $cover == null)) {
-	        if ($this->validation($file)) {
-		        $this->file = $file;
+            if ($this->validation($file)) {
+                $this->file = $file;
 
-		        if ($file != LARUPLOAD_NULL) {
-			        $this->cover = $cover;
-			        $this->type = $this->getFileType($file);
-		        }
-	        }
+                if ($file != LARUPLOAD_NULL) {
+                    $this->cover = $cover;
+                    $this->type = $this->getFileType($file);
+                }
+            }
         }
     }
 
@@ -446,24 +446,24 @@ class Attachment
      * @param UploadedFile $file
      * @return bool
      */
-	protected function validation($file): bool
-	{
-		if ($file != LARUPLOAD_NULL) {
-			if (count($this->allowedMimes)) {
-				if (!in_array($file->getClientOriginalExtension(), $this->allowedMimes)) {
-					return false;
-				}
-			}
+    protected function validation($file): bool
+    {
+        if ($file != LARUPLOAD_NULL) {
+            if (count($this->allowedMimes)) {
+                if (!in_array($file->getClientOriginalExtension(), $this->allowedMimes)) {
+                    return false;
+                }
+            }
 
-			if (count($this->allowedMimeTypes)) {
-				if (!in_array($file->getClientMimeType(), $this->allowedMimeTypes)) {
-					return false;
-				}
-			}
-		}
+            if (count($this->allowedMimeTypes)) {
+                if (!in_array($file->getClientMimeType(), $this->allowedMimeTypes)) {
+                    return false;
+                }
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
     /**
      * Get default larupload options
@@ -514,14 +514,18 @@ class Attachment
      */
     protected function mimeToType($mime)
     {
-        if (strstr($mime, "image/"))
+        if (strstr($mime, "image/")) {
             return 'image';
-        else if (strstr($mime, "video/"))
+        }
+        else if (strstr($mime, "video/")) {
             return 'video';
-        else if (strstr($mime, "audio/"))
+        }
+        else if (strstr($mime, "audio/")) {
             return 'audio';
-        else
+        }
+        else {
             return 'file';
+        }
     }
 
     /**
@@ -554,8 +558,8 @@ class Attachment
         $this->output['name'] = $name . "." . $format;
         $this->output['format'] = $format;
         $this->output['size'] = $this->file->getSize();
-        $this->output['type'] = $this->getHumanReadableFileType($this->file->getClientMimeType());
-        $this->output['mime_type'] = $this->file->getClientMimeType();
+        $this->output['type'] = $this->getHumanReadableFileType($this->file->getMimeType());
+        $this->output['mime_type'] = $this->file->getMimeType();
     }
 
     /**
@@ -610,8 +614,9 @@ class Attachment
             $this->output['cover'] = $name;
         }
         else {
-            if (!$this->generateCover)
+            if (!$this->generateCover) {
                 return false;
+            }
 
             switch ($this->type) {
                 case 'video':
@@ -636,8 +641,9 @@ class Attachment
                     $image = new Image($this->file);
                     $result = $image->resize($this->storage, $saveTo, $this->coverStyle);
 
-                    if ($result)
+                    if ($result) {
                         $this->output['cover'] = $name;
+                    }
 
                     break;
             }
@@ -823,15 +829,17 @@ class Attachment
             }
             else {
                 $details = json_decode($model->{"{$this->name}_file_meta"});
-                if (isset($details->mime_type) and $details->mime_type)
+                if (isset($details->mime_type) and $details->mime_type) {
                     $mime = $details->mime_type;
+                }
             }
 
             if ($mime) {
                 $type = $this->mimeToType($mime);
 
-                if (isset($this->styles[$style]['type']) and !in_array($type, $this->styles[$style]['type']))
+                if (isset($this->styles[$style]['type']) and !in_array($type, $this->styles[$style]['type'])) {
                     return false;
+                }
             }
             else {
                 return false;
@@ -893,18 +901,24 @@ class Attachment
     {
         if ($mimeType) {
 
-            if (strstr($mimeType, "image/"))
+            if (strstr($mimeType, "image/")) {
                 return 'image';
-            else if (strstr($mimeType, "video/"))
+            }
+            else if (strstr($mimeType, "video/")) {
                 return 'video';
-            else if (strstr($mimeType, "audio/"))
+            }
+            else if (strstr($mimeType, "audio/")) {
                 return 'audio';
-            else if ($mimeType == 'application/pdf')
+            }
+            else if ($mimeType == 'application/pdf') {
                 return 'pdf';
-            else if ($mimeType == 'application/zip' or $mimeType == 'application/x-rar-compressed')
+            }
+            else if ($mimeType == 'application/zip' or $mimeType == 'application/x-rar-compressed') {
                 return 'compressed';
-            else
+            }
+            else {
                 return 'file';
+            }
         }
 
         return null;
