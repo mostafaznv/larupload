@@ -29,13 +29,6 @@ trait Larupload
     protected $attachedFiles = [];
 
     /**
-     * Default Larupload options
-     *
-     * @var
-     */
-    protected $defaultOptions = [];
-
-    /**
      * Boot the Larupload trait for the model
      * Register eloquent event handlers
      *
@@ -131,11 +124,7 @@ trait Larupload
     public function getAttribute($key)
     {
         if (array_key_exists($key, $this->attachedFiles)) {
-            $attributes = $this->getFiles();
-            if (isset($attributes[$key])) {
-                return $attributes[$key];
-            }
-            return null; // $this->attachedFiles[$key]
+            return $this->getFiles($key);
         }
 
         return parent::getAttribute($key);
@@ -198,20 +187,13 @@ trait Larupload
      * Get All styles (original, cover and ...) for attached field
      *
      * @param null $name
-     * @param boolean $withMeta
      * @return object|array|null
      */
-    public function getFiles($name = null, $withMeta = false)
+    public function getFiles($name = null)
     {
         if ($name) {
             if (isset($this->attachedFiles[$name])) {
-                $file = $this->attachedFiles[$name]->getFiles($this);
-
-                if ($withMeta) {
-                    $file->meta = $this->meta($name);
-                }
-
-                return $file;
+                return $this->attachedFiles[$name]->getFiles($this);
             }
 
             return null;

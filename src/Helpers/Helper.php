@@ -67,8 +67,9 @@ class Helper
     public static function validate(array $config = []): array
     {
         $rules = [
-            'storage'       => 'string',
+            'storage'       => 'nullable|string',
             'mode'          => 'string|in:light,heavy',
+            'with_meta'     => 'nullable|boolean',
             'naming_method' => 'string|in:slug,hash_file,time',
 
             'styles'          => 'array|min:1',

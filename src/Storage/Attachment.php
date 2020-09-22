@@ -65,6 +65,11 @@ class Attachment
     protected $mode;
 
     /**
+     * @var boolean
+     */
+    protected $withMeta;
+
+    /**
      * Naming method
      *
      * @var string
@@ -191,6 +196,7 @@ class Attachment
 
             $this->storage = $options['storage'];
             $this->mode = $options['mode'];
+            $this->withMeta = $options['with_meta'];
             $this->namingMethod = $options['naming_method'];
             $this->dominantColor = $options['dominant_color'];
             $this->styles = $options['styles'];
@@ -364,6 +370,10 @@ class Attachment
             $styles->{$style} = $this->url($model, $style);
         }
 
+        if ($this->withMeta) {
+            $styles->meta = $this->getMeta($model);
+        }
+
         return $styles;
     }
 
@@ -472,10 +482,11 @@ class Attachment
      */
     protected function getDefaultOptions(): array
     {
-        $defaultOptions = [
+        return [
             'storage'            => $this->config['storage'],
             'mode'               => $this->config['mode'],
             'naming_method'      => $this->config['naming_method'],
+            'with_meta'          => $this->config['with_meta'],
             'styles'             => $this->config['styles'],
             'dominant_color'     => $this->config['dominant_color'],
             'generate_cover'     => $this->config['generate_cover'],
@@ -485,8 +496,6 @@ class Attachment
             'allowed_mime_types' => $this->config['allowed_mime_types'],
             'allowed_mimes'      => $this->config['allowed_mimes'],
         ];
-
-        return $defaultOptions;
     }
 
     /**
