@@ -247,7 +247,9 @@ class Attachment
                 $this->clean($model->id);
 
                 if ($this->mode == 'light') {
-                    $this->output = null;
+                    foreach ($this->output as $key => $value) {
+                        $this->output[$key] = null;
+                    }
                 }
             }
             else {
@@ -398,7 +400,12 @@ class Attachment
             }
             else {
                 foreach ($meta as $index => $item) {
-                    $meta->{$index} = $model->{"{$this->name}_file_$index"};
+                    if ($this->file == LARUPLOAD_NULL) {
+                        $meta->{$index} = null;
+                    }
+                    else {
+                        $meta->{$index} = $model->{"{$this->name}_file_$index"};
+                    }
                 }
 
                 return $meta;
@@ -872,6 +879,10 @@ class Attachment
     protected function storageUrl($path)
     {
         $storage = $this->storage;
+
+        if ($this->file == LARUPLOAD_NULL) {
+            return null;
+        }
 
         if ($storage == 'local') {
             $url = Storage::disk($this->storage)->url($path);
