@@ -466,7 +466,7 @@ class Attachment
             }
 
             if (count($this->allowedMimeTypes)) {
-                if (!in_array($file->getClientMimeType(), $this->allowedMimeTypes)) {
+                if (!in_array($file->getMimeType(), $this->allowedMimeTypes)) {
                     return false;
                 }
             }
@@ -622,7 +622,7 @@ class Attachment
             $name = "$fileName.jpg";
         }
 
-        if ($this->cover and ($this->cover instanceof UploadedFile) and ($this->mimeToType($this->cover->getClientMimeType()) == 'image')) {
+        if ($this->cover and ($this->cover instanceof UploadedFile) and ($this->mimeToType($this->cover->getMimeType()) == 'image')) {
             Storage::disk($this->storage)->putFileAs($path, $this->cover, $name);
 
             $this->output['cover'] = $name;
