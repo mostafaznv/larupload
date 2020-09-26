@@ -201,16 +201,28 @@ You can use the following methods to access the uploaded file link:
     ```
     Output:
     ```php
-    array:3 [▼
-      "original"  => "http://larupload.site/uploads/uploads/1/file/original/image.png"
-      "cover"     => "http://larupload.site/uploads/uploads/1/file/cover/image.jpg"
-      "thumbnail" => "http://larupload.site/uploads/uploads/1/file/thumbnail/image.png"
-    ]
+    [
+       "original"  => "http://larupload.site/uploads/uploads/1/file/original/image.png",
+       "cover"     => "http://larupload.site/uploads/uploads/1/file/cover/image.jpg",
+       "thumbnail" => "http://larupload.site/uploads/uploads/1/file/thumbnail/image.png",
+       "meta"      => [
+            "name"           => "38792a2e4497b7b64e0a3f79d581c805.jpeg",
+            "size"           => 93366,
+            "type"           => "image",
+            "mime_type"      => "image/png",
+            "cover"          => "38792a2e4497b7b64e0a3f79d581c805.jpg",
+            "width"          => 2560,
+            "format"         => "png",
+            "height"         => 1600,
+            "duration"       => null,
+            "dominant_color" => "#c5ae0a",
+       ]
+    ];
     ```
 
 2. ### Get link for a particular style
     ```php
-    echo $upload->file['thumbnail'];
+    echo $upload->file->thumbnail;
     // or
     echo $upload->url('file', 'thumbnail');
     ```
@@ -648,18 +660,42 @@ class Contact extends Model
 
 Output:
 ```php
-"media" => array:1 [▼
-    "image" => array:3 [▼
-        "original" => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg"
-        "cover" => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg"
-        "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+"media" => [
+    "image" => [
+        "original"  => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg",
+        "cover"     => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg",
+        "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg",
+        "meta"      => [
+            "name"           => "38792a2e4497b7b64e0a3f79d581c805.jpeg",
+            "size"           => 93366,
+            "type"           => "image",
+            "mime_type"      => "image/png",
+            "cover"          => "38792a2e4497b7b64e0a3f79d581c805.jpg",
+            "width"          => 2560,
+            "format"         => "png",
+            "height"         => 1600,
+            "duration"       => null,
+            "dominant_color" => "#c5ae0a",
+        ]
     ],
-    "profile_cover" => array:3 [▼
-        "original" => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg"
-        "cover" => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg"
-        "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg"
+    "profile_cover" => [
+        "original"  => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg",
+        "cover"     => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg",
+        "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg",
+        "meta"      => [
+            "name"           => "38792a2e4497b7b64e0a3f79d581c805.jpeg",
+            "size"           => 93366,
+            "type"           => "image",
+            "mime_type"      => "image/png",
+            "cover"          => "38792a2e4497b7b64e0a3f79d581c805.jpg",
+            "width"          => 2560,
+            "format"         => "png",
+            "height"         => 1600,
+            "duration"       => null,
+            "dominant_color" => "#c5ae0a",
+        ]
     ]
-]
+];
 ```
 
 #### Return urls for specific file:
@@ -698,11 +734,23 @@ class Contact extends Model
 
 Output:
 ```php
-"image" => array:3 [▼
-    "original" => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg"
-    "cover" => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg"
-    "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg"
-]
+"image" => [
+    "original"  => "http://larupload.site/uploads/uploads/contacts/18/image/original/38792a2e4497b7b64e0a3f79d581c805.jpeg",
+    "cover"     => "http://larupload.site/uploads/uploads/contacts/18/image/cover/38792a2e4497b7b64e0a3f79d581c805.jpg",
+    "thumbnail" => "http://larupload.site/uploads/uploads/contacts/18/image/thumbnail/38792a2e4497b7b64e0a3f79d581c805.jpeg",
+    "meta"      => [
+        "name"           => "38792a2e4497b7b64e0a3f79d581c805.jpeg",
+        "size"           => 93366,
+        "type"           => "image",
+        "mime_type"      => "image/png",
+        "cover"          => "38792a2e4497b7b64e0a3f79d581c805.jpg",
+        "width"          => 2560,
+        "format"         => "png",
+        "height"         => 1600,
+        "duration"       => null,
+        "dominant_color" => "#c5ae0a",
+    ]
+];
 ```
 
 ## Changelog
