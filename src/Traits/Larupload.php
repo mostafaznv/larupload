@@ -2,6 +2,8 @@
 
 namespace Mostafaznv\Larupload\Traits;
 
+use stdClass;
+use Exception;
 use Mostafaznv\Larupload\Models\LaruploadFFMpegQueue;
 use Mostafaznv\Larupload\Storage\Attachment;
 
@@ -66,11 +68,11 @@ trait Larupload
      * Add a new file attachment type to the list of available attachments
      * This function acts as a quasi constructor for this trait
      *
-     * @param $name
+     * @param string $name
      * @param array $options
-     * @throws \Exception
+     * @throws Exception
      */
-    public function hasUploadFile($name, array $options = [])
+    public function hasUploadFile(string $name, array $options = []): void
     {
         $folder = self::getTable();
         $attachment = new Attachment($name, $folder, $options);
@@ -87,7 +89,7 @@ trait Larupload
      *
      * @return bool
      */
-    public function setUploadedFile($key, $file, $cover = null)
+    public function setUploadedFile(string $key, $file, $cover = null): bool
     {
         if (array_key_exists($key, $this->attachedFiles)) {
             if ($file) {
@@ -96,6 +98,7 @@ trait Larupload
                 $attachedFile = $this->attachedFiles[$key];
                 $attachedFile->setUploadedFile($file, $cover);
             }
+
             return true;
         }
 
@@ -158,13 +161,13 @@ trait Larupload
     /**
      * Get URL for specified style of attachable field
      *
-     * @param $name
+     * @param string $name
      * @param string $style
-     * @return null
+     * @return null|string
      */
-    public function laruploadUrl($name, $style = 'original')
+    public function laruploadUrl(string $name, string $style = 'original')
     {
-        if (array_key_exists($name, $this->attachedFiles) and $this->id) {
+        if (array_key_exists($name, $this->attachedFiles) and $this->attributes['id']) {
             return $this->attachedFiles[$name]->url($this, $style);
         }
 
@@ -174,11 +177,11 @@ trait Larupload
     /**
      * Get URL for specified style of attachable field
      *
-     * @param $name
+     * @param string $name
      * @param string $style
-     * @return null
+     * @return null|string
      */
-    public function url($name, $style = 'original')
+    public function url(string $name, string $style = 'original')
     {
         return $this->laruploadUrl($name, $style);
     }
@@ -186,10 +189,10 @@ trait Larupload
     /**
      * Get All styles (original, cover and ...) for attached field
      *
-     * @param null $name
-     * @return object|array|null
+     * @param string $name
+     * @return object|null
      */
-    public function getFiles($name = null)
+    public function getFiles(string $name = null)
     {
         if ($name) {
             if (isset($this->attachedFiles[$name])) {
@@ -199,9 +202,9 @@ trait Larupload
             return null;
         }
         else {
-            $files = [];
+            $files = new stdClass();
             foreach ($this->attachedFiles as $name => $attachedFile) {
-                $files[$name] = $attachedFile->getFiles($this);
+                $files->{$name} = $attachedFile->getFiles($this);
             }
 
             return $files;
@@ -211,17 +214,17 @@ trait Larupload
     /**
      * Get meta data as an array or object
      *
-     * @param $name
-     * @param null $key
-     * @return object|null
+     * @param string $name
+     * @param string $key
+     * @return object|string|integer|null
      */
-    public function meta($name, $key = null)
+    public function meta(string $name, string $key = null)
     {
-        if (array_key_exists($name, $this->attachedFiles) and $this->id) {
+        if (array_key_exists($name, $this->attachedFiles) and $this->attributes['id']) {
             return $this->attachedFiles[$name]->getMeta($this, $key);
         }
 
-        return ($key) ? null : new \stdClass();
+        return ($key) ? null : new stdClass();
     }
 
     /**

@@ -10,10 +10,10 @@ class Helper
     /**
      * Return Original config file
      *
-     * @param null $key
+     * @param string $key
      * @return array|mixed
      */
-    public static function originalConfig($key = null)
+    public static function originalConfig(string $key = null)
     {
         $path = null;
 
@@ -26,9 +26,11 @@ class Helper
 
         if ($path) {
             $config = File::getRequire(base_path('packages/mostafaznv/larupload/config/config.php'));
+
             if ($key and isset($config[$key])) {
                 return $config[$key];
             }
+
             return $config;
         }
 
@@ -42,7 +44,7 @@ class Helper
      * @param array $array2
      * @return array
      */
-    public static function arrayMergeRecursiveDistinct(array $array1, array $array2)
+    public static function arrayMergeRecursiveDistinct(array $array1, array $array2): array
     {
         $merged = $array1;
 
@@ -139,6 +141,14 @@ class Helper
         }
     }
 
+    /**
+     * Validation rule to check attribute is a valid bitrate
+     *
+     * @param $attribute
+     * @param $value
+     * @param $fail
+     * @return mixed
+     */
     public static function numericBitrateRule($attribute, $value, $fail)
     {
         $units = ['k', 'm'];
@@ -152,16 +162,16 @@ class Helper
     /**
      * Convert disk name to driver name
      *
-     * @param $disk
+     * @param string $disk
      * @return string
      */
-    public static function diskToDriver($disk): string
+    public static function diskToDriver(string $disk): string
     {
         return config("filesystems.disks.$disk.driver");
     }
 
     /**
-     * Get temp directory.
+     * Get temp directory
      *
      * @return array|false|string
      */
@@ -181,10 +191,10 @@ class Helper
     /**
      * Extract name from path
      *
-     * @param $dir
+     * @param string $dir
      * @return array
      */
-    public static function splitPath($dir)
+    public static function splitPath(string $dir): array
     {
         $path = dirname($dir);
         $name = pathinfo($dir, PATHINFO_BASENAME);

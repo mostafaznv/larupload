@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Storage;
 
+use stdClass;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -175,12 +176,12 @@ class Attachment
     /**
      * Attachment constructor
      *
-     * @param $name
-     * @param $folder
+     * @param string $name
+     * @param string $folder
      * @param array $options
      * @throws Exception
      */
-    public function __construct($name, $folder, array $options = [])
+    public function __construct(string $name, string $folder, array $options = [])
     {
         $this->config = config('larupload');
         $errors = Helper::validate($options);
@@ -220,7 +221,7 @@ class Attachment
      * @param UploadedFile $file
      * @param UploadedFile|null $cover
      */
-    public function setUploadedFile($file, $cover = null)
+    public function setUploadedFile($file, $cover = null): void
     {
         if (($file instanceof UploadedFile or $file == LARUPLOAD_NULL) and ($cover instanceof UploadedFile or $cover == null)) {
             if ($this->validation($file)) {
@@ -239,8 +240,9 @@ class Attachment
      *
      * @param Model $model
      * @return Model
+     * @throws Exception
      */
-    public function saved(Model $model)
+    public function saved(Model $model): Model
     {
         if ($this->file) {
             if ($this->file == LARUPLOAD_NULL) {
@@ -277,7 +279,7 @@ class Attachment
      *
      * @param Model $model
      */
-    public function deleted(Model $model)
+    public function deleted(Model $model): void
     {
         if (!$this->preserveFiles) {
             $path = $this->path . '/' . $model->id;
@@ -293,7 +295,7 @@ class Attachment
      * @param string $style
      * @return null|string
      */
-    public function url(Model $model, $style = 'original')
+    public function url(Model $model, string $style = 'original')
     {
         if (in_array($style, ['original', 'cover']) or array_key_exists($style, $this->styles)) {
             $name = null;
@@ -328,7 +330,6 @@ class Attachment
                 if ($type == 'video') {
                     $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
                     $path = $this->getPath($model->id, $style);
-
                     $path = "$path/$name";
 
                     return $this->storageUrl($path);
@@ -343,9 +344,7 @@ class Attachment
                 $path = $this->getPath($model->id, $style);
                 $path = "$path/$name";
 
-                $url = $this->storageUrl($path);
-
-                return $url;
+                return $this->storageUrl($path);
             }
         }
 
@@ -358,10 +357,10 @@ class Attachment
      * @param Model $model
      * @return object
      */
-    public function getFiles(Model $model)
+    public function getFiles(Model $model): object
     {
         $styleNames = array_merge(['original', 'cover'], array_keys($this->styles));
-        $styles = new \stdClass();
+        $styles = new stdClass();
 
         foreach ($styleNames as $style) {
             if ($style == 'cover' and $this->generateCover == false) {
@@ -383,10 +382,10 @@ class Attachment
      * Get meta data as an array or object
      *
      * @param Model $model
-     * @param null $key
-     * @return array|mixed|null
+     * @param string $key
+     * @return object|string|integer|null
      */
-    public function getMeta(Model $model, $key = null)
+    public function getMeta(Model $model, string $key = null)
     {
         if ($this->mode == 'heavy') {
             $meta = (object)$this->output;
@@ -417,9 +416,8 @@ class Attachment
             if ($key) {
                 return property_exists($meta, $key) ? $meta->{$key} : null;
             }
-            else {
-                return $meta;
-            }
+
+            return $meta;
         }
     }
 
@@ -427,10 +425,10 @@ class Attachment
      * Handle FFMpeg queue on running ffmpeg queue:work
      *
      * @param $id
-     * @param $meta
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @param array $meta
+     * @throws Exception
      */
-    public function handleFFMpegQueue($id, $meta)
+    public function handleFFMpegQueue($id, array $meta): void
     {
         $shouldDeletePath = null;
         $path = $this->getPath($id, 'original');
@@ -466,16 +464,12 @@ class Attachment
     protected function validation($file): bool
     {
         if ($file != LARUPLOAD_NULL) {
-            if (count($this->allowedMimes)) {
-                if (!in_array($file->getClientOriginalExtension(), $this->allowedMimes)) {
-                    return false;
-                }
+            if (count($this->allowedMimes) and !in_array($file->getClientOriginalExtension(), $this->allowedMimes)) {
+                return false;
             }
 
-            if (count($this->allowedMimeTypes)) {
-                if (!in_array($file->getMimeType(), $this->allowedMimeTypes)) {
-                    return false;
-                }
+            if (count($this->allowedMimeTypes) and !in_array($file->getMimeType(), $this->allowedMimeTypes)) {
+                return false;
             }
         }
 
@@ -525,10 +519,10 @@ class Attachment
     /**
      * Convert MimeType to human readable type
      *
-     * @param $mime
+     * @param string $mime
      * @return string
      */
-    protected function mimeToType($mime)
+    protected function mimeToType(string $mime): string
     {
         if (strstr($mime, "image/")) {
             return 'image';
@@ -539,15 +533,14 @@ class Attachment
         else if (strstr($mime, "audio/")) {
             return 'audio';
         }
-        else {
-            return 'file';
-        }
+
+        return 'file';
     }
 
     /**
      * Set some basic details
      */
-    protected function setBasicDetails()
+    protected function setBasicDetails(): void
     {
         $format = $this->file->getClientOriginalExtension();
 
@@ -564,7 +557,7 @@ class Attachment
             default:
                 $name = $this->file->getClientOriginalName();
                 $name = pathinfo($name, PATHINFO_FILENAME);
-                $num = random_int(0, 9999);
+                $num = rand(0, 9999);
 
                 $str = new Str($this->config['lang']);
                 $name = $str->generateSlug($name) . "-" . $num;
@@ -580,8 +573,10 @@ class Attachment
 
     /**
      * Set media details
+     *
+     * @throws Exception
      */
-    protected function setMediaDetails()
+    protected function setMediaDetails(): void
     {
         switch ($this->type) {
             case 'video':
@@ -613,9 +608,9 @@ class Attachment
      * Generate cover photo automatically from photos and videos, if cover file was null
      *
      * @param $id
-     * @return bool
+     * @throws Exception
      */
-    protected function setCover($id)
+    protected function setCover($id): void
     {
         $path = $this->getPath($id, 'cover');
 
@@ -636,7 +631,7 @@ class Attachment
         }
         else {
             if (!$this->generateCover) {
-                return false;
+                return;
             }
 
             switch ($this->type) {
@@ -645,12 +640,10 @@ class Attachment
                     $saveTo = $path . "/$name";
 
                     $ffmpeg = new FFMpeg($this->file);
-                    $result = $ffmpeg->capture($this->config['ffmpeg-capture-frame'], $this->coverStyle, $this->storage, $saveTo);
+                    $ffmpeg->capture($this->config['ffmpeg-capture-frame'], $this->coverStyle, $this->storage, $saveTo);
 
-                    if ($result) {
-                        $this->output['cover'] = $name;
-                        $this->output['dominant_color'] = ($this->dominantColor) ? Image::dominant($saveTo) : null;
-                    }
+                    $this->output['cover'] = $name;
+                    $this->output['dominant_color'] = ($this->dominantColor) ? Image::dominant($saveTo) : null;
 
                     break;
 
@@ -677,8 +670,9 @@ class Attachment
      *
      * @param $id
      * @param $class
+     * @throws Exception
      */
-    protected function handleStyles($id, $class)
+    protected function handleStyles($id, $class): void
     {
         // Handle original
         $path = $this->getPath($id, 'original');
@@ -753,9 +747,10 @@ class Attachment
      * Handle styles for videos
      *
      * @param $id
-     * @param $file
+     * @param UploadedFile $file
+     * @throws Exception
      */
-    protected function handleVideoStyles($id, $file)
+    protected function handleVideoStyles($id, UploadedFile $file): void
     {
         foreach ($this->styles as $name => $style) {
             if ($name == 'stream' or (isset($style['type']) and !in_array($this->type, $style['type']))) {
@@ -789,10 +784,10 @@ class Attachment
      * Path Helper to generate relative path string
      *
      * @param $id
-     * @param null $folder
+     * @param string $folder
      * @return string
      */
-    protected function getPath($id, $folder = null)
+    protected function getPath($id, string $folder = null): string
     {
         if ($folder) {
             return $this->path . '/' . $id . '/' . $this->name . '/' . $folder;
@@ -806,7 +801,7 @@ class Attachment
      *
      * @param $id
      */
-    protected function clean($id)
+    protected function clean($id): void
     {
         $path = $this->getPath($id);
         Storage::disk($this->storage)->deleteDirectory($path);
@@ -818,7 +813,7 @@ class Attachment
      * @param Model $model
      * @return Model
      */
-    protected function setAttributes(Model $model)
+    protected function setAttributes(Model $model): Model
     {
 
         if ($this->mode == 'heavy') {
@@ -841,7 +836,7 @@ class Attachment
      * @param $style
      * @return bool
      */
-    protected function hasFile(Model $model, $style)
+    protected function hasFile(Model $model, $style): bool
     {
         if (array_key_exists($style, $this->styles)) {
             $mime = null;
@@ -873,10 +868,10 @@ class Attachment
     /**
      * Convert path to URL based on storage driver
      *
-     * @param $path
-     * @return string
+     * @param string $path
+     * @return string|null
      */
-    protected function storageUrl($path)
+    protected function storageUrl(string $path)
     {
         $storage = $this->storage;
 
@@ -901,11 +896,11 @@ class Attachment
      * In some special cases we should use other file names instead of the original one
      * Example: when user uploads a svg image, we should change the converted format to jpg! so we have to manipulate file name
      *
-     * @param $name
+     * @param string $name
      * @param $style
      * @return mixed
      */
-    protected function fixExceptionNames($name, $style)
+    protected function fixExceptionNames(string $name, $style): string
     {
         if (!in_array($style, ['original', 'cover'])) {
             if (Str::endsWith($name, 'svg')) {
@@ -917,12 +912,12 @@ class Attachment
     }
 
     /**
-     * Get human readable file type from mimetype
+     * Get human readable file type from mime-type
      *
-     * @param $mimeType
+     * @param string $mimeType
      * @return null|string
      */
-    protected function getHumanReadableFileType($mimeType)
+    protected function getHumanReadableFileType(string $mimeType)
     {
         if ($mimeType) {
 
@@ -941,12 +936,10 @@ class Attachment
             else if ($mimeType == 'application/zip' or $mimeType == 'application/x-rar-compressed') {
                 return 'compressed';
             }
-            else {
-                return 'file';
-            }
+
+            return 'file';
         }
 
         return null;
     }
-
 }

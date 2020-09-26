@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Storage;
 use ColorThief\ColorThief;
 use Exception;
 use Illuminate\Http\UploadedFile;
+use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
 use Imagine\Image\Box;
@@ -23,32 +24,32 @@ use Mostafaznv\Larupload\Helpers\Helper;
 class Image
 {
     /**
-     * Attached file.
+     * Attached file
      *
      * @var object
      */
     protected $file;
 
     /**
-     * Larupload configurations.
+     * Larupload configurations
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Imagine object.
+     * Imagine object
      *
      * @var object
      */
     protected $image;
 
     /**
-     * Image constructor.
+     * Image constructor
      *
-     * @param $file
+     * @param UploadedFile $file
      */
-    public function __construct($file)
+    public function __construct(UploadedFile $file)
     {
         $this->config = config('larupload');
         $this->file = $file;
@@ -61,40 +62,36 @@ class Image
     }
 
     /**
-     * Get Metadata from image file.
+     * Get Metadata from image file
      *
      * @return array
      */
-    public function getMeta()
+    public function getMeta(): array
     {
         $size = $this->image->getSize();
 
-        $meta = [
+        return [
             'width'  => $size->getWidth(),
             'height' => $size->getHeight(),
         ];
-
-        return $meta;
     }
 
     /**
-     * Resize an image using the computed settings.
+     * Resize an image using the computed settings
      *
-     * @param $storage
-     * @param $saveTo
-     * @param $style
+     * @param string $storage
+     * @param string $saveTo
+     * @param array $style
      *
-     * @return string
+     * @return bool
      */
-    public function resize($storage, $saveTo, $style)
+    public function resize(string $storage, string $saveTo, array $style): bool
     {
-        $saveTo = Storage::disk($storage)->path($saveTo);
         list($width, $height, $option) = $this->parseStyleDimensions($style);
         $method = 'resize' . ucfirst($option);
-
-        $image = $this->image;
-
+        $saveTo = Storage::disk($storage)->path($saveTo);
         $driver = Helper::diskToDriver($storage);
+        $image = $this->image;
 
         if ($driver == 'local') {
             $this->$method($image, $width, $height)->save($saveTo);
@@ -130,8 +127,8 @@ class Image
      * image being resized to a square).
      *
      * @param ImageInterface $image
-     * @param string $width - The image's new width.
-     * @param string $height - The image's new height.
+     * @param string $width - The image's new width
+     * @param string $height - The image's new height
      *
      * @return ImageInterface
      */
@@ -142,11 +139,13 @@ class Image
         $originalWidth = $size->getWidth();
         $originalHeight = $size->getHeight();
 
-        if (!$width)
+        if (!$width) {
             $width = $originalWidth;
+        }
 
-        if (!$height)
+        if (!$height) {
             $height = $originalHeight;
+        }
 
         if ($originalHeight < $originalWidth) {
             return $this->resizeLandscape($image, $width, $height);
@@ -168,11 +167,11 @@ class Image
     }
 
     /**
-     * Resize an image and then center crop it.
+     * Resize an image and then center crop it
      *
      * @param ImageInterface $image
-     * @param string $width - The image's new width.
-     * @param string $height - The image's new height.
+     * @param string $width - The image's new width
+     * @param string $height - The image's new height
      *
      * @return ImageInterface
      */
@@ -183,6 +182,7 @@ class Image
         // Find center - this will be used for the crop
         $centerX = ($optimalWidth / 2) - ($width / 2);
         $centerY = ($optimalHeight / 2) - ($height / 2);
+
         return $image->resize(new Box($optimalWidth, $optimalHeight))->crop(new Point($centerX, $centerY), new Box($width, $height));
     }
 
@@ -233,9 +233,8 @@ class Image
     {
         $box = $image->getSize();
         $ratio = $box->getHeight() / $box->getWidth();
-        $newHeight = $newWidth * $ratio;
 
-        return $newHeight;
+        return $newWidth * $ratio;
     }
 
     /**
@@ -250,9 +249,8 @@ class Image
     {
         $box = $image->getSize();
         $ratio = $box->getWidth() / $box->getHeight();
-        $newWidth = $newHeight * $ratio;
 
-        return $newWidth;
+        return $newHeight * $ratio;
     }
 
     /**
@@ -348,10 +346,12 @@ class Image
             $path = null;
 
 
-            if ($file instanceof UploadedFile)
+            if ($file instanceof UploadedFile) {
                 $path = $file->getRealPath();
-            else if (file_exists($file))
+            }
+            else if (file_exists($file)) {
                 $path = $file;
+            }
 
             if ($path) {
                 $color = ColorThief::getColor($path);
@@ -363,7 +363,6 @@ class Image
         catch (Exception $e) {
             // do nothing
         }
-
 
         return null;
     }
@@ -389,8 +388,9 @@ class Image
      */
     protected static function toRgbString($rgb, $prefix = 'rgb')
     {
-        if (is_array($rgb) and isset($rgb[0]) and isset($rgb[1]) and isset($rgb[2]))
+        if (is_array($rgb) and isset($rgb[0]) and isset($rgb[1]) and isset($rgb[2])) {
             return "$prefix({$rgb[0]},{$rgb[1]},{$rgb[2]})";
+        }
 
         return null;
     }
@@ -404,8 +404,10 @@ class Image
      */
     protected static function toInt($rgb)
     {
-        if (is_array($rgb) and isset($rgb[0]) and isset($rgb[1]) and isset($rgb[2]))
+        if (is_array($rgb) and isset($rgb[0]) and isset($rgb[1]) and isset($rgb[2])) {
             return ($rgb[0] << 16) | ($rgb[1] << 8) | $rgb[2];
+        }
+
         return null;
     }
 }
