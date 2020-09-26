@@ -274,7 +274,7 @@ class LaruploadModelLightTest extends LaruploadTestCase
 
         $m3u8 = 'chunk-list.m3u8';
         $ts = 'file-sequence-0.ts';
-        $folders = ['480p', '720p', '1080p'];
+        $folders = ['480p', '720p'];
 
         $this->assertEquals(true, file_exists($path));
 
