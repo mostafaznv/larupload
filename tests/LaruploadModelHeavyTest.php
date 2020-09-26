@@ -167,7 +167,7 @@ class LaruploadModelHeavyTest extends LaruploadTestCase
         $this->initModel();
         $svg = $this->uploadSVG();
 
-        $this->assertEquals($svg->file->meta->dominant_color, $this->imageDetails['svg']['color']);
+        $this->assertRegExp($this->hexRegex, $svg->file->meta->dominant_color);
     }
 
     /*
@@ -292,7 +292,7 @@ class LaruploadModelHeavyTest extends LaruploadTestCase
         $pdf = $this->uploadPDF();
 
         $this->assertNotNull($pdf->file->original);
-        $this->assertEquals($this->pdfDetails['name'], $pdf->file->meta->name);
+        $this->assertNotNull($pdf->file->meta->name);
         $this->assertEquals($this->pdfDetails['size'], $pdf->file->meta->size);
         $this->assertEquals($this->pdfDetails['mime_type'], $pdf->file->meta->mime_type);
     }

@@ -72,6 +72,11 @@ trait LaruploadModelTestCase
      */
     public $pdfDetails;
 
+    /**
+     * @var string
+     */
+    public $hexRegex = '/^#[0-9A-F]{6}$/i';
+
     protected function initModel(array $config = []): Model
     {
         if ($this->mode == 'heavy') {
