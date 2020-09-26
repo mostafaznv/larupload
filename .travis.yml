@@ -52,8 +52,7 @@ install:
   - sudo add-apt-repository -y ppa:mc3man/xerus-media
   - sudo apt-get -qq update
   - sudo apt-get install -y --allow-unauthenticated software-properties-common ffmpeg libmagickwand-dev imagemagick php-pear
-  - sudo pecl install imagick
-  - echo 'extension=imagick.so' >> `php --ini | grep 'Loaded Configuration' | sed -e 's|.*:\s*||'`
+  - echo '\n\n\n' | sudo pecl install imagick
 
 script:
   - vendor/bin/phpunit
