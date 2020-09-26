@@ -79,15 +79,6 @@ class LaruploadUploadHeavy extends Model
                             'audio' => '64k',
                             'video' => '400000'
                         ]
-                    ],
-
-                    '1080p' => [
-                        'width'   => 1920,
-                        'height'  => 1080,
-                        'bitrate' => [
-                            'audio' => '64k',
-                            'video' => '500000'
-                        ]
                     ]
                 ]
             ]

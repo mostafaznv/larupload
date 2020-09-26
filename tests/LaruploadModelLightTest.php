@@ -289,12 +289,12 @@ class LaruploadModelLightTest extends LaruploadTestCase
      */
     public function testUploadByFunction()
     {
-        $pdf = $this->uploadPDF();
+        $jpg = $this->uploadJPG();
 
-        $this->assertNotNull($pdf->file->original);
-        $this->assertNotNull($pdf->file->meta->name);
-        $this->assertEquals($this->pdfDetails['size'], $pdf->file->meta->size);
-        $this->assertEquals($this->pdfDetails['mime_type'], $pdf->file->meta->mime_type);
+        $this->assertNotNull($jpg->file->original);
+        $this->assertEquals($this->imageDetails['jpg']['name']['hash'], $jpg->file->meta->name);
+        $this->assertEquals($this->imageDetails['jpg']['size'], $jpg->file->meta->size);
+        $this->assertEquals($this->imageDetails['jpg']['mime_type'], $jpg->file->meta->mime_type);
     }
 
     /*
