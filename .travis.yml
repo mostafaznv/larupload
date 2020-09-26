@@ -53,6 +53,7 @@ install:
   - sudo apt-get -qq update
   - sudo apt-get install -y --allow-unauthenticated software-properties-common ffmpeg libmagickwand-dev imagemagick php-pear
   - sudo pecl install imagick
+  - echo 'extension=imagick.so' >> `php --ini | grep 'Loaded Configuration' | sed -e 's|.*:\s*||'`
 
 script:
   - vendor/bin/phpunit
