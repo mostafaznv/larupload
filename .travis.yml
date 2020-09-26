@@ -51,7 +51,8 @@ install:
   - travis_retry composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction --no-suggest
   - sudo add-apt-repository -y ppa:mc3man/xerus-media
   - sudo apt-get -qq update
-  - sudo apt-get install -y --allow-unauthenticated software-properties-common ffmpeg libmagickwand-dev imagemagick php-imagick
+  - sudo apt-get install -y --allow-unauthenticated software-properties-common ffmpeg libmagickwand-dev imagemagick php-pear
+  - sudo pecl install imagick
 
 script:
   - vendor/bin/phpunit
