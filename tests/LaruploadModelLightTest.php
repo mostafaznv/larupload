@@ -167,7 +167,7 @@ class LaruploadModelLightTest extends LaruploadTestCase
         $this->initModel();
         $svg = $this->uploadSVG();
 
-        $this->assertRegExp($this->hexRegex, $svg->file->meta->dominant_color);
+        $this->assertEquals(true, !!preg_match($this->hexRegex, $svg->file->meta->dominant_color));
     }
 
     /*
