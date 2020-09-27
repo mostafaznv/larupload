@@ -19,7 +19,7 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - add an ability to custom ffmpeg scripts (video and stream)
     // TODO - check possibility of change video ffmpeg script to streaming one (none crop mode).
 
-    const VERSION = '0.0.8';
+    const VERSION = '0.0.9';
 
     public function boot()
     {

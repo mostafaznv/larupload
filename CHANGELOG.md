@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.0.9 - 2020/09/27
+- Support laravel 8.*
+- Return object instead of array in getFiles and meta functions
+- Cleanup and improvement on migration blueprint
+- Improvement on validator
+- Merge meta into file object
+- Fix a bug on saving svg cover image
+- Return null links and meta after delete file
+- Unit test
+- Throw exception on errors in ffmpeg component
+- Add code quality and travis automated test
+- Minor bug fix and improvement
+
 ## v0.0.8 [hotfix] - 2019/04/29
 - change new Process($cmd) from string to array
 string cmd deprecated in symfony/process v5.*
