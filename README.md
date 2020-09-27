@@ -34,7 +34,7 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
 - Queue FFMpeg processes and finish them in background.
 
 ## Requirements:
-- Laravel 5.5 or higher
+- Laravel 6.* or higher
 - GD library
 - FFMPEG
 
