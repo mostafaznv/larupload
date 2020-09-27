@@ -184,78 +184,55 @@ class LaruploadModelHeavyTest extends LaruploadTestCase
     }
 
     /*
-     * TEST VIDEO SIZE
+     * TEST VIDEO STYLES
      */
-    public function testUploadCoverVideo()
+    public function testUploadVideoStyles()
     {
         $video = $this->uploadVideo();
-        $meta = $this->video($video->file->cover);
 
+        // cover
+        $meta = $this->video($video->file->cover);
         $this->assertNotNull($video->file->cover);
         $this->assertEquals(500, $meta['width']);
         $this->assertEquals(500, $meta['height']);
-    }
 
-    public function testUploadSmallVideo()
-    {
-        $video = $this->uploadVideo();
+        // small
         $meta = $this->video($video->file->small);
-
         $this->assertNotNull($video->file->small);
         $this->assertEquals(200, $meta['width']);
         $this->assertEquals(200, $meta['height']);
         $this->assertEquals(5, $meta['duration']);
-    }
 
-    public function testUploadMediumVideo()
-    {
-        $video = $this->uploadVideo();
+        // medium
         $meta = $this->video($video->file->medium);
-
         $this->assertNotNull($video->file->medium);
         $this->assertEquals(800, $meta['width']);
         $this->assertEquals(458, $meta['height']);
         $this->assertEquals(5, $meta['duration']);
-    }
 
-    public function testUploadLandscapeVideo()
-    {
-        $video = $this->uploadVideo();
+        // landscape
         $meta = $this->video($video->file->landscape);
-
         $this->assertNotNull($video->file->landscape);
         $this->assertEquals(400, $meta['width']);
         $this->assertEquals(228, $meta['height']);
         $this->assertEquals(5, $meta['duration']);
-    }
 
-    public function testUploadPortraitVideo()
-    {
-        $video = $this->uploadVideo();
+        // portrait
         $meta = $this->video($video->file->portrait);
-
         $this->assertNotNull($video->file->portrait);
         $this->assertEquals(700, $meta['width']);
         $this->assertEquals(400, $meta['height']);
         $this->assertEquals(5, $meta['duration']);
-    }
 
-    public function testUploadExactVideo()
-    {
-        $video = $this->uploadVideo();
+        // exact
         $meta = $this->video($video->file->exact);
-
         $this->assertNotNull($video->file->exact);
         $this->assertEquals(300, $meta['width']);
         $this->assertEquals(172, $meta['height']);
         $this->assertEquals(5, $meta['duration']);
-    }
 
-    public function testUploadAutoWidthVideo()
-    {
-        $video = $this->uploadVideo();
+        // auto
         $meta = $this->video($video->file->auto);
-
         $this->assertNotNull($video->file->auto);
         $this->assertEquals(300, $meta['width']);
         $this->assertEquals(172, $meta['height']);
