@@ -2,7 +2,6 @@
 
 namespace Mostafaznv\Larupload\Test;
 
-use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Helpers\Helper;
 
 class LaruploadValidationTest extends LaruploadTestCase
@@ -29,7 +28,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['mode' => 'heavy']);
         $this->assertCount(0, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['mode' => Str::random(8)]);
+        $errors = Helper::validate(['mode' => 'pro']);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -45,7 +44,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['naming_method' => 'time']);
         $this->assertCount(0, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['naming_method' => Str::random(5)]);
+        $errors = Helper::validate(['naming_method' => 'pascal-case']);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -64,7 +63,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['with_meta' => 0]);
         $this->assertCount(0, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['with_meta' => Str::random(4)]);
+        $errors = Helper::validate(['with_meta' => 'yes']);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -149,7 +148,7 @@ class LaruploadValidationTest extends LaruploadTestCase
 
     public function testStyleModeShouldNotAcceptWrongValue()
     {
-        $errors = Helper::validate(['styles' => ['style-name' => ['mode' => Str::random(5)]]]);
+        $errors = Helper::validate(['styles' => ['style-name' => ['mode' => 'free']]]);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -179,7 +178,7 @@ class LaruploadValidationTest extends LaruploadTestCase
 
     public function testStyleTypeShouldNotAcceptWrongValue()
     {
-        $errors = Helper::validate(['styles' => ['style-name' => ['type' => ['image', Str::random(5)]]]]);
+        $errors = Helper::validate(['styles' => ['style-name' => ['type' => ['image', 'pdf']]]]);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -262,7 +261,7 @@ class LaruploadValidationTest extends LaruploadTestCase
             'styles' => [
                 'stream' => [
                     '480p' => [
-                        'height'  => Str::random(3),
+                        'height'  => 'vertical',
                         'width'   => 640,
                         'bitrate' => [
                             'audio' => '64k',
@@ -296,7 +295,7 @@ class LaruploadValidationTest extends LaruploadTestCase
             'styles' => [
                 'stream' => [
                     '480p' => [
-                        'width'   => Str::random(3),
+                        'width'   => 'wide',
                         'height'  => 640,
                         'bitrate' => [
                             'audio' => '64k',
@@ -348,7 +347,7 @@ class LaruploadValidationTest extends LaruploadTestCase
                         'width'   => 640,
                         'height'  => 480,
                         'bitrate' => [
-                            'audio' => Str::random(5),
+                            'audio' => 'mute',
                             'video' => '300000'
                         ]
                     ],
@@ -365,7 +364,7 @@ class LaruploadValidationTest extends LaruploadTestCase
                         'height'  => 480,
                         'bitrate' => [
                             'audio' => '64k',
-                            'video' => Str::random(5)
+                            'video' => 'hq'
                         ]
                     ],
                 ]
@@ -442,7 +441,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['dominant_color' => 0]);
         $this->assertCount(0, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['dominant_color' => Str::random(4)]);
+        $errors = Helper::validate(['dominant_color' => 'rgba']);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -461,7 +460,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['generate_cover' => 0]);
         $this->assertCount(0, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['generate_cover' => Str::random(4)]);
+        $errors = Helper::validate(['generate_cover' => 'no-cover']);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -471,7 +470,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['cover_style' => ['height' => 500]]);
         $this->assertCount(0, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['cover_style' => ['height' => Str::random(12)]]);
+        $errors = Helper::validate(['cover_style' => ['height' => 'large']]);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -480,7 +479,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['cover_style' => ['width' => 500]]);
         $this->assertCount(0, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['cover_style' => ['width' => Str::random(12)]]);
+        $errors = Helper::validate(['cover_style' => ['width' => 'wide']]);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -525,7 +524,7 @@ class LaruploadValidationTest extends LaruploadTestCase
 
     public function testCoverStyleModeShouldNotAcceptWrongValue()
     {
-        $errors = Helper::validate(['cover_style' => ['mode' => Str::random(5)]]);
+        $errors = Helper::validate(['cover_style' => ['mode' => 'expert']]);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -544,7 +543,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['keep_old_files' => 0]);
         $this->assertCount(0, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['keep_old_files' => Str::random(4)]);
+        $errors = Helper::validate(['keep_old_files' => 'just-new']);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -563,7 +562,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['preserve_files' => 0]);
         $this->assertCount(0, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['preserve_files' => Str::random(4)]);
+        $errors = Helper::validate(['preserve_files' => 'files']);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -605,7 +604,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['ffmpeg-capture-frame' => 999999999999999999]);
         $this->assertCount(1, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['ffmpeg-capture-frame' => Str::random(5)]);
+        $errors = Helper::validate(['ffmpeg-capture-frame' => 'HC01']);
         $this->assertCount(1, $errors, $this->showErrors($errors));
 
     }
@@ -622,7 +621,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['ffmpeg-timeout' => -1]);
         $this->assertCount(1, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['ffmpeg-timeout' => Str::random(5)]);
+        $errors = Helper::validate(['ffmpeg-timeout' => 'TM3801']);
         $this->assertCount(1, $errors, $this->showErrors($errors));
 
     }
@@ -642,7 +641,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['ffmpeg-queue' => 0]);
         $this->assertCount(0, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['ffmpeg-queue' => Str::random(4)]);
+        $errors = Helper::validate(['ffmpeg-queue' => 'yes']);
         $this->assertCount(1, $errors, $this->showErrors($errors));
     }
 
@@ -658,7 +657,7 @@ class LaruploadValidationTest extends LaruploadTestCase
         $errors = Helper::validate(['ffmpeg-max-queue-num' => -1]);
         $this->assertCount(1, $errors, $this->showErrors($errors));
 
-        $errors = Helper::validate(['ffmpeg-max-queue-num' => Str::random(5)]);
+        $errors = Helper::validate(['ffmpeg-max-queue-num' => 'large-number']);
         $this->assertCount(1, $errors, $this->showErrors($errors));
 
     }
