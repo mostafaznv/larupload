@@ -128,6 +128,7 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
   - [Upload by function](#upload-by-function)
   - [Deleting the existing file](#deleting-the-existing-file-and-the-value-in-the-database)
 - [Generate download link](#generate-the-download-link)
+- [Generate download response](#generate-download-link-response)
 - [Get additional information (Meta)](#get-additional-information-meta)
 - [Customization](#customization)
   - [Customization by config file](#customization-by-config-file)
@@ -234,6 +235,19 @@ You can use the following methods to access the uploaded file link:
     > If you don’t send the second argument, the link to the original file will be automatically returned.
     
     > You can use `LaruploadUrl` instead of the url function.
+
+
+## Generate download response 
+You can use the following methods to generate download response for uploaded file:
+Code:
+```php
+$upload->download('image'); // download original style of attachment
+$upload->download('image', 'cover'); // download cover style of attachment
+```
+
+> If you don’t send the second argument, larupload will generate a download response for the original file.
+
+> You can use `laruploadDownload` instead of download function.
 
 
 ## Get additional information (Meta)

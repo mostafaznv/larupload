@@ -187,6 +187,34 @@ trait Larupload
     }
 
     /**
+     * Download specified style of attachable field
+     *
+     * @param string $name
+     * @param string $style
+     * @return null|string
+     */
+    public function laruploadDownload(string $name, string $style = 'original')
+    {
+        if (array_key_exists($name, $this->attachedFiles) and $this->attributes['id']) {
+            return $this->attachedFiles[$name]->download($this, $style);
+        }
+
+        return null;
+    }
+
+    /**
+     * Download specified style of attachable field
+     *
+     * @param string $name
+     * @param string $style
+     * @return null|string
+     */
+    public function download(string $name, string $style = 'original')
+    {
+        return $this->laruploadDownload($name, $style);
+    }
+
+    /**
      * Get All styles (original, cover and ...) for attached field
      *
      * @param string $name

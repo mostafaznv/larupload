@@ -13,6 +13,8 @@ use Mostafaznv\Larupload\Helpers\Helper;
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Helpers\Str;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
+use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Attachment
 {
@@ -298,33 +300,7 @@ class Attachment
     public function url(Model $model, string $style = 'original')
     {
         if (in_array($style, ['original', 'cover']) or array_key_exists($style, $this->styles)) {
-            $name = null;
-
-            if ($this->mode == 'heavy') {
-                $type = $model->{"{$this->name}_file_type"};
-
-                if ($style == 'cover') {
-                    $name = $model->{"{$this->name}_file_cover"};
-                }
-                else {
-                    $name = $model->{"{$this->name}_file_name"};
-                }
-            }
-            else {
-                $details = json_decode($model->{"{$this->name}_file_meta"});
-                $type = null;
-
-                if ($details and isset($details->type)) {
-                    $type = $details->type;
-                }
-
-                if ($style == 'cover' and isset($details->cover) and $details->cover) {
-                    $name = $details->cover;
-                }
-                else if (isset($details->name) and $details->name) {
-                    $name = $details->name;
-                }
-            }
+            list('name' => $name, 'type' => $type) = $this->getTypeAndName($model, $style);
 
             if ($name and $style == 'stream') {
                 if ($type == 'video') {
@@ -345,6 +321,43 @@ class Attachment
                 $path = "$path/$name";
 
                 return $this->storageUrl($path);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Download attached file
+     *
+     * @param Model $model
+     * @param string $style
+     * @return null|string
+     */
+    public function download(Model $model, string $style = 'original')
+    {
+        if (in_array($style, ['original', 'cover']) or array_key_exists($style, $this->styles)) {
+            list('name' => $name, 'type' => $type) = $this->getTypeAndName($model, $style);
+
+            if ($name and $style == 'stream') {
+                if ($type == 'video') {
+                    $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
+                    $path = $this->getPath($model->id, $style);
+                    $path = "$path/$name";
+
+                    return $this->storageDownload($path);
+                }
+                else {
+                    return null;
+                }
+
+            }
+            else if ($name and $this->hasFile($model, $style)) {
+                $name = $this->fixExceptionNames($name, $style);
+                $path = $this->getPath($model->id, $style);
+                $path = "$path/$name";
+
+                return $this->storageDownload($path);
             }
         }
 
@@ -880,7 +893,7 @@ class Attachment
         }
 
         if ($storage == 'local') {
-            $url = Storage::disk($this->storage)->url($path);
+            $url = Storage::disk($storage)->url($path);
             return url($url);
         }
 
@@ -890,6 +903,32 @@ class Attachment
         }
 
         return $path;
+    }
+
+    /**
+     * Download path based on storage driver
+     *
+     * @param string $path
+     * @return RedirectResponse|StreamedResponse|null
+     */
+    protected function storageDownload(string $path)
+    {
+        $storage = $this->storage;
+
+        if ($this->file == LARUPLOAD_NULL) {
+            return null;
+        }
+
+        if ($storage == 'local') {
+            return Storage::disk($storage)->download($path);
+        }
+
+        $base = config("filesystems.disks.$storage.url");
+        if ($base) {
+            return redirect("$base/$path");
+        }
+
+        return null;
     }
 
     /**
@@ -941,5 +980,45 @@ class Attachment
         }
 
         return null;
+    }
+
+    /**
+     * Retrieve Type and Name of attached style
+     *
+     * @param Model $model
+     * @param $style
+     * return array
+     */
+    protected function getTypeAndName(Model $model, $style)
+    {
+        $name = null;
+
+        if ($this->mode == 'heavy') {
+            $type = $model->{"{$this->name}_file_type"};
+
+            if ($style == 'cover') {
+                $name = $model->{"{$this->name}_file_cover"};
+            }
+            else {
+                $name = $model->{"{$this->name}_file_name"};
+            }
+        }
+        else {
+            $details = json_decode($model->{"{$this->name}_file_meta"});
+            $type = null;
+
+            if ($details and isset($details->type)) {
+                $type = $details->type;
+            }
+
+            if ($style == 'cover' and isset($details->cover) and $details->cover) {
+                $name = $details->cover;
+            }
+            else if (isset($details->name) and $details->name) {
+                $name = $details->name;
+            }
+        }
+
+        return compact('name', 'type');
     }
 }
