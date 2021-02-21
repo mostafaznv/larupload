@@ -448,6 +448,8 @@ class FFMpeg
      */
     protected function cmd(string $cmd): array
     {
+        $cmd = str_replace('\\', '/', $cmd);
+        
         return explode(' ', escapeshellcmd($cmd));
     }
 }
