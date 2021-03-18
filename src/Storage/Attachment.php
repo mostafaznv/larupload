@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Storage;
 
+use Mostafaznv\Larupload\UploadEntities;
 use stdClass;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -9,35 +10,20 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
-use Mostafaznv\Larupload\Helpers\Helper;
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Helpers\Str;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class Attachment
+class Attachment extends UploadEntities
 {
     /**
-     * Column name
+     * File object
      *
-     * @var string
+     * @var UploadedFile
      */
-    protected $name;
-
-    /**
-     * Folder Name (table name)
-     *
-     * @var string
-     */
-    protected $folder;
-
-    /**
-     * Options on the Fly
-     *
-     * @var string
-     */
-    protected $injectedOptions;
+    protected UploadedFile $file;
 
     /**
      * File path
@@ -45,102 +31,6 @@ class Attachment
      * @var string
      */
     protected $path;
-
-    /**
-     * Larupload configurations
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Storage driver
-     *
-     * @var string
-     */
-    protected $storage;
-
-    /**
-     * Details mode, light or heavy
-     *
-     * @var string
-     */
-    protected $mode;
-
-    /**
-     * @var boolean
-     */
-    protected $withMeta;
-
-    /**
-     * Naming method
-     *
-     * @var string
-     */
-    protected $namingMethod;
-
-    /**
-     * Style options
-     *
-     * @var array
-     */
-    protected $styles;
-
-    /**
-     * dominant color flag
-     *
-     * @var boolean
-     */
-    protected $dominantColor;
-
-    /**
-     * Generate cover flag
-     *
-     * @var boolean
-     */
-    protected $generateCover;
-
-    /**
-     * Cover Style
-     *
-     * @var array
-     */
-    protected $coverStyle;
-
-    /**
-     * Keep old files or not
-     *
-     * @var boolean
-     */
-    protected $keepOldFiles;
-
-    /**
-     * Preserve files or not
-     *
-     * @var boolean
-     */
-    protected $preserveFiles;
-
-    /**
-     * Allowed mime types
-     *
-     * @var array
-     */
-    protected $allowedMimeTypes;
-
-    /**
-     * Allowed file extensions
-     *
-     * @var array
-     */
-    protected $allowedMimes;
-
-    /**
-     * File object
-     *
-     * @var UploadedFile
-     */
-    protected $file;
 
     /**
      * Predefined cover file by user
@@ -174,67 +64,27 @@ class Attachment
         'cover'          => null,
     ];
 
-
-    /**
-     * Attachment constructor
-     *
-     * @param string $name
-     * @param string $folder
-     * @param array $options
-     * @throws Exception
-     */
-    public function __construct(string $name, string $folder, array $options = [])
-    {
-        $this->config = config('larupload');
-        $errors = Helper::validate($options);
-
-        if (empty($errors)) {
-            $this->folder = $folder;
-            $this->injectedOptions = $options;
-
-            $options = Helper::arrayMergeRecursiveDistinct($this->getDefaultOptions(), $options);
-
-            $this->name = $name;
-            $this->path = $this->config['path'] . "/" . strtolower($folder);
-
-            $this->storage = $options['storage'];
-            $this->mode = $options['mode'];
-            $this->withMeta = $options['with_meta'];
-            $this->namingMethod = $options['naming_method'];
-            $this->dominantColor = $options['dominant_color'];
-            $this->styles = $options['styles'];
-            $this->generateCover = $options['generate_cover'];
-            $this->coverStyle = $options['cover_style'];
-            $this->keepOldFiles = $options['keep_old_files'];
-            $this->preserveFiles = $options['preserve_files'];
-            $this->allowedMimeTypes = $options['allowed_mime_types'];
-            $this->allowedMimes = $options['allowed_mimes'];
-        }
-        else {
-            $fields = implode(', ', array_keys($errors));
-
-            throw new Exception("invalid fields: $fields");
-        }
-    }
-
     /**
      * Set uploaded file
      *
      * @param UploadedFile $file
      * @param UploadedFile|null $cover
+     * @return bool
      */
-    public function setUploadedFile($file, $cover = null): void
+    public function setUploadedFile($file, $cover = null): bool
     {
         if (($file instanceof UploadedFile or $file == LARUPLOAD_NULL) and ($cover instanceof UploadedFile or $cover == null)) {
-            if ($this->validation($file)) {
-                $this->file = $file;
+            $this->file = $file;
 
-                if ($file != LARUPLOAD_NULL) {
-                    $this->cover = $cover;
-                    $this->type = $this->getFileType($file);
-                }
+            if ($file != LARUPLOAD_NULL) {
+                $this->cover = $cover;
+                $this->type = $this->getFileType($file);
             }
+
+            return true;
         }
+
+        return false;
     }
 
     /**
@@ -466,27 +316,6 @@ class Attachment
         if ($shouldDeletePath) {
             Storage::disk('local')->deleteDirectory($shouldDeletePath);
         }
-    }
-
-    /**
-     * Validate files with mime type and file extension
-     *
-     * @param UploadedFile $file
-     * @return bool
-     */
-    protected function validation($file): bool
-    {
-        if ($file != LARUPLOAD_NULL) {
-            if (count($this->allowedMimes) and !in_array($file->getClientOriginalExtension(), $this->allowedMimes)) {
-                return false;
-            }
-
-            if (count($this->allowedMimeTypes) and !in_array($file->getMimeType(), $this->allowedMimeTypes)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**

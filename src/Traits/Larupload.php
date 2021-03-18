@@ -2,33 +2,40 @@
 
 namespace Mostafaznv\Larupload\Traits;
 
-use stdClass;
-use Exception;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Mostafaznv\Larupload\Models\LaruploadFFMpegQueue;
-use Mostafaznv\Larupload\Storage\Attachment;
 
 trait Larupload
 {
+    protected array $attachments = [];
+
     /**
      * Holds the hash value for the current LARUPLOAD_NULL constant
      *
      * @var string
      */
-    protected static $laruploadNull;
+    protected static string $laruploadNull;
 
     /**
      * Uploaded flag to prevent infinite loop
      *
      * @var bool
      */
-    protected static $uploaded = false;
+    protected static bool $uploaded = false;
 
     /**
-     * All of the model's current file attachments
-     *
-     * @var array
+     * Initialize attachments
      */
-    protected $attachedFiles = [];
+    protected function initializeLarupload()
+    {
+        $this->attachments = $this->attachments();
+        $table = $this->getTable();
+
+        foreach ($this->attachments as $attachment) {
+            $attachment->folder($table);
+        }
+    }
 
     /**
      * Boot the Larupload trait for the model
@@ -47,8 +54,8 @@ trait Larupload
             if (!self::$uploaded) {
                 self::$uploaded = true;
 
-                foreach ($model->attachedFiles as $name => $attachedFile) {
-                    $model = $attachedFile->saved($model);
+                foreach ($model->attachments as $attachment) {
+                    $model = $attachment->saved($model);
                 }
 
                 $model->save();
@@ -56,64 +63,38 @@ trait Larupload
         });
 
         static::deleted(function($model) {
-            foreach ($model->attachedFiles as $name => $attachedFile) {
+            foreach ($model->attachments as $attachment) {
                 if ($model->forceDeleting) {
-                    $attachedFile->deleted($model);
+                    $attachment->deleted($model);
                 }
             }
         });
     }
 
     /**
-     * Add a new file attachment type to the list of available attachments
-     * This function acts as a quasi constructor for this trait
+     * Get the entities should upload into the model
      *
-     * @param string $name
-     * @param array $options
-     * @throws Exception
+     * @return array
      */
-    public function hasUploadFile(string $name, array $options = []): void
-    {
-        $folder = self::getTable();
-        $attachment = new Attachment($name, $folder, $options);
-
-        $this->attachedFiles[$name] = $attachment;
-    }
-
-    /**
-     * Assign file and cover to registered fields
-     *
-     * @param $key
-     * @param $file
-     * @param null $cover
-     *
-     * @return bool
-     */
-    public function setUploadedFile(string $key, $file, $cover = null): bool
-    {
-        if (array_key_exists($key, $this->attachedFiles)) {
-            if ($file) {
-                static::$uploaded = false;
-
-                $attachedFile = $this->attachedFiles[$key];
-                $attachedFile->setUploadedFile($file, $cover);
-            }
-
-            return true;
-        }
-
-        return false;
-    }
+    abstract public function attachments(): array;
 
     /**
      * Handle the dynamic setting of attachment objects
      *
      * @param string $key
-     * @param mixed $value
+     * @param $value
+     * @return mixed
      */
     public function setAttribute($key, $value)
     {
-        if (!$this->setUploadedFile($key, $value)) {
+        if ($attachment = $this->getAttachment($key)) {
+            $uploaded = $attachment->setUploadedFile($value);
+
+            if ($uploaded) {
+                static::$uploaded = false;
+            }
+        }
+        else {
             parent::setAttribute($key, $value);
         }
     }
@@ -122,145 +103,40 @@ trait Larupload
      * Handle the dynamic retrieval of attachment objects
      *
      * @param string $key
-     * @return mixed
+     * @return mixed|null
      */
     public function getAttribute($key)
     {
-        if (array_key_exists($key, $this->attachedFiles)) {
-            return $this->getFiles($key);
+        if ($attachment = $this->getAttachment($key)) {
+            return $attachment;
         }
 
         return parent::getAttribute($key);
     }
 
     /**
-     * Get all of the current attributes and attachment objects on the model
+     * Retrieve attachment if exists, otherwise return null
      *
-     * @return mixed
+     * @param $name
+     * @return mixed|null
      */
-    /*public function getAttributes()
+    protected function getAttachment($name)
     {
-        return array_merge(parent::getAttributes(), $this->attachedFiles);
-    }*/
-
-    /**
-     * Remove attachment from get dirty array
-     * Fix for getAttributes()
-     *
-     * @return array
-     */
-    public function getDirty()
-    {
-        $dirty = parent::getDirty();
-
-        return array_filter($dirty, function($var) {
-            return !($var instanceof Attachment);
-        });
-    }
-
-    /**
-     * Get URL for specified style of attachable field
-     *
-     * @param string $name
-     * @param string $style
-     * @return null|string
-     */
-    public function laruploadUrl(string $name, string $style = 'original')
-    {
-        if (array_key_exists($name, $this->attachedFiles) and $this->attributes['id']) {
-            return $this->attachedFiles[$name]->url($this, $style);
+        foreach ($this->attachments as $attachment) {
+            if ($attachment->name == $name) {
+                return $attachment;
+            }
         }
 
         return null;
-    }
-
-    /**
-     * Get URL for specified style of attachable field
-     *
-     * @param string $name
-     * @param string $style
-     * @return null|string
-     */
-    public function url(string $name, string $style = 'original')
-    {
-        return $this->laruploadUrl($name, $style);
-    }
-
-    /**
-     * Download specified style of attachable field
-     *
-     * @param string $name
-     * @param string $style
-     * @return null|string
-     */
-    public function laruploadDownload(string $name, string $style = 'original')
-    {
-        if (array_key_exists($name, $this->attachedFiles) and $this->attributes['id']) {
-            return $this->attachedFiles[$name]->download($this, $style);
-        }
-
-        return null;
-    }
-
-    /**
-     * Download specified style of attachable field
-     *
-     * @param string $name
-     * @param string $style
-     * @return null|string
-     */
-    public function download(string $name, string $style = 'original')
-    {
-        return $this->laruploadDownload($name, $style);
-    }
-
-    /**
-     * Get All styles (original, cover and ...) for attached field
-     *
-     * @param string $name
-     * @return object|null
-     */
-    public function getFiles(string $name = null)
-    {
-        if ($name) {
-            if (isset($this->attachedFiles[$name])) {
-                return $this->attachedFiles[$name]->getFiles($this);
-            }
-
-            return null;
-        }
-        else {
-            $files = new stdClass();
-            foreach ($this->attachedFiles as $name => $attachedFile) {
-                $files->{$name} = $attachedFile->getFiles($this);
-            }
-
-            return $files;
-        }
-    }
-
-    /**
-     * Get meta data as an array or object
-     *
-     * @param string $name
-     * @param string $key
-     * @return object|string|integer|null
-     */
-    public function meta(string $name, string $key = null)
-    {
-        if (array_key_exists($name, $this->attachedFiles) and $this->attributes['id']) {
-            return $this->attachedFiles[$name]->getMeta($this, $key);
-        }
-
-        return ($key) ? null : new stdClass();
     }
 
     /**
      * Retrieve latest status log for ffmpeg queue process
      *
-     * @return mixed
+     * @return HasOne
      */
-    public function laruploadQueue()
+    public function laruploadQueue(): HasOne
     {
         return $this->hasOne(LaruploadFFMpegQueue::class, 'record_id')->where('record_class', self::class)->orderBy('id', 'desc');
     }
@@ -268,9 +144,9 @@ trait Larupload
     /**
      * Retrieve all status logs for ffmpeg queue process
      *
-     * @return mixed
+     * @return HasMany
      */
-    public function laruploadQueues()
+    public function laruploadQueues(): HasMany
     {
         return $this->hasMany(LaruploadFFMpegQueue::class, 'record_id')->where('record_class', self::class)->orderBy('id', 'desc');
     }

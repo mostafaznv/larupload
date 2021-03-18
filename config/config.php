@@ -56,7 +56,7 @@ return [
     */
 
     'naming-method' => LaruploadEnum::SLUG_NAMING_METHOD,
-    'lang'          => null,
+    'lang'          => '',
 
     /*
     |--------------------------------------------------------------------------

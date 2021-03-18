@@ -18,6 +18,9 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - import php-ffmpeg package into the project [NOTICE: wait for a stable version]
     // TODO - add an ability to custom ffmpeg scripts (video and stream)
     // TODO - check possibility of change video ffmpeg script to streaming one (none crop mode).
+    // TODO - mix with download php-x-sendfile
+    // TODO - return original size of file on json response (toString and toJson)
+    // TODO - upload with create() function
 
     const VERSION = '0.0.9';
 
