@@ -1,19 +1,19 @@
 <?php
 
+use Mostafaznv\Larupload\LaruploadEnum;
+
 return [
     /*
     |--------------------------------------------------------------------------
-    | Storage Driver
+    | Storage Disk
     |--------------------------------------------------------------------------
     |
-    | The default mechanism for handling file storage. Larupload supports
-    | all Laravel filesystem drivers.
-    |
-    | Example: local, public, s3, ftp, sftp
+    | The default disk for handling file storage. Larupload will use available
+    | disks in config/filesystems.php
     |
     */
 
-    'storage' => 'local',
+    'disk' => 'local',
 
     /*
     |--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ return [
     |
     */
 
-    'mode' => 'heavy',
+    'mode' => LaruploadEnum::HEAVY_MODE,
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'with_meta' => true,
+    'with-meta' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'naming_method' => 'slug',
+    'naming-method' => LaruploadEnum::SLUG_NAMING_METHOD,
     'lang'          => null,
 
     /*
@@ -70,7 +70,7 @@ return [
     |
     */
 
-    'image_processing_library' => 'Imagine\Gd\Imagine',
+    'image-processing-library' => LaruploadEnum::GD_IMAGE_LIBRARY,
 
     /*
     |--------------------------------------------------------------------------
@@ -111,7 +111,7 @@ return [
     |
     */
 
-    'generate_cover' => true,
+    'generate-cover' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -125,7 +125,7 @@ return [
     |
     */
 
-    'cover_style' => [
+    'cover-style' => [
         'width'  => 500,
         'height' => 500,
         'mode'   => 'crop',
@@ -140,7 +140,7 @@ return [
     |
     */
 
-    'dominant_color' => true,
+    'dominant-color' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -152,7 +152,7 @@ return [
     |
     */
 
-    'keep_old_files' => false,
+    'keep-old-files' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -166,47 +166,7 @@ return [
     |
     */
 
-    'preserve_files' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Upload Path
-    |--------------------------------------------------------------------------
-    |
-    | The path option is the location where your files will
-    | be stored at on filesystem root path.
-    |
-    */
-
-    'path' => 'uploads',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Validation
-    |--------------------------------------------------------------------------
-    |
-    | Larupload have a validation to check mime types, if you leave this array empty, all files will
-    | pass from validation.
-    |
-    | Example: ['video/mp4', 'video/3gpp']
-    |
-    */
-
-    'allowed_mime_types' => [],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Validation
-    |--------------------------------------------------------------------------
-    |
-    | Larupload have a validation to check file extensions, if you leave this array empty, all files will
-    | pass from validation.
-    |
-    | Example: ['jpeg', 'bmp', 'png']
-    |
-    */
-
-    'allowed_mimes' => [],
+    'preserve-files' => false,
 
     /*
     |--------------------------------------------------------------------------
