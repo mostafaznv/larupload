@@ -70,6 +70,12 @@ trait Larupload
                 }
             }
         });
+
+        static::retrieved(function($model) {
+            foreach ($model->attachments as $attachment) {
+                $attachment->setOutput($model);
+            }
+        });
     }
 
     /**

@@ -99,31 +99,31 @@ class Attachment extends UploadEntities
      * Generate URL for attached file
      * Remember, if you are using the local driver, all files that should be publicly accessible should be placed in the storage/app/public directory. Furthermore, you should create a symbolic link at public/storage which points to the  storage/app/public directory
      *
-     * @param Model $model
      * @param string $style
      * @return null|string
      */
-    public function url(Model $model, string $style = 'original')
+    public function url(string $style = LaruploadEnum::ORIGINAL_FOLDER): ?string
     {
-        if (in_array($style, ['original', 'cover']) or array_key_exists($style, $this->styles)) {
-            list('name' => $name, 'type' => $type) = $this->getTypeAndName($model, $style);
+        $staticStyles = [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER, LaruploadEnum::STREAM_FOLDER];
 
-            if ($name and $style == 'stream') {
-                if ($type == 'video') {
+        if ($this->id and (in_array($style, $staticStyles) or array_key_exists($style, $this->styles))) {
+            $name = $style == LaruploadEnum::COVER_FOLDER ? $this->output['cover'] : $this->output['name'];
+            $type = $this->output['type'];
+
+            if ($name and $style == LaruploadEnum::STREAM_FOLDER) {
+                if ($type == LaruploadEnum::VIDEO) {
                     $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
-                    $path = $this->getPath($model->id, $style);
+                    $path = $this->getBasePath($this->id, $style);
                     $path = "$path/$name";
 
                     return $this->storageUrl($path);
                 }
-                else {
-                    return null;
-                }
 
+                return null;
             }
-            else if ($name and $this->hasFile($model, $style)) {
+            else if ($name and $this->styleHasFile($style)) {
                 $name = $this->fixExceptionNames($name, $style);
-                $path = $this->getPath($model->id, $style);
+                $path = $this->getBasePath($this->id, $style);
                 $path = "$path/$name";
 
                 return $this->storageUrl($path);
@@ -517,7 +517,6 @@ class Attachment extends UploadEntities
      */
     protected function setAttributes(Model $model): Model
     {
-
         if ($this->mode == 'heavy') {
             foreach ($this->output as $key => $value) {
                 $model->{"{$this->name}_file_$key"} = $value;
@@ -529,69 +528,6 @@ class Attachment extends UploadEntities
         }
 
         return $model;
-    }
-
-    /**
-     * Check if style has file
-     *
-     * @param Model $model
-     * @param $style
-     * @return bool
-     */
-    protected function hasFile(Model $model, $style): bool
-    {
-        if (array_key_exists($style, $this->styles)) {
-            $mime = null;
-            if ($this->mode == 'heavy') {
-                $mime = $model->{"{$this->name}_file_mime_type"};
-            }
-            else {
-                $details = json_decode($model->{"{$this->name}_file_meta"});
-                if (isset($details->mime_type) and $details->mime_type) {
-                    $mime = $details->mime_type;
-                }
-            }
-
-            if ($mime) {
-                $type = $this->mimeToType($mime);
-
-                if (isset($this->styles[$style]['type']) and !in_array($type, $this->styles[$style]['type'])) {
-                    return false;
-                }
-            }
-            else {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Convert path to URL based on storage driver
-     *
-     * @param string $path
-     * @return string|null
-     */
-    protected function storageUrl(string $path)
-    {
-        $storage = $this->disk;
-
-        if ($this->file == LARUPLOAD_NULL) {
-            return null;
-        }
-
-        if ($storage == 'local') {
-            $url = Storage::disk($storage)->url($path);
-            return url($url);
-        }
-
-        $base = config("filesystems.disks.$storage.url");
-        if ($base) {
-            return "$base/$path";
-        }
-
-        return $path;
     }
 
     /**
@@ -625,13 +561,13 @@ class Attachment extends UploadEntities
      *
      * @param Model $model
      * @param $style
-     * return array
+     * @return array
      */
-    protected function getTypeAndName(Model $model, $style)
+    protected function getTypeAndName(Model $model, $style): array
     {
         $name = null;
 
-        if ($this->mode == 'heavy') {
+        if ($this->mode == LaruploadEnum::HEAVY_MODE) {
             $type = $model->{"{$this->name}_file_type"};
 
             if ($style == 'cover') {

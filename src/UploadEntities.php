@@ -3,7 +3,9 @@
 namespace Mostafaznv\Larupload;
 
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Helpers\Validator;
 use Mostafaznv\Larupload\Storage\FFMpeg;
@@ -25,6 +27,14 @@ class UploadEntities
      */
     protected string $name;
     protected string $nameKebab;
+
+    /**
+     * Model ID
+     * this property will initiated only on retrieving model.
+     *
+     * @var string
+     */
+    protected string $id;
 
     /**
      * Mode of uploadable entity
@@ -292,6 +302,31 @@ class UploadEntities
     }
 
     /**
+     * Set model attributes for current entity
+     *
+     * @param Model $model
+     */
+    public function setOutput(Model $model)
+    {
+        $this->id = $model->id;
+
+        if ($this->mode == LaruploadEnum::HEAVY_MODE) {
+            foreach ($this->output as $key => $value) {
+                $this->output[$key] = $model->{"{$this->name}_file_$key"};
+            }
+        }
+        else {
+            $meta = json_decode($model->{"{$this->name}_file_meta"}, true);
+
+            if (is_array($meta)) {
+                foreach ($meta as $key => $value) {
+                    $this->output[$key] = $value;
+                }
+            }
+        }
+    }
+
+    /**
      * Set folder name by user
      *
      * @param string $name
@@ -502,5 +537,79 @@ class UploadEntities
         $number = (float)$number * $units[$unit];
 
         return (int)$number;
+    }
+
+    /**
+     * Check if style has file
+     *
+     * @param $style
+     * @return bool
+     */
+    protected function styleHasFile(string $style): bool
+    {
+        if (in_array($style, [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER])) {
+            return true;
+        }
+
+        if (array_key_exists($style, $this->styles)) {
+            $type = $this->output['type'];
+
+            if (in_array($type, [LaruploadEnum::VIDEO, LaruploadEnum::IMAGE])) {
+                $styleTypes = $this->styles[$style]['type'];
+
+                return count($styleTypes) == 0 or in_array($type, $styleTypes);
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Fix Exception Names
+     *
+     * In some special cases we should use other file names instead of the original one
+     * Example: when user uploads a svg image, we should change the converted format to jpg! so we have to manipulate file name
+     *
+     * @param string $name
+     * @param string $style
+     * @return mixed
+     */
+    protected function fixExceptionNames(string $name, string $style): string
+    {
+        if (!in_array($style, [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER])) {
+            if (Str::endsWith($name, 'svg')) {
+                $name = str_replace('svg', 'jpg', $name);
+            }
+        }
+
+        return $name;
+    }
+
+    /**
+     * Convert path to URL, based on storage driver
+     *
+     * @param string $path
+     * @return string|null
+     */
+    protected function storageUrl(string $path): ?string
+    {
+        if (isset($this->file) and $this->file == LARUPLOAD_NULL) {
+            return null;
+        }
+
+        $driver = config("filesystems.disks.{$this->disk}.driver");
+
+        if ($driver == LaruploadEnum::LOCAL_DISK) {
+            $url = Storage::disk($this->disk)->url($path);
+
+            return url($url);
+        }
+
+        $baseUrl = config("filesystems.disks.{$this->disk}.url");
+        if ($baseUrl) {
+            return "$baseUrl/$path";
+        }
+
+        return $path;
     }
 }

@@ -123,25 +123,4 @@ trait LaraTools
 
         return [$path, $name];
     }
-
-    /**
-     * Fix Exception Names
-     *
-     * In some special cases we should use other file names instead of the original one
-     * Example: when user uploads a svg image, we should change the converted format to jpg! so we have to manipulate file name
-     *
-     * @param string $name
-     * @param string $style
-     * @return mixed
-     */
-    protected function fixExceptionNames(string $name, string $style): string
-    {
-        if (!in_array($style, [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER])) {
-            if (Str::endsWith($name, 'svg')) {
-                $name = str_replace('svg', 'jpg', $name);
-            }
-        }
-
-        return $name;
-    }
 }
