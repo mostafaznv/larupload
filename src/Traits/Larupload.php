@@ -4,6 +4,7 @@ namespace Mostafaznv\Larupload\Traits;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Mostafaznv\Larupload\Models\LaruploadFFMpegQueue;
 
 trait Larupload
@@ -63,8 +64,8 @@ trait Larupload
         });
 
         static::deleted(function($model) {
-            foreach ($model->attachments as $attachment) {
-                if ($model->forceDeleting) {
+            if (!$model->hasGlobalScope(SoftDeletingScope::class) or $model->isForceDeleting()) {
+                foreach ($model->attachments as $attachment) {
                     $attachment->deleted($model);
                 }
             }

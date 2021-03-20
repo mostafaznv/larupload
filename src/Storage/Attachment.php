@@ -91,8 +91,7 @@ class Attachment extends UploadEntities
     public function deleted(Model $model): void
     {
         if (!$this->preserveFiles) {
-            $path = $this->path . '/' . $model->id;
-            Storage::disk($this->disk)->deleteDirectory($path);
+            Storage::disk($this->disk)->deleteDirectory("{$this->folder}/{$model->id}");
         }
     }
 
