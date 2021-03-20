@@ -3,17 +3,28 @@
 namespace Mostafaznv\Larupload;
 
 use Exception;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Helpers\Validator;
+use Mostafaznv\Larupload\Storage\FFMpeg;
+use Mostafaznv\Larupload\Storage\Image;
 
 class UploadEntities
 {
+    /**
+     * File object
+     *
+     * @var UploadedFile
+     */
+    protected UploadedFile $file;
+
     /**
      * Name of uploadable entity
      *
      * @var string
      */
-    public string $name;
+    protected string $name;
+    protected string $nameKebab;
 
     /**
      * Mode of uploadable entity
@@ -29,6 +40,13 @@ class UploadEntities
      * @var string
      */
     protected string $folder = '';
+
+    /**
+     * Type to get type of attached file
+     *
+     * @var string
+     */
+    protected string $type;
 
     /**
      * Storage Disk
@@ -114,12 +132,65 @@ class UploadEntities
      */
     protected bool $preserveFiles;
 
+    /**
+     * Output array to save in database
+     *
+     * @var array
+     */
+    protected array $output = [
+        'name'           => null,
+        'size'           => null,
+        'type'           => null,
+        'mime_type'      => null,
+        'width'          => null,
+        'height'         => null,
+        'duration'       => null,
+        'dominant_color' => null,
+        'format'         => null,
+        'cover'          => null,
+    ];
+
+    /**
+     * FFMPEG instance
+     *
+     * @var FFMpeg
+     */
+    protected FFMpeg $ffmpeg;
+
+    /**
+     * Specify if FFMPEG process should run through queue or not
+     *
+     * @var bool
+     */
+    protected bool $ffmpegQueue;
+
+    /**
+     * Specify max FFMPEG processes should run at the same time
+     *
+     * @var int
+     */
+    protected int $ffmpegMaxQueueNum;
+
+    /**
+     * FFMPEG capture frame
+     *
+     * @var mixed
+     */
+    protected $ffmpegCaptureFrame;
+
+    /**
+     * Image instance
+     *
+     * @var Image
+     */
+    protected Image $image;
 
     public function __construct(string $name, string $mode)
     {
         $config = config('larupload');
 
         $this->name = $name;
+        $this->nameKebab = str_replace('_', '-', Str::kebab($name));
         $this->mode = $mode;
         $this->disk = $config['disk'];
         $this->withMeta = $config['with-meta'];
@@ -131,6 +202,9 @@ class UploadEntities
         $this->dominantColor = $config['dominant-color'];
         $this->keepOldFiles = $config['keep-old-files'];
         $this->preserveFiles = $config['preserve-files'];
+        $this->ffmpegQueue = $config['ffmpeg']['queue'];
+        $this->ffmpegMaxQueueNum = $config['ffmpeg']['max-queue-num'];
+        $this->ffmpegCaptureFrame = $config['ffmpeg']['capture-frame'];
     }
 
     /**
@@ -143,6 +217,78 @@ class UploadEntities
     public static function make(string $name, string $mode = LaruploadEnum::HEAVY_MODE): UploadEntities
     {
         return new static($name, $mode);
+    }
+
+    /**
+     * FFMPEG instance
+     *
+     * @param UploadedFile|null $file
+     * @return FFMpeg
+     */
+    protected function ffmpeg(UploadedFile $file = null): FFMpeg
+    {
+        if (!isset($this->ffmpeg) or $file) {
+            $this->ffmpeg = new FFMpeg($this->file, $this->disk);
+        }
+
+        return $this->ffmpeg;
+    }
+
+    /**
+     * Image instance
+     *
+     * @param UploadedFile|null $file
+     * @return Image
+     */
+    protected function image(UploadedFile $file = null): Image
+    {
+        if (!isset($this->image) or $file) {
+            $this->image = new Image($file ?? $this->file, $this->disk);
+        }
+
+        return $this->image;
+    }
+
+    /**
+     * Generate file name using naming method
+     *
+     * @return string
+     */
+    protected function setFileName(): string
+    {
+        $format = $this->file->getClientOriginalExtension();
+
+        switch ($this->namingMethod) {
+            case 'hash_file':
+                $name = hash_file('md5', $this->file->getRealPath());
+                break;
+
+            case 'time':
+                $name = time();
+                break;
+
+
+            default:
+                $name = $this->file->getClientOriginalName();
+                $name = pathinfo($name, PATHINFO_FILENAME);
+                $num = rand(0, 9999);
+
+                $str = new \Mostafaznv\Larupload\Helpers\Str($this->lang);
+                $name = $str->generateSlug($name) . "-" . $num;
+                break;
+        }
+
+        return "{$name}.$format";
+    }
+
+    /**
+     * Name Accessor
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     /**
@@ -235,14 +381,14 @@ class UploadEntities
      * Set style
      *
      * @param string $name
-     * @param string|null $type
+     * @param array $type
      * @param string|null $mode
      * @param int|null $width
      * @param int|null $height
      * @return $this
      * @throws Exception
      */
-    public function style(string $name, string $type = null, string $mode = null, int $width = null, int $height = null): UploadEntities
+    public function style(string $name, array $type = [], string $mode = null, int $width = null, int $height = null): UploadEntities
     {
         Validator::styleIsValid($name, $type, $mode, $width, $height);
 
@@ -258,21 +404,25 @@ class UploadEntities
 
     /**
      * Set stream style
+     *
      * @param string $name
      * @param int $width
      * @param int $height
-     * @param int $audioBitrate
-     * @param int $videoBitrate
+     * @param string|int $audioBitrate
+     * @param string|int $videoBitrate
      * @return $this
+     * @throws Exception
      */
-    public function stream(string $name, int $width, int $height, int $audioBitrate, int $videoBitrate): UploadEntities
+    public function stream(string $name, int $width, int $height, $audioBitrate, $videoBitrate): UploadEntities
     {
+        Validator::streamIsValid($name, $width, $height, $audioBitrate, $videoBitrate);
+
         $this->streams[$name] = [
             'width'   => $width,
             'height'  => $height,
             'bitrate' => [
-                'audio' => $audioBitrate,
-                'video' => $videoBitrate
+                'audio' => $this->shortNumberToInteger($audioBitrate),
+                'video' => $this->shortNumberToInteger($videoBitrate)
             ]
         ];
 
@@ -325,5 +475,32 @@ class UploadEntities
         $this->dominantColor = $status;
 
         return $this;
+    }
+
+    /**
+     * Convert short number formats to integer
+     * Example: 1M -> 1000000
+     *
+     * @param $number
+     * @return int
+     */
+    protected function shortNumberToInteger($number): int
+    {
+        $number = strtoupper($number);
+
+        $units = [
+            'M' => '1000000',
+            'K' => '1000',
+        ];
+
+        $unit = substr($number, -1);
+
+        if (!array_key_exists($unit, $units)) {
+            return (int)$number;
+        }
+
+        $number = (float)$number * $units[$unit];
+
+        return (int)$number;
     }
 }

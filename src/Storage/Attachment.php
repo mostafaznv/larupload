@@ -2,6 +2,8 @@
 
 namespace Mostafaznv\Larupload\Storage;
 
+use Mostafaznv\Larupload\Helpers\LaraTools;
+use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\UploadEntities;
 use stdClass;
 use Exception;
@@ -11,69 +13,26 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Http\UploadedFile;
-use Mostafaznv\Larupload\Helpers\Str;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Attachment extends UploadEntities
 {
-    /**
-     * File object
-     *
-     * @var UploadedFile
-     */
-    protected UploadedFile $file;
-
-    /**
-     * File path
-     *
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * Predefined cover file by user
-     *
-     * @var object
-     */
-    protected $cover;
-
-    /**
-     * Type to get type of attached file
-     *
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * Output array to save in database
-     *
-     * @var array
-     */
-    protected $output = [
-        'name'           => null,
-        'size'           => null,
-        'type'           => null,
-        'mime_type'      => null,
-        'width'          => null,
-        'height'         => null,
-        'duration'       => null,
-        'dominant_color' => null,
-        'format'         => null,
-        'cover'          => null,
-    ];
+    use LaraTools;
 
     /**
      * Set uploaded file
      *
-     * @param UploadedFile $file
+     * @param mixed $file
      * @param UploadedFile|null $cover
      * @return bool
      */
     public function setUploadedFile($file, $cover = null): bool
     {
-        if (($file instanceof UploadedFile or $file == LARUPLOAD_NULL) and ($cover instanceof UploadedFile or $cover == null)) {
+        // todo - accept urls and convert them to file object (checking possibility to handle this feature with queue)
+
+        if (($this->fileIsSetAndHasValue($file) or $file == LARUPLOAD_NULL) and ($this->fileIsSetAndHasValue($cover) or $cover == null)) {
             $this->file = $file;
 
             if ($file != LARUPLOAD_NULL) {
@@ -96,11 +55,11 @@ class Attachment extends UploadEntities
      */
     public function saved(Model $model): Model
     {
-        if ($this->file) {
+        if (isset($this->file)) {
             if ($this->file == LARUPLOAD_NULL) {
                 $this->clean($model->id);
 
-                if ($this->mode == 'light') {
+                if ($this->mode == LaruploadEnum::LIGHT_MODE) {
                     foreach ($this->output as $key => $value) {
                         $this->output[$key] = null;
                     }
@@ -112,12 +71,10 @@ class Attachment extends UploadEntities
                 }
 
                 $this->setBasicDetails();
-
                 $this->setMediaDetails();
-
-                $this->handleStyles($model->id, $model->getMorphClass());
-
+                $this->uploadOriginalFile($model->id);
                 $this->setCover($model->id);
+                $this->handleStyles($model->id, $model->getMorphClass());
             }
 
             $model = $this->setAttributes($model);
@@ -135,7 +92,7 @@ class Attachment extends UploadEntities
     {
         if (!$this->preserveFiles) {
             $path = $this->path . '/' . $model->id;
-            Storage::disk($this->storage)->deleteDirectory($path);
+            Storage::disk($this->disk)->deleteDirectory($path);
         }
     }
 
@@ -296,8 +253,8 @@ class Attachment extends UploadEntities
         $shouldDeletePath = null;
         $path = $this->getPath($id, 'original');
 
-        if ($this->storage == 'local') {
-            $path = Storage::disk($this->storage)->path("$path/{$meta['name']}");
+        if ($this->disk == 'local') {
+            $path = Storage::disk($this->disk)->path("$path/{$meta['name']}");
         }
         else {
             $shouldDeletePath = $this->getPath($id, '');
@@ -319,97 +276,14 @@ class Attachment extends UploadEntities
     }
 
     /**
-     * Get default larupload options
-     *
-     * @return array
-     */
-    protected function getDefaultOptions(): array
-    {
-        return [
-            'storage'            => $this->config['storage'],
-            'mode'               => $this->config['mode'],
-            'naming_method'      => $this->config['naming_method'],
-            'with_meta'          => $this->config['with_meta'],
-            'styles'             => $this->config['styles'],
-            'dominant_color'     => $this->config['dominant_color'],
-            'generate_cover'     => $this->config['generate_cover'],
-            'cover_style'        => $this->config['cover_style'],
-            'keep_old_files'     => $this->config['keep_old_files'],
-            'preserve_files'     => $this->config['preserve_files'],
-            'allowed_mime_types' => $this->config['allowed_mime_types'],
-            'allowed_mimes'      => $this->config['allowed_mimes'],
-        ];
-    }
-
-    /**
-     * Get file type
-     *
-     * @param UploadedFile $file
-     * @return null|string
-     */
-    protected function getFileType(UploadedFile $file)
-    {
-        if ($file) {
-            $mime = $file->getMimeType();
-
-            return $this->mimeToType($mime);
-        }
-
-        return null;
-    }
-
-    /**
-     * Convert MimeType to human readable type
-     *
-     * @param string $mime
-     * @return string
-     */
-    protected function mimeToType(string $mime): string
-    {
-        if (strstr($mime, "image/")) {
-            return 'image';
-        }
-        else if (strstr($mime, "video/")) {
-            return 'video';
-        }
-        else if (strstr($mime, "audio/")) {
-            return 'audio';
-        }
-
-        return 'file';
-    }
-
-    /**
      * Set some basic details
      */
     protected function setBasicDetails(): void
     {
-        $format = $this->file->getClientOriginalExtension();
-
-        switch ($this->namingMethod) {
-            case 'hash_file':
-                $name = hash_file('md5', $this->file->getRealPath());
-                break;
-
-            case 'time':
-                $name = time();
-                break;
-
-
-            default:
-                $name = $this->file->getClientOriginalName();
-                $name = pathinfo($name, PATHINFO_FILENAME);
-                $num = rand(0, 9999);
-
-                $str = new Str($this->config['lang']);
-                $name = $str->generateSlug($name) . "-" . $num;
-                break;
-        }
-
-        $this->output['name'] = $name . "." . $format;
-        $this->output['format'] = $format;
+        $this->output['name'] = $this->setFileName();
+        $this->output['format'] = $this->file->getClientOriginalExtension();
         $this->output['size'] = $this->file->getSize();
-        $this->output['type'] = $this->getHumanReadableFileType($this->file->getMimeType());
+        $this->output['type'] = $this->type;
         $this->output['mime_type'] = $this->file->getMimeType();
     }
 
@@ -421,28 +295,36 @@ class Attachment extends UploadEntities
     protected function setMediaDetails(): void
     {
         switch ($this->type) {
-            case 'video':
-            case 'audio':
-                $ffmpeg = new FFMpeg($this->file);
-                $meta = $ffmpeg->getMeta();
+            case LaruploadEnum::VIDEO:
+            case LaruploadEnum::AUDIO:
+                $meta = $this->ffmpeg()->getMeta();
 
-                $this->output['width'] = (int)$meta['width'];
-                $this->output['height'] = (int)$meta['height'];
-                $this->output['duration'] = (int)$meta['duration'];
+                $this->output['width'] = $meta['width'];
+                $this->output['height'] = $meta['height'];
+                $this->output['duration'] = $meta['duration'];
 
                 break;
 
-            case 'image':
-                $image = new Image($this->file);
-                $meta = $image->getMeta();
+            case LaruploadEnum::IMAGE:
+                $meta = $this->image()->getMeta();
 
-                $dominantColor = $this->dominantColor ? Image::dominant($this->file) : null;
+                $this->output['width'] = $meta['width'];
+                $this->output['height'] = $meta['height'];
+                $this->output['dominant_color'] = $this->dominantColor ? $this->image()->getDominantColor($this->file) : null;
 
-                $this->output['width'] = (int)$meta['width'];
-                $this->output['height'] = (int)$meta['height'];
-                $this->output['dominant_color'] = $dominantColor;
                 break;
         }
+    }
+
+    /**
+     * Upload original file
+     *
+     * @param int $id
+     */
+    protected function uploadOriginalFile(int $id)
+    {
+        $path = $this->getBasePath($id, LaruploadEnum::ORIGINAL_FOLDER);
+        Storage::disk($this->disk)->putFileAs($path, $this->file, $this->output['name']);
     }
 
     /**
@@ -454,20 +336,14 @@ class Attachment extends UploadEntities
      */
     protected function setCover($id): void
     {
-        $path = $this->getPath($id, 'cover');
+        $path = $this->getBasePath($id, LaruploadEnum::COVER_FOLDER);
+        $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME);
+        $format = $this->type == LaruploadEnum::IMAGE ? ($this->output['format'] == 'svg' ? 'png' : $this->output['format']) : 'jpg';
+        $name = "{$fileName}.$format";
 
-        $pathInfo = pathinfo($this->output['name']);
-        $fileName = $pathInfo['filename'];
-
-        if ($this->type == 'image') {
-            $name = "$fileName." . ($pathInfo['extension'] == 'svg' ? 'png' : $pathInfo['extension']);
-        }
-        else {
-            $name = "$fileName.jpg";
-        }
-
-        if ($this->cover and ($this->cover instanceof UploadedFile) and ($this->mimeToType($this->cover->getMimeType()) == 'image')) {
-            Storage::disk($this->storage)->putFileAs($path, $this->cover, $name);
+        // in case cover uploaded by user
+        if ($this->fileIsSetAndHasValue($this->cover) and ($this->mimeToType($this->cover->getMimeType()) == LaruploadEnum::IMAGE)) {
+            Storage::disk($this->disk)->putFileAs($path, $this->cover, $name);
 
             $this->output['cover'] = $name;
         }
@@ -476,26 +352,26 @@ class Attachment extends UploadEntities
                 return;
             }
 
-            switch ($this->type) {
-                case 'video':
-                    Storage::disk($this->storage)->makeDirectory($path);
-                    $saveTo = $path . "/$name";
+            $saveTo = "{$path}/{$name}";
 
-                    $ffmpeg = new FFMpeg($this->file);
-                    $ffmpeg->capture($this->config['ffmpeg-capture-frame'], $this->coverStyle, $this->storage, $saveTo);
+            switch ($this->type) {
+                case LaruploadEnum::VIDEO:
+                    Storage::disk($this->disk)->makeDirectory($path);
+
+                    $this->ffmpeg()->capture($this->ffmpegCaptureFrame, $this->coverStyle, $saveTo);
+
+                    $cover = Storage::disk($this->disk)->path($saveTo);
+                    $cover = new UploadedFile($cover, $name);
 
                     $this->output['cover'] = $name;
-                    $this->output['dominant_color'] = ($this->dominantColor) ? Image::dominant($saveTo) : null;
+                    $this->output['dominant_color'] = $this->dominantColor ? $this->image($cover)->getDominantColor() : null;
 
                     break;
 
+                case LaruploadEnum::IMAGE:
+                    Storage::disk($this->disk)->makeDirectory($path);
 
-                case 'image':
-                    Storage::disk($this->storage)->makeDirectory($path);
-                    $saveTo = $path . "/$name";
-
-                    $image = new Image($this->file);
-                    $result = $image->resize($this->storage, $saveTo, $this->coverStyle);
+                    $result = $this->image()->resize($saveTo, $this->coverStyle);
 
                     if ($result) {
                         $this->output['cover'] = $name;
@@ -510,78 +386,84 @@ class Attachment extends UploadEntities
      * Handle styles
      * resize, crop and generate styles from original file
      *
-     * @param $id
-     * @param $class
+     * @param int $id
+     * @param string $class
      * @throws Exception
      */
-    protected function handleStyles($id, $class): void
+    protected function handleStyles(int $id, string $class): void
     {
-        // Handle original
-        $path = $this->getPath($id, 'original');
-        Storage::disk($this->storage)->putFileAs($path, $this->file, $this->output['name']);
-
-
-        // Handle styles by file type
         switch ($this->type) {
-            case 'image':
+            case LaruploadEnum::IMAGE:
                 foreach ($this->styles as $name => $style) {
-                    if ($name == 'stream' or (isset($style['type']) and !in_array($this->type, $style['type']))) {
+                    if (count($style['type']) and !in_array(LaruploadEnum::IMAGE, $style['type'])) {
                         continue;
                     }
 
-                    $path = $this->getPath($id, $name);
+                    $path = $this->getBasePath($id, $name);
+                    $saveTo = $path . '/' . $this->fixExceptionNames($this->output['name'], $name);
 
-                    Storage::disk($this->storage)->makeDirectory($path);
-                    $saveTo = $path . '/' . $this->fixExceptionNames($this->output['name'], $style);
-
-                    $image = new Image($this->file);
-                    $image->resize($this->storage, $saveTo, $style);
+                    Storage::disk($this->disk)->makeDirectory($path);
+                    $this->image()->resize($saveTo, $style);
                 }
 
                 break;
 
-
             case 'video':
-                if ($this->config['ffmpeg-queue']) {
-                    $maxQueueNum = $this->config['ffmpeg-max-queue-num'];
-                    $flag = false;
-
-                    if ($maxQueueNum == 0) {
-                        $flag = true;
-                    }
-                    else {
-                        $availableQueues = DB::table('larupload_ffmpeg_queue')->where('status', 0)->count();
-
-                        if ($availableQueues < $maxQueueNum) {
-                            $flag = true;
-                        }
-                    }
-
-
-                    if ($flag) {
-                        // Save a copy of original file to use it on process ffmpeg queue, then delete it
-                        Storage::disk('local')->putFileAs($path, $this->file, $this->output['name']);
-
-                        $statusId = DB::table('larupload_ffmpeg_queue')->insertGetId([
-                            'record_id'    => $id,
-                            'record_class' => $class,
-                            'created_at'   => now(),
-                        ]);
-
-                        ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class, $this->folder, $this->injectedOptions, $this->output)->delay(now()->addSeconds(1));
-                    }
-                    else {
-                        throw new HttpResponseException(redirect(URL::previous())->withErrors([
-                            'ffmpeg_queue_max_num' => trans('larupload::messages.max-queue-num-exceeded')
-                        ]));
-                    }
-
+                if ($this->ffmpegQueue) {
+                    $this->initializeFFMpegQueue($id, $class);
                 }
                 else {
                     $this->handleVideoStyles($id, $this->file);
                 }
 
                 break;
+        }
+    }
+
+    /**
+     * Initialize FFMPEG Queue
+     *
+     * @param int $id
+     * @param string $class
+     */
+    protected function initializeFFMpegQueue(int $id, string $class)
+    {
+        $maxQueueNum = $this->ffmpegMaxQueueNum;
+        $flag = false;
+
+        if ($maxQueueNum == 0) {
+            $flag = true;
+        }
+        else {
+            $availableQueues = DB::table('larupload_ffmpeg_queue')->where('status', 0)->count();
+
+            if ($availableQueues < $maxQueueNum) {
+                $flag = true;
+            }
+        }
+
+
+        if ($flag) {
+            $driver = $this->diskToDriver($this->disk);
+
+            // save a copy of original file to use it on process ffmpeg queue, then delete it
+            if ($driver != LaruploadEnum::LOCAL_DRIVER) {
+                $path = $this->getBasePath($id, LaruploadEnum::ORIGINAL_FOLDER);
+                Storage::disk(LaruploadEnum::LOCAL_DISK)->putFileAs($path, $this->file, $this->output['name']);
+            }
+
+            $statusId = DB::table('larupload_ffmpeg_queue')->insertGetId([
+                'record_id'    => $id,
+                'record_class' => $class,
+                'created_at'   => now(),
+            ]);
+
+            ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class, $this->folder, $this->injectedOptions, $this->output)->delay(now()->addSeconds(1));
+        }
+        else {
+            throw new HttpResponseException(redirect(URL::previous())->withErrors([
+                'ffmpeg_queue_max_num' => trans('larupload::messages.max-queue-num-exceeded')
+            ]));
         }
     }
 
@@ -595,47 +477,25 @@ class Attachment extends UploadEntities
     protected function handleVideoStyles($id, UploadedFile $file): void
     {
         foreach ($this->styles as $name => $style) {
-            if ($name == 'stream' or (isset($style['type']) and !in_array($this->type, $style['type']))) {
+            if ((count($style['type']) and !in_array(LaruploadEnum::VIDEO, $style['type']))) {
                 continue;
             }
 
-            $path = $this->getPath($id, $name);
-            Storage::disk($this->storage)->makeDirectory($path);
-            $saveTo = $path . '/' . $this->output['name'];
+            $path = $this->getBasePath($id, $name);
+            Storage::disk($this->disk)->makeDirectory($path);
+            $saveTo = "{$path}/{$this->output['name']}";
 
-            $ffmpeg = new FFMpeg($file);
-            $ffmpeg->manipulate($style, $this->storage, $saveTo);
-
-            unset($ffmpeg);
+            $this->ffmpeg()->manipulate($style, $saveTo);
         }
 
-        if (isset($this->styles['stream'])) {
+        if (count($this->streams)) {
             $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME) . '.m3u8';
 
-            $path = $this->getPath($id, 'stream');
-            Storage::disk($this->storage)->makeDirectory($path);
+            $path = $this->getBasePath($id, LaruploadEnum::STREAM_FOLDER);
+            Storage::disk($this->disk)->makeDirectory($path);
 
-            $ffmpeg = new FFMpeg($file);
-            $ffmpeg->stream($this->styles['stream'], $this->storage, $path, $fileName);
-
-            unset($ffmpeg);
+            $this->ffmpeg()->stream($this->streams, $path, $fileName);
         }
-    }
-
-    /**
-     * Path Helper to generate relative path string
-     *
-     * @param $id
-     * @param string $folder
-     * @return string
-     */
-    protected function getPath($id, string $folder = null): string
-    {
-        if ($folder) {
-            return $this->path . '/' . $id . '/' . $this->name . '/' . $folder;
-        }
-
-        return $this->path . '/' . $id . '/' . $this->name;
     }
 
     /**
@@ -645,8 +505,9 @@ class Attachment extends UploadEntities
      */
     protected function clean($id): void
     {
-        $path = $this->getPath($id);
-        Storage::disk($this->storage)->deleteDirectory($path);
+        $path = $this->getBasePath($id);
+
+        Storage::disk($this->disk)->deleteDirectory($path);
     }
 
     /**
@@ -715,7 +576,7 @@ class Attachment extends UploadEntities
      */
     protected function storageUrl(string $path)
     {
-        $storage = $this->storage;
+        $storage = $this->disk;
 
         if ($this->file == LARUPLOAD_NULL) {
             return null;
@@ -742,7 +603,7 @@ class Attachment extends UploadEntities
      */
     protected function storageDownload(string $path)
     {
-        $storage = $this->storage;
+        $storage = $this->disk;
 
         if ($this->file == LARUPLOAD_NULL) {
             return null;
@@ -755,57 +616,6 @@ class Attachment extends UploadEntities
         $base = config("filesystems.disks.$storage.url");
         if ($base) {
             return redirect("$base/$path");
-        }
-
-        return null;
-    }
-
-    /**
-     * In some special cases we should use other file names instead of the original one
-     * Example: when user uploads a svg image, we should change the converted format to jpg! so we have to manipulate file name
-     *
-     * @param string $name
-     * @param $style
-     * @return mixed
-     */
-    protected function fixExceptionNames(string $name, $style): string
-    {
-        if (!in_array($style, ['original', 'cover'])) {
-            if (Str::endsWith($name, 'svg')) {
-                $name = str_replace('svg', 'jpg', $name);
-            }
-        }
-
-        return $name;
-    }
-
-    /**
-     * Get human readable file type from mime-type
-     *
-     * @param string $mimeType
-     * @return null|string
-     */
-    protected function getHumanReadableFileType(string $mimeType)
-    {
-        if ($mimeType) {
-
-            if (strstr($mimeType, "image/")) {
-                return 'image';
-            }
-            else if (strstr($mimeType, "video/")) {
-                return 'video';
-            }
-            else if (strstr($mimeType, "audio/")) {
-                return 'audio';
-            }
-            else if ($mimeType == 'application/pdf') {
-                return 'pdf';
-            }
-            else if ($mimeType == 'application/zip' or $mimeType == 'application/x-rar-compressed') {
-                return 'compressed';
-            }
-
-            return 'file';
         }
 
         return null;

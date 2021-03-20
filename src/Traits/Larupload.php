@@ -123,7 +123,7 @@ trait Larupload
     protected function getAttachment($name)
     {
         foreach ($this->attachments as $attachment) {
-            if ($attachment->name == $name) {
+            if ($attachment->getName() == $name) {
                 return $attachment;
             }
         }

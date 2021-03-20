@@ -41,13 +41,13 @@ class Validator
      * Validate style
      *
      * @param string $name
-     * @param string|null $type
+     * @param array $type
      * @param string|null $mode
      * @param int|null $width
      * @param int|null $height
      * @throws Exception
      */
-    public static function styleIsValid(string $name, string $type = null, string $mode = null, int $width = null, int $height = null)
+    public static function styleIsValid(string $name, array $type = [], string $mode = null, int $width = null, int $height = null)
     {
         self::modeIsValid($mode);
 
@@ -71,10 +71,26 @@ class Validator
         if ($type) {
             $types = [LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE];
 
-            if (!in_array($type, $types)) {
-                throw new Exception("Style type [$type] is not valid. valid types: [" . implode(', ', $types) . "]");
+            if (count(array_intersect($type, $types)) != count($type)) {
+                throw new Exception('Style type [' . implode(', ', $type) . '] is not valid. valid types: [' . implode(', ', $types) . ']');
             }
         }
+    }
+
+    /**
+     * Validate stream styles
+     *
+     * @param string $name
+     * @param array $type
+     * @param string|null $mode
+     * @param int|null $width
+     * @param int|null $height
+     * @throws Exception
+     */
+    public static function streamIsValid(string $name, int $width, int $height, $audioBitrate, $videoBitrate)
+    {
+        self::numericBitrateRule('audioBitrate', $audioBitrate);
+        self::numericBitrateRule('videoBitrate', $videoBitrate);
     }
 
     /**
@@ -94,6 +110,16 @@ class Validator
             if (!in_array($mode, $modes)) {
                 throw new Exception("Style mode [$mode] is not valid. valid modes: [" . implode(', ', $modes) . "]");
             }
+        }
+    }
+
+    protected static function numericBitrateRule($attribute, $value)
+    {
+        $units = ['k', 'm'];
+        $value = str_ireplace($units, '', $value);
+
+        if (!is_numeric($value)) {
+            throw new Exception($attribute . ' is not a valid bitrate');
         }
     }
 }

@@ -168,70 +168,74 @@ return [
 
     'preserve-files' => false,
 
-    /*
-    |--------------------------------------------------------------------------
-    | FFMPEG
-    |--------------------------------------------------------------------------
-    |
-    | Larupload can detect your ffmpeg binary path from system environment. but you can set it manually
-    | pass from validation.
-    |
-    | Example: [
-    |    'ffmpeg.binaries'  => '/usr/local/bin/ffmpeg',
-    |    'ffprobe.binaries' => '/usr/local/bin/ffprobe',
-    | ]
-    |
-    */
 
-    'ffmpeg' => [],
+    'ffmpeg' => [
+        /*
+        |--------------------------------------------------------------------------
+        | FFMPEG Binaries
+        |--------------------------------------------------------------------------
+        |
+        | Larupload can detect your ffmpeg binary path from system environment. but you can set it manually
+        | pass from validation.
+        |
+        | Example: [
+        |    'ffmpeg.binaries'  => '/usr/local/bin/ffmpeg',
+        |    'ffprobe.binaries' => '/usr/local/bin/ffprobe',
+        | ]
+        |
+        */
 
-    /*
-    |--------------------------------------------------------------------------
-    | FFMPEG Capture Frame
-    |--------------------------------------------------------------------------
-    |
-    | Set Capture frame in second
-    |
-    | example: null, 0.1, 2
-    | When the value is null, larupload will capture a frame from center of video file.
-    |
-    */
+        'ffmpeg-binaries'  => 'ffmpeg',
+        'ffprobe-binaries' => 'ffmpeg',
 
-    'ffmpeg-capture-frame' => null,
+        /*
+        |--------------------------------------------------------------------------
+        | FFMPEG Queue
+        |--------------------------------------------------------------------------
+        |
+        | Sometimes ffmpeg process is very heavy, so you have to queue process and do it in background
+        | For now, queue is available only for manipulate and stream videos.
+        |
+        */
 
-    /*
-    |--------------------------------------------------------------------------
-    | FFMPEG Timeout
-    |--------------------------------------------------------------------------
-    |
-    | Set timeout to control ffmpeg max execution time
-    |
-    */
+        'queue' => false,
 
-    'ffmpeg-timeout' => 60,
+        /*
+        |--------------------------------------------------------------------------
+        | FFMPEG Max Queue Number
+        |--------------------------------------------------------------------------
+        |
+        | Set maximum Larupload instances that currently are queued.
+        | Package Will redirect back an error response if maximum limitation exceeded.
+        | If you want to ignore this feature and queue uploaded files unlimited, just set 0 for ffmpeg-max-queue-num
+        |
+        */
 
-    /*
-    |--------------------------------------------------------------------------
-    | FFMPEG Queue
-    |--------------------------------------------------------------------------
-    |
-    | Sometimes ffmpeg process is very heavy, so you have to queue process and do it in background
-    | For now, queue is available only for manipulate and stream videos.
-    |
-    */
+        'max-queue-num' => 0,
 
-    'ffmpeg-queue' => false,
+        /*
+        |--------------------------------------------------------------------------
+        | FFMPEG Capture Frame
+        |--------------------------------------------------------------------------
+        |
+        | Set Capture frame in second
+        |
+        | example: null, 0.1, 2
+        | When the value is null, larupload will capture a frame from center of video file.
+        |
+        */
 
-    /*
-    |--------------------------------------------------------------------------
-    | FFMPEG Max Queue Number
-    |--------------------------------------------------------------------------
-    |
-    | Set maximum Larupload instances that currently are queued.
-    | Package Will redirect back an error response if maximum limitation exceeded.
-    | If you want to ignore this feature and queue uploaded files unlimited, just set 0 for ffmpeg-max-queue-num
-    |
-    */
+        'capture-frame' => null,
 
-    'ffmpeg-max-queue-num' => 0,
+        /*
+        |--------------------------------------------------------------------------
+        | FFMPEG Timeout
+        |--------------------------------------------------------------------------
+        |
+        | Set timeout to control ffmpeg max execution time
+        |
+        */
+
+        'timeout' => 60,
+    ],
 ];
