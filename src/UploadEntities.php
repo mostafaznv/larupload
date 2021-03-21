@@ -4,12 +4,14 @@ namespace Mostafaznv\Larupload;
 
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Helpers\Validator;
 use Mostafaznv\Larupload\Storage\FFMpeg;
 use Mostafaznv\Larupload\Storage\Image;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UploadEntities
 {
@@ -611,5 +613,31 @@ class UploadEntities
         }
 
         return $path;
+    }
+
+    /**
+     * Download path based on storage driver
+     *
+     * @param string $path
+     * @return RedirectResponse|StreamedResponse|null
+     */
+    protected function storageDownload(string $path)
+    {
+        if (isset($this->file) and $this->file == LARUPLOAD_NULL) {
+            return null;
+        }
+
+        $driver = config("filesystems.disks.{$this->disk}.driver");
+
+        if ($driver == LaruploadEnum::LOCAL_DISK) {
+            return Storage::disk($this->disk)->download($path);
+        }
+
+        $baseUrl = config("filesystems.disks.{$this->disk}.url");
+        if ($baseUrl) {
+            return redirect("$baseUrl/$path");
+        }
+
+        return null;
     }
 }

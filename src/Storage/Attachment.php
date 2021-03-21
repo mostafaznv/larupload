@@ -104,30 +104,10 @@ class Attachment extends UploadEntities
      */
     public function url(string $style = LaruploadEnum::ORIGINAL_FOLDER): ?string
     {
-        $staticStyles = [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER, LaruploadEnum::STREAM_FOLDER];
+        $path = $this->prepareStylePath($style);
 
-        if ($this->id and (in_array($style, $staticStyles) or array_key_exists($style, $this->styles))) {
-            $name = $style == LaruploadEnum::COVER_FOLDER ? $this->output['cover'] : $this->output['name'];
-            $type = $this->output['type'];
-
-            if ($name and $style == LaruploadEnum::STREAM_FOLDER) {
-                if ($type == LaruploadEnum::VIDEO) {
-                    $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
-                    $path = $this->getBasePath($this->id, $style);
-                    $path = "$path/$name";
-
-                    return $this->storageUrl($path);
-                }
-
-                return null;
-            }
-            else if ($name and $this->styleHasFile($style)) {
-                $name = $this->fixExceptionNames($name, $style);
-                $path = $this->getBasePath($this->id, $style);
-                $path = "$path/$name";
-
-                return $this->storageUrl($path);
-            }
+        if ($path) {
+            return $this->storageUrl($path);
         }
 
         return null;
@@ -136,35 +116,15 @@ class Attachment extends UploadEntities
     /**
      * Download attached file
      *
-     * @param Model $model
      * @param string $style
-     * @return null|string
+     * @return RedirectResponse|StreamedResponse|null
      */
-    public function download(Model $model, string $style = 'original')
+    public function download(string $style = 'original')
     {
-        if (in_array($style, ['original', 'cover']) or array_key_exists($style, $this->styles)) {
-            list('name' => $name, 'type' => $type) = $this->getTypeAndName($model, $style);
+        $path = $this->prepareStylePath($style);
 
-            if ($name and $style == 'stream') {
-                if ($type == 'video') {
-                    $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
-                    $path = $this->getPath($model->id, $style);
-                    $path = "$path/$name";
-
-                    return $this->storageDownload($path);
-                }
-                else {
-                    return null;
-                }
-
-            }
-            else if ($name and $this->hasFile($model, $style)) {
-                $name = $this->fixExceptionNames($name, $style);
-                $path = $this->getPath($model->id, $style);
-                $path = "$path/$name";
-
-                return $this->storageDownload($path);
-            }
+        if ($path) {
+            return $this->storageDownload($path);
         }
 
         return null;
@@ -531,68 +491,40 @@ class Attachment extends UploadEntities
     }
 
     /**
-     * Download path based on storage driver
+     * Prepare style path
+     * this function will use to prepare full path of given style to generate url/download response
      *
-     * @param string $path
-     * @return RedirectResponse|StreamedResponse|null
+     * @param string $style
+     * @return string|null
      */
-    protected function storageDownload(string $path)
+    protected function prepareStylePath(string $style): ?string
     {
-        $storage = $this->disk;
+        $staticStyles = [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER, LaruploadEnum::STREAM_FOLDER];
 
-        if ($this->file == LARUPLOAD_NULL) {
-            return null;
-        }
+        if ($this->id and (in_array($style, $staticStyles) or array_key_exists($style, $this->styles))) {
+            $name = $style == LaruploadEnum::COVER_FOLDER ? $this->output['cover'] : $this->output['name'];
+            $type = $this->output['type'];
 
-        if ($storage == 'local') {
-            return Storage::disk($storage)->download($path);
-        }
+            if ($name and $style == LaruploadEnum::STREAM_FOLDER) {
+                if ($type == LaruploadEnum::VIDEO) {
+                    $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
+                    $path = $this->getBasePath($this->id, $style);
+                    $path = "$path/$name";
 
-        $base = config("filesystems.disks.$storage.url");
-        if ($base) {
-            return redirect("$base/$path");
+                    return $path;
+                }
+
+                return null;
+            }
+            else if ($name and $this->styleHasFile($style)) {
+                $name = $this->fixExceptionNames($name, $style);
+                $path = $this->getBasePath($this->id, $style);
+                $path = "$path/$name";
+
+                return $path;
+            }
         }
 
         return null;
-    }
-
-    /**
-     * Retrieve Type and Name of attached style
-     *
-     * @param Model $model
-     * @param $style
-     * @return array
-     */
-    protected function getTypeAndName(Model $model, $style): array
-    {
-        $name = null;
-
-        if ($this->mode == LaruploadEnum::HEAVY_MODE) {
-            $type = $model->{"{$this->name}_file_type"};
-
-            if ($style == 'cover') {
-                $name = $model->{"{$this->name}_file_cover"};
-            }
-            else {
-                $name = $model->{"{$this->name}_file_name"};
-            }
-        }
-        else {
-            $details = json_decode($model->{"{$this->name}_file_meta"});
-            $type = null;
-
-            if ($details and isset($details->type)) {
-                $type = $details->type;
-            }
-
-            if ($style == 'cover' and isset($details->cover) and $details->cover) {
-                $name = $details->cover;
-            }
-            else if (isset($details->name) and $details->name) {
-                $name = $details->name;
-            }
-        }
-
-        return compact('name', 'type');
     }
 }
