@@ -131,6 +131,36 @@ class Attachment extends UploadEntities
     }
 
     /**
+     * Get meta data as an array or object
+     *
+     * @param string|null $key
+     * @return object|string|integer|null
+     */
+    public function meta(string $key = null)
+    {
+        if ($key) {
+            $meta = $this->output;
+
+            if (array_key_exists($key, $meta)) {
+                return $meta[$key];
+            }
+
+            return null;
+        }
+        else {
+            $meta = (object)$this->output;
+
+            if (isset($this->file) and $this->file == LARUPLOAD_NULL) {
+                foreach ($meta as $index => $item) {
+                    $meta->{$index} = null;
+                }
+            }
+
+            return $meta;
+        }
+    }
+
+    /**
      * Get All styles (original, cover and ...) for attached field
      *
      * @param Model $model
@@ -155,49 +185,6 @@ class Attachment extends UploadEntities
         }
 
         return $styles;
-    }
-
-    /**
-     * Get meta data as an array or object
-     *
-     * @param Model $model
-     * @param string $key
-     * @return object|string|integer|null
-     */
-    public function getMeta(Model $model, string $key = null)
-    {
-        if ($this->mode == 'heavy') {
-            $meta = (object)$this->output;
-
-            if ($key) {
-                if (property_exists($meta, $key)) {
-                    return $model->{"{$this->name}_file_$key"};
-                }
-
-                return null;
-            }
-            else {
-                foreach ($meta as $index => $item) {
-                    if ($this->file == LARUPLOAD_NULL) {
-                        $meta->{$index} = null;
-                    }
-                    else {
-                        $meta->{$index} = $model->{"{$this->name}_file_$index"};
-                    }
-                }
-
-                return $meta;
-            }
-        }
-        else {
-            $meta = json_decode($model->{"{$this->name}_file_meta"});
-
-            if ($key) {
-                return property_exists($meta, $key) ? $meta->{$key} : null;
-            }
-
-            return $meta;
-        }
     }
 
     /**

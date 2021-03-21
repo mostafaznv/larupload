@@ -22,6 +22,7 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - return original size of file on json response (toString and toJson)
     // TODO - upload with create() function
     // TODO - get local disk from config - this will end us removing diskToDriver function and fix possible bugs for users who doesn't have disks named local.
+    // TODO - add some comment to help IDEs to show attachment functions
 
     const VERSION = '0.0.9';
 
