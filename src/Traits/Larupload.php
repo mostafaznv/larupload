@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Traits;
 
+use stdClass;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -119,6 +120,31 @@ trait Larupload
         }
 
         return parent::getAttribute($key);
+    }
+
+    /**
+     * Get All styles (original, cover and ...) of entities for this model
+     *
+     * @param string|null $name
+     * @return object|null
+     */
+    public function getAttachments(string $name = null)
+    {
+        if ($name) {
+            if ($attachment = $this->getAttachment($name)) {
+                return $attachment->urls();
+            }
+
+            return null;
+        }
+        else {
+            $attachments = new stdClass();
+            foreach ($this->attachments as $name => $attachment) {
+                $attachments->{$attachment->getName()} = $attachment->urls();
+            }
+
+            return $attachments;
+        }
     }
 
     /**

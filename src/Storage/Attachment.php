@@ -161,27 +161,27 @@ class Attachment extends UploadEntities
     }
 
     /**
-     * Get All styles (original, cover and ...) for attached field
+     * Get url for all styles (original, cover and ...) of current entity
      *
-     * @param Model $model
      * @return object
      */
-    public function getFiles(Model $model): object
+    public function urls(): object
     {
-        $styleNames = array_merge(['original', 'cover'], array_keys($this->styles));
+        $staticStyles = [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER, LaruploadEnum::STREAM_FOLDER];
+        $allStyles = array_merge($staticStyles, array_keys($this->styles));
         $styles = new stdClass();
 
-        foreach ($styleNames as $style) {
-            if ($style == 'cover' and $this->generateCover == false) {
+        foreach ($allStyles as $style) {
+            if ($style == LaruploadEnum::COVER_FOLDER and $this->generateCover == false) {
                 $styles->{$style} = null;
                 continue;
             }
 
-            $styles->{$style} = $this->url($model, $style);
+            $styles->{$style} = $this->url($style);
         }
 
         if ($this->withMeta) {
-            $styles->meta = $this->getMeta($model);
+            $styles->meta = $this->meta();
         }
 
         return $styles;
