@@ -3,19 +3,17 @@
 namespace Mostafaznv\Larupload\Helpers;
 
 /**
- * Str Helper
+ * Slug Helper
  * some functions used from https://github.com/spatie/laravel-sluggable
- *
  */
-class Str
+class Slug
 {
-    protected $lang;
+    protected string $lang;
 
     /**
-     * Init Sluggable
-     * Sluggable constructor
+     * Slug constructor
      *
-     * @param string $lang
+     * @param string|null $lang
      */
     public function __construct(string $lang = null)
     {
@@ -23,12 +21,23 @@ class Str
     }
 
     /**
+     * Make an instance of Slug class
+     *
+     * @param string|null $lang
+     * @return Slug
+     */
+    public static function make(string $lang = null): Slug
+    {
+        return new static($lang);
+    }
+
+    /**
      * Set slug language
      *
-     * @param null $lang
+     * @param string|null $lang
      * @return void
      */
-    protected function setLang($lang = null): void
+    protected function setLang(string $lang = null): void
     {
         if ($lang) {
             $this->lang = $lang;
@@ -46,21 +55,21 @@ class Str
      * @return string Path Safe file name
      *
      */
-    public function generateSlug(string $string, string $separator = '-'): string
+    public function generate(string $string, string $separator = '-'): string
     {
         $string = self::ascii($string, $this->lang);
 
-        // Convert all dashes/underscores into separator
+        // convert all dashes/underscores into separator
         $flip = $separator == '-' ? '_' : '-';
         $string = preg_replace('![' . preg_quote($flip) . ']+!u', $separator, $string);
 
-        // Replace @ with the word 'at'
+        // replace @ with the word 'at'
         $string = str_replace('@', $separator . 'at' . $separator, $string);
 
-        // Remove all characters that are not the separator, letters, numbers, or whitespace.
+        // remove all characters that are not the separator, letters, numbers, or whitespace.
         $string = preg_replace('![^' . preg_quote($separator) . '\pL\pN\s]+!u', '', mb_strtolower($string));
 
-        // Replace all separator characters and whitespace by a single separator
+        // replace all separator characters and whitespace by a single separator
         $string = preg_replace('![' . preg_quote($separator) . '\s]+!u', $separator, $string);
 
         return trim($string, $separator);
@@ -461,24 +470,5 @@ class Str
                 ],
             ];
         }
-    }
-
-    /**
-     * Determine if a given string ends with a given substring
-     * credit: Laravel
-     *
-     * @param string $haystack
-     * @param string|string[] $needles
-     * @return bool
-     */
-    public static function endsWith(string $haystack, $needles): bool
-    {
-        foreach ((array)$needles as $needle) {
-            if (substr($haystack, -strlen($needle)) === (string)$needle) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Mostafaznv\Larupload\Helpers\Slug;
 use Mostafaznv\Larupload\Helpers\Validator;
 use Mostafaznv\Larupload\Storage\FFMpeg;
 use Mostafaznv\Larupload\Storage\Image;
@@ -285,8 +286,8 @@ class UploadEntities
                 $name = pathinfo($name, PATHINFO_FILENAME);
                 $num = rand(0, 9999);
 
-                $str = new \Mostafaznv\Larupload\Helpers\Str($this->lang);
-                $name = $str->generateSlug($name) . "-" . $num;
+                $slug = Slug::make($this->lang)->generate($name);
+                $name = "{$slug}-{$num}";
                 break;
         }
 
