@@ -81,10 +81,10 @@ class Validator
      * Validate stream styles
      *
      * @param string $name
-     * @param array $type
-     * @param string|null $mode
      * @param int|null $width
      * @param int|null $height
+     * @param $audioBitrate
+     * @param $videoBitrate
      * @throws Exception
      */
     public static function streamIsValid(string $name, int $width, int $height, $audioBitrate, $videoBitrate)
@@ -113,6 +113,13 @@ class Validator
         }
     }
 
+    /**
+     * Validate Bitrate
+     *
+     * @param $attribute
+     * @param $value
+     * @throws Exception
+     */
     protected static function numericBitrateRule($attribute, $value)
     {
         $units = ['k', 'm'];

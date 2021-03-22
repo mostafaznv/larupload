@@ -4,6 +4,7 @@ namespace Mostafaznv\Larupload\Database\Schema;
 
 use Illuminate\Database\Schema\Blueprint as BlueprintIlluminate;
 use Illuminate\Support\Facades\DB;
+use Mostafaznv\Larupload\LaruploadEnum;
 use PDO;
 
 class Blueprint
@@ -15,11 +16,11 @@ class Blueprint
      * @param string $name
      * @param string $mode
      */
-    public static function columns(BlueprintIlluminate $table, string $name, string $mode = 'heavy'): void
+    public static function columns(BlueprintIlluminate $table, string $name, string $mode = LaruploadEnum::HEAVY_MODE): void
     {
         $table->string("{$name}_file_name", 255)->nullable();
 
-        if ($mode == 'heavy') {
+        if ($mode == LaruploadEnum::HEAVY_MODE) {
             $table->unsignedInteger("{$name}_file_size")->nullable();
             $table->string("{$name}_file_type", 85)->nullable();
             $table->string("{$name}_file_mime_type", 85)->nullable();
@@ -42,7 +43,7 @@ class Blueprint
      * @param $name
      * @param string $mode
      */
-    public static function dropColumns(BlueprintIlluminate $table, string $name, string $mode = 'heavy'): void
+    public static function dropColumns(BlueprintIlluminate $table, string $name, string $mode = LaruploadEnum::HEAVY_MODE): void
     {
         $columns = static::getDefaultColumns($name, $mode);
         $table->dropColumn($columns);
@@ -55,13 +56,13 @@ class Blueprint
      * @param string $mode
      * @return array
      */
-    public static function getDefaultColumns(string $name, string $mode = 'heavy'): array
+    public static function getDefaultColumns(string $name, string $mode = LaruploadEnum::HEAVY_MODE): array
     {
         $columns = [
             "{$name}_file_name"
         ];
 
-        if ($mode == 'heavy') {
+        if ($mode == LaruploadEnum::HEAVY_MODE) {
             $coverColumns = [
                 "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type", "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration", "{$name}_file_format", "{$name}_file_cover"
             ];
