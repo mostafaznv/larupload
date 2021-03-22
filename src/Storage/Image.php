@@ -305,25 +305,25 @@ class Image
         $mode = isset($style['mode']) ? $style['mode'] : null;
 
         if ($mode) {
-            // Width given, height automatically selected to preserve aspect ratio (landscape).
-            if ($mode == 'landscape' and $width) {
+            // width given, height automatically selected to preserve aspect ratio (landscape).
+            if ($mode == LaruploadEnum::LANDSCAPE_STYLE_MODE and $width) {
                 return [$width, null, 'landscape'];
             }
-            // Height given, width automatically selected to preserve aspect ratio (portrait).
-            else if ($mode == 'portrait' and $height) {
+            // height given, width automatically selected to preserve aspect ratio (portrait).
+            else if ($mode == LaruploadEnum::PORTRAIT_STYLE_MODE and $height) {
                 return [null, $height, 'portrait'];
             }
-            // Resize, then crop.
-            else if ($mode == 'crop' and $height and $width) {
+            // resize, then crop.
+            else if ($mode == LaruploadEnum::CROP_STYLE_MODE and $height and $width) {
                 return [$width, $height, 'crop'];
             }
-            // Resize by exact width/height (does not preserve aspect ratio).
-            else if ($mode == 'exact' and $height and $width) {
+            // resize by exact width/height (does not preserve aspect ratio).
+            else if ($mode == LaruploadEnum::EXACT_STYLE_MODE and $height and $width) {
                 return [$width, $height, 'exact'];
             }
         }
 
-        // Let the script decide the best way to resize.
+        // let the script decide the best way to resize.
         return [$width, $height, 'auto'];
     }
 

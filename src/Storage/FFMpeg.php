@@ -8,7 +8,6 @@ use Mostafaznv\Larupload\Helpers\LaraTools;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
-use Mostafaznv\Larupload\Helpers\Helper;
 use Symfony\Component\Process\Process;
 
 class FFMpeg
@@ -34,7 +33,7 @@ class FFMpeg
      *
      * @var array
      */
-    protected $meta = [];
+    protected array $meta = [];
 
     /**
      * FFMPEG binary address
@@ -143,7 +142,7 @@ class FFMpeg
     {
         $width = isset($style['width']) ? $style['width'] : null;
         $height = isset($style['height']) ? $style['height'] : null;
-        $scale = $width ? $width : ($height ? $height : 850);
+        $scale = $width ? $width : ($height ? $height : self::DEFAULT_SCALE);
         $mode = isset($style['mode']) ? $style['mode'] : null;
         $path = $this->file->getRealPath();
         $saveTo = Storage::disk($this->disk)->path($saveTo);
@@ -154,7 +153,7 @@ class FFMpeg
             $fromSecond = number_format($fromSecond, 1);
         }
 
-        if ($mode == 'crop') {
+        if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
             if ($width and $height) {
                 $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=-1:$scale,crop=$width:$height");
             }
@@ -182,8 +181,8 @@ class FFMpeg
         $height = isset($style['height']) ? $style['height'] : null;
         $mode = isset($style['mode']) ? $style['mode'] : null;
         $scale = $this->calculateScale($mode, $width, $height);
-        $saveTo = Storage::disk($this->disk)->path($saveTo);
         $path = $this->file->getRealPath();
+        $saveTo = Storage::disk($this->disk)->path($saveTo);
 
         if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
             if ($scale) {
