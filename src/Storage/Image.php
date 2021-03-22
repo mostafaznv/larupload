@@ -48,15 +48,32 @@ class Image
     protected string $disk;
 
     /**
+     * Storage local disk
+     *
+     * @var string
+     */
+    protected string $localDisk;
+
+    /**
+     * Specify if driver is local or not
+     *
+     * @var bool
+     */
+    protected bool $driverIsLocal;
+
+    /**
      * Image constructor
      *
      * @param UploadedFile $file
      * @param string $disk
+     * @param string $localDisk
      */
-    public function __construct(UploadedFile $file, string $disk)
+    public function __construct(UploadedFile $file, string $disk, string $localDisk)
     {
         $this->file = $file;
         $this->disk = $disk;
+        $this->localDisk = $localDisk;
+        $this->driverIsLocal = $this->disk == $this->localDisk;
 
         $path = $file->getRealPath();
         $library = config('larupload.image-processing-library');
@@ -94,10 +111,9 @@ class Image
 
         $method = 'resize' . ucfirst($option);
         $saveTo = Storage::disk($this->disk)->path($saveTo);
-        $driver = $this->diskToDriver($this->disk);
         $image = $this->image;
 
-        if ($driver == LaruploadEnum::LOCAL_DRIVER) {
+        if ($this->driverIsLocal) {
             $this->$method($image, $width, $height)->save($saveTo);
         }
         else {

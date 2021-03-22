@@ -201,9 +201,9 @@ class Attachment extends UploadEntities
 
         $this->handleVideoStyles($this->id);
 
-        if ($this->disk != LaruploadEnum::LOCAL_DISK) {
+        if ($this->driverIsNotLocal()) {
             $localPath = $this->getBasePath($this->id, '');
-            Storage::disk(LaruploadEnum::LOCAL_DISK)->deleteDirectory($localPath);
+            Storage::disk($this->localDisk)->deleteDirectory($localPath);
         }
     }
 
@@ -406,12 +406,10 @@ class Attachment extends UploadEntities
 
 
         if ($flag) {
-            $driver = $this->diskToDriver($this->disk);
-
             // save a copy of original file to use it on process ffmpeg queue, then delete it
-            if ($driver != LaruploadEnum::LOCAL_DRIVER) {
+            if ($this->driverIsNotLocal()) {
                 $path = $this->getBasePath($id, LaruploadEnum::ORIGINAL_FOLDER);
-                Storage::disk(LaruploadEnum::LOCAL_DISK)->putFileAs($path, $this->file, $this->output['name']);
+                Storage::disk($this->localDisk)->putFileAs($path, $this->file, $this->output['name']);
             }
 
             $statusId = DB::table('larupload_ffmpeg_queue')->insertGetId([

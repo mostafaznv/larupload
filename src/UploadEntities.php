@@ -62,11 +62,18 @@ class UploadEntities
     protected string $type;
 
     /**
-     * Storage Disk
+     * Storage disk
      *
      * @var string
      */
     protected string $disk;
+
+    /**
+     * Storage local disk
+     *
+     * @var string
+     */
+    protected string $localDisk;
 
     /**
      * Specify that larupload returns meta values on getAttribute or not
@@ -206,6 +213,7 @@ class UploadEntities
         $this->nameKebab = str_replace('_', '-', Str::kebab($name));
         $this->mode = $mode;
         $this->disk = $config['disk'];
+        $this->localDisk = $config['local-disk'];
         $this->withMeta = $config['with-meta'];
         $this->namingMethod = $config['naming-method'];
         $this->lang = $config['lang'];
@@ -241,7 +249,7 @@ class UploadEntities
     protected function ffmpeg(UploadedFile $file = null): FFMpeg
     {
         if (!isset($this->ffmpeg) or $file) {
-            $this->ffmpeg = new FFMpeg($this->file, $this->disk);
+            $this->ffmpeg = new FFMpeg($this->file, $this->disk, $this->localDisk);
         }
 
         return $this->ffmpeg;
@@ -256,7 +264,7 @@ class UploadEntities
     protected function image(UploadedFile $file = null): Image
     {
         if (!isset($this->image) or $file) {
-            $this->image = new Image($file ?? $this->file, $this->disk);
+            $this->image = new Image($file ?? $this->file, $this->disk, $this->localDisk);
         }
 
         return $this->image;
@@ -600,9 +608,7 @@ class UploadEntities
             return null;
         }
 
-        $driver = config("filesystems.disks.{$this->disk}.driver");
-
-        if ($driver == LaruploadEnum::LOCAL_DISK) {
+        if ($this->driverIsLocal()) {
             $url = Storage::disk($this->disk)->url($path);
 
             return url($url);
@@ -628,9 +634,7 @@ class UploadEntities
             return null;
         }
 
-        $driver = config("filesystems.disks.{$this->disk}.driver");
-
-        if ($driver == LaruploadEnum::LOCAL_DISK) {
+        if ($this->driverIsLocal()) {
             return Storage::disk($this->disk)->download($path);
         }
 
@@ -640,5 +644,25 @@ class UploadEntities
         }
 
         return null;
+    }
+
+    /**
+     * Check if disk is using local driver
+     *
+     * @return bool
+     */
+    protected function driverIsLocal(): bool
+    {
+        return $this->disk == $this->localDisk;
+    }
+
+    /**
+     * Check if disk is not using local driver
+     *
+     * @return bool
+     */
+    protected function driverIsNotLocal(): bool
+    {
+        return !$this->driverIsLocal();
     }
 }

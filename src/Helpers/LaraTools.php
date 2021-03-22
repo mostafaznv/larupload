@@ -81,17 +81,6 @@ trait LaraTools
     }
 
     /**
-     * Convert disk name to driver name
-     *
-     * @param string $disk
-     * @return string
-     */
-    public function diskToDriver(string $disk): string
-    {
-        return config("filesystems.disks.$disk.driver");
-    }
-
-    /**
      * Get temp directory
      *
      * @return string

@@ -15,6 +15,21 @@ return [
 
     'disk' => 'local',
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Storage Local Disk
+    |--------------------------------------------------------------------------
+    |
+    | Larupload needs to know your local disk name. when your default disk uses
+    | external drivers like sftp, for some reasons larupload needs to use local
+    | disk too.
+    | notice: in most cases, your local disk and default one are the same
+    |
+    */
+
+    'local-disk' => 'local',
+
     /*
     |--------------------------------------------------------------------------
     | Mode

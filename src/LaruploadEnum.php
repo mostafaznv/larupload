@@ -34,9 +34,4 @@ class LaruploadEnum
     const ORIGINAL_FOLDER = 'original';
     const COVER_FOLDER    = 'cover';
     const STREAM_FOLDER   = 'stream';
-
-
-    const LOCAL_DRIVER = 'local';
-
-    const LOCAL_DISK = 'local';
 }

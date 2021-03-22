@@ -29,6 +29,20 @@ class FFMpeg
     protected string $disk;
 
     /**
+     * Storage local disk
+     *
+     * @var string
+     */
+    protected string $localDisk;
+
+    /**
+     * Specify if driver is local or not
+     *
+     * @var bool
+     */
+    protected bool $driverIsLocal;
+
+    /**
      * Video Metadata
      *
      * @var array
@@ -69,11 +83,14 @@ class FFMpeg
      *
      * @param UploadedFile $file
      * @param string $disk
+     * @param string $localDisk
      */
-    public function __construct(UploadedFile $file, string $disk)
+    public function __construct(UploadedFile $file, string $disk, string $localDisk)
     {
         $this->file = $file;
         $this->disk = $disk;
+        $this->localDisk = $localDisk;
+        $this->driverIsLocal = $this->disk == $this->localDisk;
 
         $config = config('larupload.ffmpeg');
 
@@ -222,11 +239,11 @@ class FFMpeg
             $videoBitRate = $style['bitrate']['video'];
             $styleBasePath = "$basePath/$name-convert";
 
-            Storage::disk(LaruploadEnum::LOCAL_DISK)->makeDirectory($styleBasePath);
-            $saveTo = Storage::disk(LaruploadEnum::LOCAL_DISK)->path("$styleBasePath/$name.mp4");
+            Storage::disk($this->localDisk)->makeDirectory($styleBasePath);
+            $saveTo = Storage::disk($this->localDisk)->path("$styleBasePath/$name.mp4");
 
             $cmd = escapeshellcmd("{$this->ffmpeg} -y -i $path -s {$width}x{$height} -y -strict experimental -acodec aac -b:a $audioBitRate -ac 2 -ar 48000 -vcodec libx264 -vprofile main -g 48 -b:v $videoBitRate -threads 64");
-            $this->run($cmd, $saveTo, LaruploadEnum::LOCAL_DISK);
+            $this->run($cmd, $saveTo, $this->localDisk);
 
             $converted[$name] = [
                 'path'      => $styleBasePath,
@@ -250,7 +267,7 @@ class FFMpeg
             $playlist .= "#EXT-X-STREAM-INF:BANDWIDTH={$value['bandwidth']},RESOLUTION={$value['width']}x{$value['height']}\n";
             $playlist .= "$name/$m3u8\n";
 
-            Storage::disk(LaruploadEnum::LOCAL_DISK)->deleteDirectory($value['path']);
+            Storage::disk($this->localDisk)->deleteDirectory($value['path']);
         }
 
         if (count($converted)) {
@@ -318,9 +335,8 @@ class FFMpeg
     protected function run(string $cmd, string $saveTo, string $disk = null): void
     {
         $disk = $disk ?? $this->disk;
-        $driver = $this->diskToDriver($disk);
 
-        if ($driver == LaruploadEnum::LOCAL_DRIVER) {
+        if ($this->driverIsLocal) {
             $cmd = $this->cmd("$cmd $saveTo");
             $process = new Process($cmd);
             $process->setTimeout($this->timeout);
@@ -367,9 +383,7 @@ class FFMpeg
      */
     protected function streamRun(string $cmd, string $streamPath): void
     {
-        $driver = $this->diskToDriver($this->disk);
-
-        if ($driver == LaruploadEnum::LOCAL_DRIVER) {
+        if ($this->driverIsLocal) {
             $cmd = $this->cmd(str_replace(':stream-path', $streamPath, $cmd));
 
             $process = new Process($cmd);
@@ -387,7 +401,7 @@ class FFMpeg
 
             $temp = $name . '-' . time();
 
-            Storage::disk(LaruploadEnum::LOCAL_DISK)->makeDirectory($temp);
+            Storage::disk($this->localDisk)->makeDirectory($temp);
 
             $cmd = $this->cmd(str_replace(':stream-path', $temp, $cmd));
 
@@ -396,7 +410,7 @@ class FFMpeg
             $process->run();
 
             if ($process->isSuccessful()) {
-                $files = Storage::disk(LaruploadEnum::LOCAL_DISK)->files($temp);
+                $files = Storage::disk($this->localDisk)->files($temp);
 
                 foreach ($files as $file) {
                     $fileObject = new File($file);
@@ -406,7 +420,7 @@ class FFMpeg
                     unset($fileObject);
                 }
 
-                Storage::disk(LaruploadEnum::LOCAL_DISK)->deleteDirectory($temp);
+                Storage::disk($this->localDisk)->deleteDirectory($temp);
 
                 return;
             }
