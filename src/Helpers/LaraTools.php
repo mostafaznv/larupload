@@ -4,7 +4,6 @@ namespace Mostafaznv\Larupload\Helpers;
 
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\LaruploadEnum;
-use Illuminate\Support\Str;
 
 trait LaraTools
 {

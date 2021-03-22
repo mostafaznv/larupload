@@ -11,61 +11,61 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
 use Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished;
-use Mostafaznv\Larupload\Storage\Attachment;
 
 class ProcessFFMpeg implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $statusId;
-    protected $id;
-    protected $name;
-    protected $model;
-    protected $folder;
-    protected $options;
-    protected $meta;
+    protected int    $statusId;
+    protected int    $id;
+    protected string $name;
+    protected string $model;
 
 
-    public function __construct($statusId, $id, $name, $model, $folder, $options, $meta)
+    public function __construct(int $statusId, int $id, string $name, string $model)
     {
         $this->statusId = $statusId;
         $this->id = $id;
         $this->name = $name;
         $this->model = $model;
-        $this->folder = $folder;
-        $this->options = $options;
-        $this->meta = $meta;
     }
 
     public function handle()
     {
-        $this->updateStatus(['started_at' => now()]);
+        $this->updateStatus(false, true);
 
         try {
-            $attachment = new Attachment($this->name, $this->folder, $this->options);
-            $attachment->handleFFMpegQueue($this->id, $this->meta);
-        }
-        catch (FileNotFoundException $e) {
-            $this->updateStatus(['finished_at' => now()]);
-        }
-        catch (Exception $e) {
-            $this->updateStatus(['finished_at' => now()]);
-        }
+            $class = $this->model;
+            $model = $class::where('id', $this->id)->first();
 
-        $this->updateStatus(['status' => 1, 'finished_at' => now()]);
+            $model->{$this->name}->handleFFMpegQueue();
+
+            $this->updateStatus(true, false);
+        }
+        catch (FileNotFoundException | Exception $e) {
+            $this->updateStatus(false, false, $e->getMessage());
+        }
     }
 
     /**
      * Update LaruploadFFMpegQueue table
      *
-     * @param $data
+     * @param bool $status
+     * @param bool $isStarted
+     * @param string|null $message
      * @return int
      */
-    protected function updateStatus($data)
+    protected function updateStatus(bool $status, bool $isStarted, string $message = null): int
     {
-        $result = DB::table('larupload_ffmpeg_queue')->where('id', $this->statusId)->update($data);
+        $dateColumn = $isStarted ? 'started_at' : 'finished_at';
 
-        if ($result and isset($data['status']) and $data['status']) {
+        $result = DB::table('larupload_ffmpeg_queue')->where('id', $this->statusId)->update([
+            'status'    => $status,
+            'message'   => $message,
+            $dateColumn => now(),
+        ]);
+
+        if ($result and $status) {
             event(new LaruploadFFMpegQueueFinished($this->id, $this->model, $this->statusId));
         }
 

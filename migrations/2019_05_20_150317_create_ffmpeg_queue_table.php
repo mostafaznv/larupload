@@ -13,6 +13,7 @@ class CreateFfmpegQueueTable extends Migration
             $table->unsignedInteger('record_id');
             $table->string('record_class', 50);
             $table->boolean('status')->default(0);
+            $table->text('message')->nullable();
 
             $table->timestamp('created_at')->nullable();
             $table->timestamp('started_at')->nullable();

@@ -190,34 +190,20 @@ class Attachment extends UploadEntities
     /**
      * Handle FFMpeg queue on running ffmpeg queue:work
      *
-     * @param $id
-     * @param array $meta
      * @throws Exception
      */
-    public function handleFFMpegQueue($id, array $meta): void
+    public function handleFFMpegQueue(): void
     {
-        $shouldDeletePath = null;
-        $path = $this->getPath($id, 'original');
+        $path = $this->getBasePath($this->id, LaruploadEnum::ORIGINAL_FOLDER);
+        $path = Storage::disk($this->disk)->path("$path/{$this->output['name']}");
+        $this->file = new UploadedFile($path, $this->output['name'], null, null, true);
+        $this->type = $this->getFileType($this->file);
 
-        if ($this->disk == 'local') {
-            $path = Storage::disk($this->disk)->path("$path/{$meta['name']}");
-        }
-        else {
-            $shouldDeletePath = $this->getPath($id, '');
+        $this->handleVideoStyles($this->id);
 
-            $path = Storage::disk('local')->path("$path/{$meta['name']}");
-        }
-
-        $file = new UploadedFile($path, $meta['name'], $meta['mime_type']);
-        $this->file = $file;
-
-        $this->type = $this->getFileType($file);
-        $this->setBasicDetails();
-
-        $this->handleVideoStyles($id, $file);
-
-        if ($shouldDeletePath) {
-            Storage::disk('local')->deleteDirectory($shouldDeletePath);
+        if ($this->disk != LaruploadEnum::LOCAL_DISK) {
+            $localPath = $this->getBasePath($this->id, '');
+            Storage::disk(LaruploadEnum::LOCAL_DISK)->deleteDirectory($localPath);
         }
     }
 
@@ -285,7 +271,7 @@ class Attachment extends UploadEntities
         $path = $this->getBasePath($id, LaruploadEnum::COVER_FOLDER);
         $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME);
         $format = $this->type == LaruploadEnum::IMAGE ? ($this->output['format'] == 'svg' ? 'png' : $this->output['format']) : 'jpg';
-        $name = "{$fileName}.$format";
+        $name = "{$fileName}.{$format}";
 
         // in case cover uploaded by user
         if ($this->fileIsSetAndHasValue($this->cover) and ($this->mimeToType($this->cover->getMimeType()) == LaruploadEnum::IMAGE)) {
@@ -359,10 +345,40 @@ class Attachment extends UploadEntities
                     $this->initializeFFMpegQueue($id, $class);
                 }
                 else {
-                    $this->handleVideoStyles($id, $this->file);
+                    $this->handleVideoStyles($id);
                 }
 
                 break;
+        }
+    }
+
+    /**
+     * Handle styles for videos
+     *
+     * @param $id
+     * @throws Exception
+     */
+    protected function handleVideoStyles($id): void
+    {
+        foreach ($this->styles as $name => $style) {
+            if ((count($style['type']) and !in_array(LaruploadEnum::VIDEO, $style['type']))) {
+                continue;
+            }
+
+            $path = $this->getBasePath($id, $name);
+            Storage::disk($this->disk)->makeDirectory($path);
+            $saveTo = "{$path}/{$this->output['name']}";
+
+            $this->ffmpeg()->manipulate($style, $saveTo);
+        }
+
+        if (count($this->streams)) {
+            $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME) . '.m3u8';
+
+            $path = $this->getBasePath($id, LaruploadEnum::STREAM_FOLDER);
+            Storage::disk($this->disk)->makeDirectory($path);
+
+            $this->ffmpeg()->stream($this->streams, $path, $fileName);
         }
     }
 
@@ -404,43 +420,12 @@ class Attachment extends UploadEntities
                 'created_at'   => now(),
             ]);
 
-            ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class, $this->folder, $this->injectedOptions, $this->output)->delay(now()->addSeconds(1));
+            ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class)->delay(now()->addSeconds(1));
         }
         else {
             throw new HttpResponseException(redirect(URL::previous())->withErrors([
                 'ffmpeg_queue_max_num' => trans('larupload::messages.max-queue-num-exceeded')
             ]));
-        }
-    }
-
-    /**
-     * Handle styles for videos
-     *
-     * @param $id
-     * @param UploadedFile $file
-     * @throws Exception
-     */
-    protected function handleVideoStyles($id, UploadedFile $file): void
-    {
-        foreach ($this->styles as $name => $style) {
-            if ((count($style['type']) and !in_array(LaruploadEnum::VIDEO, $style['type']))) {
-                continue;
-            }
-
-            $path = $this->getBasePath($id, $name);
-            Storage::disk($this->disk)->makeDirectory($path);
-            $saveTo = "{$path}/{$this->output['name']}";
-
-            $this->ffmpeg()->manipulate($style, $saveTo);
-        }
-
-        if (count($this->streams)) {
-            $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME) . '.m3u8';
-
-            $path = $this->getBasePath($id, LaruploadEnum::STREAM_FOLDER);
-            Storage::disk($this->disk)->makeDirectory($path);
-
-            $this->ffmpeg()->stream($this->streams, $path, $fileName);
         }
     }
 
