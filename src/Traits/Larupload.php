@@ -91,11 +91,19 @@ trait Larupload
 
     /**
      * Override toArray method
+     *
      * @return array
      */
     public function toArray(): array
     {
-        return $this->hideLaruploadColumns(parent::toArray());
+        $array = $this->hideLaruploadColumns(parent::toArray());
+
+        // attach attachment entities to array/json response
+        foreach ($this->getAttachments() as $name => $attachment) {
+            $array[$name] = $attachment;
+        }
+
+        return $array;
     }
 
     /**
