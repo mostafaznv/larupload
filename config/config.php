@@ -74,6 +74,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Hide Table Columns
+    |--------------------------------------------------------------------------
+    |
+    | Larupload creates multiple columns to work with them. these columns are
+    | useless in application-level and even api-level.
+    | by default, larupload will hide them from toArray and toJson.
+    |
+    | Example: true, false
+    |
+    */
+
+    'hide-table-columns' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Naming Method
     |--------------------------------------------------------------------------
     |

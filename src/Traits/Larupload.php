@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Traits;
 
+use Mostafaznv\Larupload\LaruploadEnum;
 use stdClass;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -10,7 +11,14 @@ use Mostafaznv\Larupload\Models\LaruploadFFMpegQueue;
 
 trait Larupload
 {
+    /**
+     * Attachment Entities
+     *
+     * @var array
+     */
     protected array $attachments = [];
+
+    protected bool $hideLaruploadColumns;
 
     /**
      * Holds the hash value for the current LARUPLOAD_NULL constant
@@ -31,6 +39,8 @@ trait Larupload
      */
     protected function initializeLarupload()
     {
+        $this->hideLaruploadColumns = config('larupload.hide-table-columns');
+
         $this->attachments = $this->attachments();
         $table = $this->getTable();
 
@@ -77,6 +87,15 @@ trait Larupload
                 $attachment->setOutput($model);
             }
         });
+    }
+
+    /**
+     * Override toArray method
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return $this->hideLaruploadColumns(parent::toArray());
     }
 
     /**
@@ -139,7 +158,7 @@ trait Larupload
         }
         else {
             $attachments = new stdClass();
-            foreach ($this->attachments as $name => $attachment) {
+            foreach ($this->attachments as $attachment) {
                 $attachments->{$attachment->getName(true)} = $attachment->urls();
             }
 
@@ -162,6 +181,40 @@ trait Larupload
         }
 
         return null;
+    }
+
+    /**
+     * Hide larupload columns
+     *
+     * @param array $array
+     * @return array
+     */
+    protected function hideLaruploadColumns(array $array): array
+    {
+        if ($this->hideLaruploadColumns) {
+            foreach ($this->attachments as $attachment) {
+                $name = $attachment->getName();
+
+                unset($array["{$name}_file_name"]);
+
+                if ($attachment->getMode() == LaruploadEnum::HEAVY_MODE) {
+                    unset($array["{$name}_file_size"]);
+                    unset($array["{$name}_file_type"]);
+                    unset($array["{$name}_file_mime_type"]);
+                    unset($array["{$name}_file_width"]);
+                    unset($array["{$name}_file_height"]);
+                    unset($array["{$name}_file_duration"]);
+                    unset($array["{$name}_file_dominant_color"]);
+                    unset($array["{$name}_file_format"]);
+                    unset($array["{$name}_file_cover"]);
+                }
+                else {
+                    unset($array["{$name}_file_meta"]);
+                }
+            }
+        }
+
+        return $array;
     }
 
     /**

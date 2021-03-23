@@ -8,7 +8,6 @@ use Mostafaznv\Larupload\Database\Schema\Blueprint;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - return original size of file on json response (toString and toJson)
     // TODO - automatically attach file into model after toArray/toJson
 
     // TODO - upload with url

@@ -322,6 +322,16 @@ class UploadEntities
     }
 
     /**
+     * Mode Accessor
+     *
+     * @return string
+     */
+    public function getMode(): string
+    {
+        return $this->mode;
+    }
+
+    /**
      * Set model attributes for current entity
      *
      * @param Model $model
