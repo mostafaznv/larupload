@@ -23,6 +23,6 @@ class CreateFfmpegQueueTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('ffmpeg_queue');
+        Schema::dropIfExists('larupload_ffmpeg_queue');
     }
 }
