@@ -146,11 +146,11 @@ class Image
      * image being resized to a square).
      *
      * @param ImageInterface $image
-     * @param int $width
-     * @param int $height
+     * @param int|null $width
+     * @param int|null $height
      * @return ImageInterface
      */
-    protected function resizeAuto(ImageInterface $image, int $width, int $height): ImageInterface
+    protected function resizeAuto(ImageInterface $image, int $width = null, int $height = null): ImageInterface
     {
         $size = $this->image->getSize();
         $originalWidth = $size->getWidth();
@@ -208,11 +208,11 @@ class Image
      *
      * @param ImageInterface $image
      * @param int $width - The image's new width.
-     * @param int $height - The image's new height.
+     * @param int|null $height - The image's new height.
      *
      * @return ImageInterface
      */
-    protected function resizeLandscape(ImageInterface $image, int $width, int $height): ImageInterface
+    protected function resizeLandscape(ImageInterface $image, int $width, int $height = null): ImageInterface
     {
         $optimalHeight = $this->getSizeByFixedWidth($image, $width);
         $dimensions = $image->getSize()->widen($width)->heighten($optimalHeight);
@@ -225,12 +225,12 @@ class Image
      * Resize an image as a portrait (height fixed).
      *
      * @param ImageInterface $image
-     * @param int $width - The image's new width.
+     * @param int|null $width - The image's new width.
      * @param int $height - The image's new height.
      *
      * @return ImageInterface
      */
-    protected function resizePortrait(ImageInterface $image, int $width, int $height): ImageInterface
+    protected function resizePortrait(ImageInterface $image, int $width = null, int $height): ImageInterface
     {
         $optimalWidth = $this->getSizeByFixedHeight($image, $height);
         $dimensions = $image->getSize()->heighten($height)->widen($optimalWidth);
