@@ -8,21 +8,22 @@ use Mostafaznv\Larupload\Database\Schema\Blueprint;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
+    // TODO - return original size of file on json response (toString and toJson)
     // TODO - automatically attach file into model after toArray/toJson
-    // TODO - update m3u8 catalog
-    // TODO - Return Meta Object on Light Mode when attached file is null
+
     // TODO - upload with url
     // TODO - add an ability to upload files without orm.
-    // TODO - dpi for resized/cropped images and videos
-    // TODO - test s3
+    // TODO - upload with create() function
+
+    // TODO - update m3u8 catalog
     // TODO - import php-ffmpeg package into the project [NOTICE: wait for a stable version]
     // TODO - add an ability to custom ffmpeg scripts (video and stream)
     // TODO - check possibility of change video ffmpeg script to streaming one (none crop mode).
+
+    // TODO - dpi for resized/cropped images and videos
+    // TODO - test s3
     // TODO - mix with download php-x-sendfile
-    // TODO - return original size of file on json response (toString and toJson)
-    // TODO - upload with create() function
-    // TODO - get local disk from config - this will end us removing diskToDriver function and fix possible bugs for users who doesn't have disks named local.
-    // TODO - add some comment to help IDEs to show attachment functions
+    // TODO - add some comments to help IDEs to show attachment functions
 
     const VERSION = '0.0.9';
 

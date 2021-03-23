@@ -15,7 +15,6 @@ return [
 
     'disk' => 'local',
 
-
     /*
     |--------------------------------------------------------------------------
     | Storage Local Disk
@@ -57,6 +56,21 @@ return [
     */
 
     'with-meta' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Camel Case Response
+    |--------------------------------------------------------------------------
+    |
+    | By default, larupload returns all meta keys, entity names and any other
+    | responses snaked case. with enabling this option, we return them came-
+    | cased
+    |
+    | Example: true, false
+    |
+    */
+
+    'camel-case-response' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -182,7 +196,6 @@ return [
     */
 
     'preserve-files' => false,
-
 
     'ffmpeg' => [
         /*

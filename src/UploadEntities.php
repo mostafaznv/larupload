@@ -83,6 +83,13 @@ class UploadEntities
     protected bool $withMeta;
 
     /**
+     * Specify that larupload returns responses camel-cased or not
+     *
+     * @var bool
+     */
+    protected bool $camelCaseResponse;
+
+    /**
      * Method that larupload should use to naming uploaded files
      *
      * @var string
@@ -215,6 +222,7 @@ class UploadEntities
         $this->disk = $config['disk'];
         $this->localDisk = $config['local-disk'];
         $this->withMeta = $config['with-meta'];
+        $this->camelCaseResponse = $config['camel-case-response'];
         $this->namingMethod = $config['naming-method'];
         $this->lang = $config['lang'];
         $this->imageProcessingLibrary = $config['image-processing-library'];
@@ -305,11 +313,12 @@ class UploadEntities
     /**
      * Name Accessor
      *
+     * @param bool $withNameStyle
      * @return string
      */
-    public function getName(): string
+    public function getName(bool $withNameStyle = false): string
     {
-        return $this->name;
+        return $withNameStyle ? $this->nameStyle($this->name) : $this->name;
     }
 
     /**
@@ -664,5 +673,37 @@ class UploadEntities
     protected function driverIsNotLocal(): bool
     {
         return !$this->driverIsLocal();
+    }
+
+    /**
+     * Prepare output array to response
+     *
+     * @return object
+     */
+    protected function outputToObject(): object
+    {
+        $output = (object)$this->output;
+
+        if ($this->camelCaseResponse) {
+            $output->mimeType = $output->mime_type;
+            $output->dominantColor = $output->dominant_color;
+
+            unset($output->mime_type);
+            unset($output->dominant_color);
+        }
+
+        return $output;
+    }
+
+    /**
+     * Name Style
+     * check if we should convert name to camel-case style
+     *
+     * @param $name
+     * @return string
+     */
+    protected function nameStyle($name): string
+    {
+        return $this->camelCaseResponse ? Str::camel($name) : $name;
     }
 }

@@ -58,12 +58,6 @@ class Attachment extends UploadEntities
         if (isset($this->file)) {
             if ($this->file == LARUPLOAD_NULL) {
                 $this->clean($model->id);
-
-                if ($this->mode == LaruploadEnum::LIGHT_MODE) {
-                    foreach ($this->output as $key => $value) {
-                        $this->output[$key] = null;
-                    }
-                }
             }
             else {
                 if (!$this->keepOldFiles) {
@@ -147,17 +141,8 @@ class Attachment extends UploadEntities
 
             return null;
         }
-        else {
-            $meta = (object)$this->output;
 
-            if (isset($this->file) and $this->file == LARUPLOAD_NULL) {
-                foreach ($meta as $index => $item) {
-                    $meta->{$index} = null;
-                }
-            }
-
-            return $meta;
-        }
+        return $this->outputToObject();
     }
 
     /**
@@ -177,7 +162,7 @@ class Attachment extends UploadEntities
                 continue;
             }
 
-            $styles->{$style} = $this->url($style);
+            $styles->{$this->nameStyle($style)} = $this->url($style);
         }
 
         if ($this->withMeta) {
@@ -435,8 +420,11 @@ class Attachment extends UploadEntities
     protected function clean($id): void
     {
         $path = $this->getBasePath($id);
-
         Storage::disk($this->disk)->deleteDirectory($path);
+
+        foreach ($this->output as $key => $value) {
+            $this->output[$key] = null;
+        }
     }
 
     /**

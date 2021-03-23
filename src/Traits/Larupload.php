@@ -140,7 +140,7 @@ trait Larupload
         else {
             $attachments = new stdClass();
             foreach ($this->attachments as $name => $attachment) {
-                $attachments->{$attachment->getName()} = $attachment->urls();
+                $attachments->{$attachment->getName(true)} = $attachment->urls();
             }
 
             return $attachments;
