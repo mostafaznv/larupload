@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Helpers;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 use Mostafaznv\Larupload\LaruploadEnum;
 
 trait LaraTools
@@ -63,6 +64,8 @@ trait LaraTools
         $path = "{$this->folder}/$id/{$this->nameKebab}";
 
         if ($folder) {
+            $folder = strtolower(str_replace('_', '-', trim($folder)));
+
             return "$path/$folder";
         }
 
