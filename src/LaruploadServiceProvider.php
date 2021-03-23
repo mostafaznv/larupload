@@ -8,8 +8,6 @@ use Mostafaznv\Larupload\Database\Schema\Blueprint;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - automatically attach file into model after toArray/toJson
-
     // TODO - upload with url
     // TODO - add an ability to upload files without orm.
     // TODO - upload with create() function
