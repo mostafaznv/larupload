@@ -161,6 +161,10 @@ class Attachment extends UploadEntities
                 $styles->{$style} = null;
                 continue;
             }
+            else if ($style == LaruploadEnum::STREAM_FOLDER and empty($this->streams)) {
+                unset($styles->{$style});
+                continue;
+            }
 
             $styles->{$this->nameStyle($style)} = $this->url($style);
         }
