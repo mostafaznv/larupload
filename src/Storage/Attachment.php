@@ -30,8 +30,6 @@ class Attachment extends UploadEntities
      */
     public function setUploadedFile($file, $cover = null): bool
     {
-        // todo - accept urls and convert them to file object (checking possibility to handle this feature with queue)
-
         if (($this->fileIsSetAndHasValue($file) or $file == LARUPLOAD_NULL) and ($this->fileIsSetAndHasValue($cover) or $cover == null)) {
             $this->file = $file;
 
@@ -309,9 +307,10 @@ class Attachment extends UploadEntities
      *
      * @param int $id
      * @param string $class
+     * @param bool $standalone
      * @throws Exception
      */
-    protected function handleStyles(int $id, string $class): void
+    protected function handleStyles(int $id, string $class, bool $standalone = false): void
     {
         switch ($this->type) {
             case LaruploadEnum::IMAGE:
@@ -331,7 +330,7 @@ class Attachment extends UploadEntities
 
             case 'video':
                 if ($this->ffmpegQueue) {
-                    $this->initializeFFMpegQueue($id, $class);
+                    $this->initializeFFMpegQueue($id, $class, $standalone);
                 }
                 else {
                     $this->handleVideoStyles($id);
@@ -376,8 +375,9 @@ class Attachment extends UploadEntities
      *
      * @param int $id
      * @param string $class
+     * @param bool $standalone
      */
-    protected function initializeFFMpegQueue(int $id, string $class)
+    protected function initializeFFMpegQueue(int $id, string $class, bool $standalone = false)
     {
         $maxQueueNum = $this->ffmpegMaxQueueNum;
         $flag = false;
@@ -407,7 +407,18 @@ class Attachment extends UploadEntities
                 'created_at'   => now(),
             ]);
 
-            ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class)->delay(now()->addSeconds(1));
+            $serializedClass = null;
+            if ($standalone) {
+                unset($this->file);
+                unset($this->cover);
+                unset($this->image);
+                unset($this->ffmpeg);
+
+                $serializedClass = base64_encode(serialize($this));
+            }
+
+
+            ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class, $serializedClass)->delay(now()->addSeconds(1));
         }
         else {
             throw new HttpResponseException(redirect(URL::previous())->withErrors([

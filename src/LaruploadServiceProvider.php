@@ -8,9 +8,15 @@ use Mostafaznv\Larupload\Database\Schema\Blueprint;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - upload with url
-    // TODO - add an ability to upload files without orm.
+    // TODO - standalone delete file
+    // TODO - standalone update cover
+    // TODO - standalone delete cover
+
+
     // TODO - upload with create() function
+
+    // TODO - update cover
+    // TODO - delete cover
 
     // TODO - update m3u8 catalog
     // TODO - import php-ffmpeg package into the project [NOTICE: wait for a stable version]
@@ -44,11 +50,11 @@ class LaruploadServiceProvider extends ServiceProvider
 
     protected function registerMacros()
     {
-        BlueprintIlluminate::macro('upload', function(string $name, string $mode = 'heavy') {
+        BlueprintIlluminate::macro('upload', function(string $name, string $mode = LaruploadEnum::HEAVY_MODE) {
             Blueprint::columns($this, $name, $mode);
         });
 
-        BlueprintIlluminate::macro('dropUpload', function(string $name, string $mode = 'heavy') {
+        BlueprintIlluminate::macro('dropUpload', function(string $name, string $mode = LaruploadEnum::HEAVY_MODE) {
             Blueprint::dropColumns($this, $name, $mode);
         });
     }

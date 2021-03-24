@@ -24,6 +24,13 @@ class UploadEntities
     protected UploadedFile $file;
 
     /**
+     * Cover Object
+     *
+     * @var UploadedFile|mixed
+     */
+    protected $cover;
+
+    /**
      * Name of uploadable entity
      *
      * @var string
@@ -446,14 +453,14 @@ class UploadEntities
      * Set style
      *
      * @param string $name
-     * @param array $type
-     * @param string|null $mode
      * @param int|null $width
      * @param int|null $height
+     * @param string|null $mode
+     * @param array $type
      * @return $this
      * @throws Exception
      */
-    public function style(string $name, array $type = [], string $mode = null, int $width = null, int $height = null): UploadEntities
+    public function style(string $name, int $width = null, int $height = null, string $mode = null, array $type = []): UploadEntities
     {
         Validator::styleIsValid($name, $type, $mode, $width, $height);
 

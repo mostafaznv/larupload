@@ -3,7 +3,6 @@
 namespace Mostafaznv\Larupload\Helpers;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Str;
 use Mostafaznv\Larupload\LaruploadEnum;
 
 trait LaraTools
@@ -61,7 +60,8 @@ trait LaraTools
      */
     protected function getBasePath(int $id, string $folder = null): string
     {
-        $path = "{$this->folder}/$id/{$this->nameKebab}";
+        $path = $this->mode == LaruploadEnum::STANDALONE_MODE ? "{$this->folder}/{$this->nameKebab}" : "{$this->folder}/$id/{$this->nameKebab}";
+        $path = trim($path, '/');
 
         if ($folder) {
             $folder = strtolower(str_replace('_', '-', trim($folder)));
@@ -88,7 +88,7 @@ trait LaraTools
      *
      * @return string
      */
-    public function tempDir(): string
+    protected function tempDir(): string
     {
         if (ini_get('upload_tmp_dir')) {
             return ini_get('upload_tmp_dir');
@@ -107,7 +107,7 @@ trait LaraTools
      * @param string $dir
      * @return array
      */
-    public function splitPath(string $dir): array
+    protected function splitPath(string $dir): array
     {
         $path = dirname($dir);
         $name = pathinfo($dir, PATHINFO_BASENAME);

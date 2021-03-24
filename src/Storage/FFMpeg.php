@@ -128,9 +128,9 @@ class FFMpeg
                 if ($output !== null) {
                     $stream = $output->streams[0];
 
-                    $meta['width'] = (int)$stream->width;
-                    $meta['height'] = (int)$stream->height;
-                    $meta['duration'] = (int)$stream->duration;
+                    $meta['width'] = isset($stream->width) ? (int)$stream->width : 0;
+                    $meta['height'] = isset($stream->height) ? (int)$stream->height : 0;
+                    $meta['duration'] = isset($stream->duration) ? (int)$stream->duration : 0;
                 }
                 else {
                     $process->addErrorOutput('ffprobe output is null');

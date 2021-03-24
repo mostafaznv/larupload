@@ -4,8 +4,9 @@ namespace Mostafaznv\Larupload;
 
 class LaruploadEnum
 {
-    const HEAVY_MODE = 'heavy';
-    const LIGHT_MODE = 'light';
+    const HEAVY_MODE      = 'heavy';
+    const LIGHT_MODE      = 'light';
+    const STANDALONE_MODE = 'standalone';
 
     const SLUG_NAMING_METHOD      = 'slug';
     const HASH_FILE_NAMING_METHOD = 'hash_file';

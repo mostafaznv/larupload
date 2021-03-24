@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
 use Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished;
+use Mostafaznv\Larupload\Larupload;
 
 class ProcessFFMpeg implements ShouldQueue
 {
@@ -20,14 +21,19 @@ class ProcessFFMpeg implements ShouldQueue
     protected int    $id;
     protected string $name;
     protected string $model;
+    protected Larupload $standalone;
 
 
-    public function __construct(int $statusId, int $id, string $name, string $model)
+    public function __construct(int $statusId, int $id, string $name, string $model, string $standalone = null)
     {
         $this->statusId = $statusId;
         $this->id = $id;
         $this->name = $name;
         $this->model = $model;
+
+        if ($standalone) {
+            $this->standalone = unserialize(base64_decode($standalone));
+        }
     }
 
     public function handle()
@@ -35,10 +41,15 @@ class ProcessFFMpeg implements ShouldQueue
         $this->updateStatus(false, true);
 
         try {
-            $class = $this->model;
-            $model = $class::where('id', $this->id)->first();
+            if (isset($this->standalone) and $this->standalone) {
+                $this->standalone->handleFFMpegQueue();
+            }
+            else {
+                $class = $this->model;
+                $model = $class::where('id', $this->id)->first();
 
-            $model->{$this->name}->handleFFMpegQueue();
+                $model->{$this->name}->handleFFMpegQueue();
+            }
 
             $this->updateStatus(true, false);
         }
