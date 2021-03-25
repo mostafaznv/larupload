@@ -63,6 +63,24 @@ class Attachment extends UploadEntities
     }
 
     /**
+     * Update cover
+     *
+     * @return bool
+     */
+    public function updateCover(UploadedFile $file): bool
+    {
+        if ($this->output['type'] and $file->isValid()) {
+            $this->cover = $file;
+            $this->type = $this->output['type'];
+
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * After save event to process all uploads, converts and ...
      *
      * @param Model $model
