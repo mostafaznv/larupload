@@ -123,7 +123,7 @@ trait Larupload
     public function setAttribute($key, $value)
     {
         if ($attachment = $this->getAttachment($key)) {
-            $uploaded = $attachment->setUploadedFile($value);
+            $uploaded = $attachment->attach($value);
 
             if ($uploaded) {
                 static::$uploaded = false;

@@ -22,13 +22,13 @@ class Attachment extends UploadEntities
     use LaraTools;
 
     /**
-     * Set uploaded file
+     * Attach files into entity
      *
      * @param mixed $file
      * @param UploadedFile|null $cover
      * @return bool
      */
-    public function setUploadedFile($file, $cover = null): bool
+    public function attach($file, $cover = null): bool
     {
         if (($this->fileIsSetAndHasValue($file) or $file == LARUPLOAD_NULL) and ($this->fileIsSetAndHasValue($cover) or $cover == null)) {
             $this->file = $file;
