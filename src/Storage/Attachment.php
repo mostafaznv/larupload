@@ -45,6 +45,24 @@ class Attachment extends UploadEntities
     }
 
     /**
+     * Detach cover
+     *
+     * @return bool
+     */
+    public function detachCover(): bool
+    {
+        if ($this->output['type']) {
+            $this->cover = LARUPLOAD_NULL;
+            $this->type = $this->output['type'];
+
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * After save event to process all uploads, converts and ...
      *
      * @param Model $model
@@ -68,6 +86,11 @@ class Attachment extends UploadEntities
                 $this->setCover($model->id);
                 $this->handleStyles($model->id, $model->getMorphClass());
             }
+
+            $model = $this->setAttributes($model);
+        }
+        else if (isset($this->cover)) {
+            $this->setCover($model->id);
 
             $model = $this->setAttributes($model);
         }
@@ -256,48 +279,63 @@ class Attachment extends UploadEntities
     protected function setCover($id): void
     {
         $path = $this->getBasePath($id, LaruploadEnum::COVER_FOLDER);
-        $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME);
-        $format = $this->type == LaruploadEnum::IMAGE ? ($this->output['format'] == 'svg' ? 'png' : $this->output['format']) : 'jpg';
-        $name = "{$fileName}.{$format}";
 
-        // in case cover uploaded by user
-        if ($this->fileIsSetAndHasValue($this->cover) and ($this->mimeToType($this->cover->getMimeType()) == LaruploadEnum::IMAGE)) {
-            Storage::disk($this->disk)->putFileAs($path, $this->cover, $name);
+        if (isset($this->cover) and $this->cover == LARUPLOAD_NULL) {
+            Storage::disk($this->disk)->deleteDirectory($path);
 
-            $this->output['cover'] = $name;
-            $this->output['dominant_color'] = $this->dominantColor ? $this->image($this->cover)->getDominantColor() : null;
+            $this->output['cover'] = null;
+
+            if ($this->type != LaruploadEnum::IMAGE) {
+                $this->output['dominant_color'] = null;
+            }
         }
         else {
-            if (!$this->generateCover) {
-                return;
+            $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME);
+            $format = $this->type == LaruploadEnum::IMAGE ? ($this->output['format'] == 'svg' ? 'png' : $this->output['format']) : 'jpg';
+            $name = "{$fileName}.{$format}";
+
+            // in case cover uploaded by user
+            if ($this->fileIsSetAndHasValue($this->cover) and ($this->mimeToType($this->cover->getMimeType()) == LaruploadEnum::IMAGE)) {
+                Storage::disk($this->disk)->putFileAs($path, $this->cover, $name);
+
+                $this->output['cover'] = $name;
+
+                if ($this->type != LaruploadEnum::IMAGE) {
+                    $this->output['dominant_color'] = $this->dominantColor ? $this->image($this->cover)->getDominantColor() : null;
+                }
             }
+            else {
+                if (!$this->generateCover) {
+                    return;
+                }
 
-            $saveTo = "{$path}/{$name}";
+                $saveTo = "{$path}/{$name}";
 
-            switch ($this->type) {
-                case LaruploadEnum::VIDEO:
-                    Storage::disk($this->disk)->makeDirectory($path);
+                switch ($this->type) {
+                    case LaruploadEnum::VIDEO:
+                        Storage::disk($this->disk)->makeDirectory($path);
 
-                    $this->ffmpeg()->capture($this->ffmpegCaptureFrame, $this->coverStyle, $saveTo);
+                        $this->ffmpeg()->capture($this->ffmpegCaptureFrame, $this->coverStyle, $saveTo);
 
-                    $cover = Storage::disk($this->disk)->path($saveTo);
-                    $cover = new UploadedFile($cover, $name);
+                        $cover = Storage::disk($this->disk)->path($saveTo);
+                        $cover = new UploadedFile($cover, $name);
 
-                    $this->output['cover'] = $name;
-                    $this->output['dominant_color'] = $this->dominantColor ? $this->image($cover)->getDominantColor() : null;
-
-                    break;
-
-                case LaruploadEnum::IMAGE:
-                    Storage::disk($this->disk)->makeDirectory($path);
-
-                    $result = $this->image()->resize($saveTo, $this->coverStyle);
-
-                    if ($result) {
                         $this->output['cover'] = $name;
-                    }
+                        $this->output['dominant_color'] = $this->dominantColor ? $this->image($cover)->getDominantColor() : null;
 
-                    break;
+                        break;
+
+                    case LaruploadEnum::IMAGE:
+                        Storage::disk($this->disk)->makeDirectory($path);
+
+                        $result = $this->image()->resize($saveTo, $this->coverStyle);
+
+                        if ($result) {
+                            $this->output['cover'] = $name;
+                        }
+
+                        break;
+                }
             }
         }
     }
