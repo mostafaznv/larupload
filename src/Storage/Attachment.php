@@ -265,6 +265,7 @@ class Attachment extends UploadEntities
             Storage::disk($this->disk)->putFileAs($path, $this->cover, $name);
 
             $this->output['cover'] = $name;
+            $this->output['dominant_color'] = $this->dominantColor ? $this->image($this->cover)->getDominantColor() : null;
         }
         else {
             if (!$this->generateCover) {
