@@ -110,8 +110,8 @@ class FFMpeg
         if (empty($this->meta)) {
             $path = $this->file->getRealPath();
             $meta = [
-                'width'    => 0,
-                'height'   => 0,
+                'width'    => null,
+                'height'   => null,
                 'duration' => 0,
             ];
 
@@ -128,8 +128,8 @@ class FFMpeg
                 if ($output !== null) {
                     $stream = $output->streams[0];
 
-                    $meta['width'] = isset($stream->width) ? (int)$stream->width : 0;
-                    $meta['height'] = isset($stream->height) ? (int)$stream->height : 0;
+                    $meta['width'] = isset($stream->width) ? (int)$stream->width : null;
+                    $meta['height'] = isset($stream->height) ? (int)$stream->height : null;
                     $meta['duration'] = isset($stream->duration) ? (int)$stream->duration : 0;
                 }
                 else {
