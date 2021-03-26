@@ -8,8 +8,6 @@ use Mostafaznv\Larupload\Database\Schema\Blueprint;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - standalone delete file
-    // TODO - standalone update cover
     // TODO - standalone delete cover
 
 

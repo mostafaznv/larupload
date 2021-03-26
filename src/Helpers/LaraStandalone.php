@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Helpers;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\UploadEntities;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -67,6 +68,21 @@ trait LaraStandalone
         else {
             self::internalException();
         }
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @return bool
+     * @throws Exception
+     * @internal
+     */
+    public function updateCover(UploadedFile $file): bool
+    {
+        if ($this->internalFunctionIsCallable) {
+            return parent::updateCover($file);
+        }
+
+        self::internalException();
     }
 
     /****** not call callable ******************************************************************************************/

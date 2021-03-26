@@ -288,15 +288,17 @@ class UploadEntities
     /**
      * Generate file name using naming method
      *
+     * @param UploadedFile|null $file
      * @return string
      */
-    protected function setFileName(): string
+    protected function setFileName(UploadedFile $file = null): string
     {
-        $format = $this->file->getClientOriginalExtension();
+        $file = $file ?? $this->file;
+        $format = $file->getClientOriginalExtension();
 
         switch ($this->namingMethod) {
             case 'hash_file':
-                $name = hash_file('md5', $this->file->getRealPath());
+                $name = hash_file('md5', $file->getRealPath());
                 break;
 
             case 'time':
@@ -305,7 +307,7 @@ class UploadEntities
 
 
             default:
-                $name = $this->file->getClientOriginalName();
+                $name = $file->getClientOriginalName();
                 $name = pathinfo($name, PATHINFO_FILENAME);
                 $num = rand(0, 9999);
 

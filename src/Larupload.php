@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload;
 
 use Exception;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Helpers\LaraStandalone;
@@ -73,8 +74,11 @@ class Larupload extends Attachment
         $this->uploadOriginalFile($this->id);
         $this->setCover($this->id);
         $this->handleStyles($this->id, self::class, true);
+        $urls = $this->urls();
 
-        return $this->urls();
+        $this->updateMeta($urls);
+
+        return $urls;
     }
 
     /**
@@ -95,4 +99,62 @@ class Larupload extends Attachment
         return false;
     }
 
+    /**
+     * Update Cover
+     *
+     * @param UploadedFile $file
+     * @return object|null
+     * @throws FileNotFoundException
+     * @throws Exception
+     */
+    public function changeCover(UploadedFile $file): ?object
+    {
+        if ($this->metaIsExists()) {
+            $this->internalFunctionIsCallable = true;
+            $res = parent::updateCover($file);
+
+            if ($res) {
+                $this->setCover($this->id);
+                $this->updateMeta();
+
+                return $this->urls();
+            }
+        }
+
+        return null;
+    }
+
+    protected function updateMeta(object $urls = null)
+    {
+        if (is_null($urls)) {
+            $urls = $this->urls();
+        }
+
+        $metaPath = $this->getBasePath($this->id) . '/.meta';
+        Storage::disk($this->disk)->put($metaPath, json_encode($urls), 'private');
+    }
+
+    /**
+     * Check if .meta is exists or not
+     *
+     * @return bool
+     * @throws FileNotFoundException
+     */
+    protected function metaIsExists(): bool
+    {
+        $metaPath = $this->getBasePath($this->id) . '/.meta';
+
+        if (Storage::disk($this->disk)->exists($metaPath)) {
+            $meta = Storage::disk($this->disk)->get($metaPath);
+            $meta = json_decode($meta);
+
+            foreach ($meta->meta as $key => $value) {
+                $this->output[$key] = $value;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
 }
