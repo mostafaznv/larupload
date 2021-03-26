@@ -2,7 +2,9 @@
 
 namespace Mostafaznv\Larupload;
 
+use Exception;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Helpers\LaraStandalone;
 use Mostafaznv\Larupload\Storage\Attachment;
 
@@ -17,6 +19,11 @@ class Larupload extends Attachment
      */
     protected static string $laruploadNull;
 
+    /**
+     * Specify if internal functions are callable or not
+     *
+     * @var bool
+     */
     protected bool $internalFunctionIsCallable = false;
 
     public function __construct(string $name, string $mode)
@@ -30,6 +37,12 @@ class Larupload extends Attachment
         parent::__construct($name, LaruploadEnum::STANDALONE_MODE);
     }
 
+    /**
+     * Init uploader
+     *
+     * @param string $name
+     * @return Larupload
+     */
     public static function init(string $name): Larupload
     {
         $instance = new self($name, LaruploadEnum::STANDALONE_MODE);
@@ -38,7 +51,15 @@ class Larupload extends Attachment
         return $instance;
     }
 
-    public function upload(UploadedFile $file, UploadedFile $cover = null)
+    /**
+     * Upload file and cover
+     *
+     * @param UploadedFile $file
+     * @param UploadedFile|null $cover
+     * @return object
+     * @throws Exception
+     */
+    public function upload(UploadedFile $file, UploadedFile $cover = null): object
     {
         $this->internalFunctionIsCallable = true;
 
@@ -54,6 +75,24 @@ class Larupload extends Attachment
         $this->handleStyles($this->id, self::class, true);
 
         return $this->urls();
+    }
+
+    /**
+     * Delete uploaded folder
+     *
+     * @return bool
+     */
+    public function delete(): bool
+    {
+        $basePath = $this->getBasePath($this->id);
+
+        if (Storage::disk($this->disk)->exists($basePath)) {
+            $this->clean($this->id);
+
+            return true;
+        }
+
+        return false;
     }
 
 }
