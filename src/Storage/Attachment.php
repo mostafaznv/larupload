@@ -299,6 +299,7 @@ class Attachment extends UploadEntities
     {
         $path = $this->getBasePath($id, LaruploadEnum::COVER_FOLDER);
         Storage::disk($this->disk)->deleteDirectory($path);
+        Storage::disk($this->disk)->makeDirectory($path);
 
         // delete cover
         if (isset($this->cover) and $this->cover == LARUPLOAD_NULL) {
@@ -311,13 +312,16 @@ class Attachment extends UploadEntities
         // upload cover by sending file
         else if ($this->fileIsSetAndHasValue($this->cover) and ($this->mimeToType($this->cover->getMimeType()) == LaruploadEnum::IMAGE)) {
             $name = $this->setFileName($this->cover);
+            $saveTo = "{$path}/{$name}";
 
-            Storage::disk($this->disk)->putFileAs($path, $this->cover, $name);
+            $result = $this->image($this->cover)->resize($saveTo, $this->coverStyle);
 
-            $this->output['cover'] = $name;
+            if ($result) {
+                $this->output['cover'] = $name;
 
-            if ($this->type != LaruploadEnum::IMAGE) {
-                $this->output['dominant_color'] = $this->dominantColor ? $this->image($this->cover)->getDominantColor() : null;
+                if ($this->type != LaruploadEnum::IMAGE) {
+                    $this->output['dominant_color'] = $this->dominantColor ? $this->image($this->cover)->getDominantColor() : null;
+                }
             }
         }
         // generate cover
