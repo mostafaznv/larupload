@@ -85,6 +85,20 @@ trait LaraStandalone
         self::internalException();
     }
 
+    /**
+     * @return bool
+     * @throws Exception
+     * @internal
+     */
+    public function detachCover(): bool
+    {
+        if ($this->internalFunctionIsCallable) {
+            return parent::detachCover();
+        }
+
+        self::internalException();
+    }
+
     /****** not call callable ******************************************************************************************/
 
     /**

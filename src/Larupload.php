@@ -124,6 +124,30 @@ class Larupload extends Attachment
         return null;
     }
 
+    /**
+     * Delete Cover
+     *
+     * @return object|null
+     * @throws FileNotFoundException
+     * @throws Exception
+     */
+    public function deleteCover(): ?object
+    {
+        if ($this->metaIsExists()) {
+            $this->internalFunctionIsCallable = true;
+            $res = parent::detachCover();
+
+            if ($res) {
+                $this->setCover($this->id);
+                $this->updateMeta();
+
+                return $this->urls();
+            }
+        }
+
+        return null;
+    }
+
     protected function updateMeta(object $urls = null)
     {
         if (is_null($urls)) {

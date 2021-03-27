@@ -299,7 +299,6 @@ class Attachment extends UploadEntities
     {
         $path = $this->getBasePath($id, LaruploadEnum::COVER_FOLDER);
         Storage::disk($this->disk)->deleteDirectory($path);
-        Storage::disk($this->disk)->makeDirectory($path);
 
         // delete cover
         if (isset($this->cover) and $this->cover == LARUPLOAD_NULL) {
@@ -311,6 +310,8 @@ class Attachment extends UploadEntities
         }
         // upload cover by sending file
         else if ($this->fileIsSetAndHasValue($this->cover) and ($this->mimeToType($this->cover->getMimeType()) == LaruploadEnum::IMAGE)) {
+            Storage::disk($this->disk)->makeDirectory($path);
+            
             $name = $this->setFileName($this->cover);
             $saveTo = "{$path}/{$name}";
 
@@ -329,6 +330,8 @@ class Attachment extends UploadEntities
             if (!$this->generateCover) {
                 return;
             }
+
+            Storage::disk($this->disk)->makeDirectory($path);
 
             $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME);
             $format = $this->type == LaruploadEnum::IMAGE ? ($this->output['format'] == 'svg' ? 'png' : $this->output['format']) : 'jpg';
