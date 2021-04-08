@@ -40,15 +40,28 @@ class ProcessFFMpeg implements ShouldQueue
     {
         $this->updateStatus(false, true);
 
+        // we need to handle ffmpeg queue after model saved event
+        sleep(1);
+
         try {
             if (isset($this->standalone) and $this->standalone) {
                 $this->standalone->handleFFMpegQueue();
             }
             else {
                 $class = $this->model;
-                $model = $class::where('id', $this->id)->first();
+                $modelNotSaved = true;
 
-                $model->{$this->name}->handleFFMpegQueue();
+                while ($modelNotSaved) {
+                    $model = $class::where('id', $this->id)->first();
+
+                    if ($model->{$this->name}->meta('name')) {
+                        $modelNotSaved = false;
+
+                        $model->{$this->name}->handleFFMpegQueue();
+                    }
+
+                    sleep(1);
+                }
             }
 
             $this->updateStatus(true, false);
