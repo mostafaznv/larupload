@@ -19,8 +19,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Attachment extends UploadEntities
 {
-    use LaraTools;
-
     /**
      * Attach files into entity
      *

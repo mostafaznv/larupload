@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Mostafaznv\Larupload\Helpers\LaraTools;
 use Mostafaznv\Larupload\Helpers\Slug;
 use Mostafaznv\Larupload\Helpers\Validator;
 use Mostafaznv\Larupload\Storage\FFMpeg;
@@ -16,6 +17,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UploadEntities
 {
+    use LaraTools;
+
     /**
      * File object
      *
@@ -681,7 +684,7 @@ class UploadEntities
      */
     protected function driverIsLocal(): bool
     {
-        return $this->disk == $this->localDisk;
+        return $this->diskDriverIsLocal($this->disk);
     }
 
     /**

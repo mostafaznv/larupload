@@ -73,7 +73,7 @@ class Image
         $this->file = $file;
         $this->disk = $disk;
         $this->localDisk = $localDisk;
-        $this->driverIsLocal = $this->disk == $this->localDisk;
+        $this->driverIsLocal = $this->diskDriverIsLocal($this->disk);
 
         $path = $file->getRealPath();
         $library = config('larupload.image-processing-library');
