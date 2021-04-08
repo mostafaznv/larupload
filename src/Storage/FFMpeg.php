@@ -126,11 +126,19 @@ class FFMpeg
                 $output = json_decode($output);
 
                 if ($output !== null) {
-                    $stream = $output->streams[0];
+                    foreach ($output->streams as $stream) {
+                        if (isset($stream->width)) {
+                            $meta['width'] = (int)$stream->width;
+                        }
 
-                    $meta['width'] = isset($stream->width) ? (int)$stream->width : null;
-                    $meta['height'] = isset($stream->height) ? (int)$stream->height : null;
-                    $meta['duration'] = isset($stream->duration) ? (int)$stream->duration : 0;
+                        if (isset($stream->height)) {
+                            $meta['height'] = (int)$stream->height;
+                        }
+
+                        if (isset($stream->duration)) {
+                            $meta['duration'] = (int)$stream->duration;
+                        }
+                    }
                 }
                 else {
                     $process->addErrorOutput('ffprobe output is null');
@@ -157,29 +165,30 @@ class FFMpeg
      */
     public function capture($fromSecond, array $style, string $saveTo): void
     {
+        $meta = $this->getMeta();
         $width = isset($style['width']) ? $style['width'] : null;
         $height = isset($style['height']) ? $style['height'] : null;
         $scale = $width ? $width : ($height ? $height : self::DEFAULT_SCALE);
+        $scaleType = $meta['width'] >= $meta['height'] ? "-1:$scale" : "$scale:-1";
         $mode = isset($style['mode']) ? $style['mode'] : null;
         $path = $this->file->getRealPath();
         $saveTo = Storage::disk($this->disk)->path($saveTo);
 
         if (is_null($fromSecond)) {
-            $meta = $this->getMeta();
             $fromSecond = floor($meta['duration'] / 2);
             $fromSecond = number_format($fromSecond, 1);
         }
 
         if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
             if ($width and $height) {
-                $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=-1:$scale,crop=$width:$height");
+                $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$width:$height");
             }
             else {
-                $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=-1:$scale,crop=$scale:$scale");
+                $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$scale:$scale");
             }
         }
         else {
-            $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=-1:$scale");
+            $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType");
         }
 
         $this->run($cmd, $saveTo);
