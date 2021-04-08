@@ -161,9 +161,11 @@ class FFMpeg
      * @param $fromSecond
      * @param array $style
      * @param string $saveTo
+     * @param bool $withDominantColor
+     * @return string|null
      * @throws Exception
      */
-    public function capture($fromSecond, array $style, string $saveTo): void
+    public function capture($fromSecond, array $style, string $saveTo, bool $withDominantColor): ?string
     {
         $meta = $this->getMeta();
         $width = isset($style['width']) ? $style['width'] : null;
@@ -191,7 +193,7 @@ class FFMpeg
             $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType");
         }
 
-        $this->run($cmd, $saveTo);
+        return $this->run($cmd, $saveTo, null, $withDominantColor);
     }
 
     /**
@@ -339,9 +341,11 @@ class FFMpeg
      * @param string $cmd
      * @param string $saveTo
      * @param string|null $disk
+     * @param bool $withDominantColor
+     * @return string|null
      * @throws Exception
      */
-    protected function run(string $cmd, string $saveTo, string $disk = null): void
+    protected function run(string $cmd, string $saveTo, string $disk = null, bool $withDominantColor = false): ?string
     {
         $disk = $disk ?? $this->disk;
 
@@ -352,7 +356,7 @@ class FFMpeg
             $process->run();
 
             if ($process->isSuccessful()) {
-                return;
+                return $withDominantColor ? $this->calcDominantColor($saveTo) : null;
             }
 
             throw new Exception($process->getErrorOutput());
@@ -372,10 +376,12 @@ class FFMpeg
             if ($process->isSuccessful()) {
                 $file = new File($temp);
 
+                $dominantColor = $withDominantColor ? $this->calcDominantColor($temp) : null;
                 Storage::disk($disk)->putFileAs($path, $file, $name);
+
                 @unlink($temp);
 
-                return;
+                return $dominantColor;
             }
 
             throw new Exception($process->getErrorOutput());
@@ -449,5 +455,18 @@ class FFMpeg
         $cmd = str_replace('\\', '/', $cmd);
 
         return explode(' ', escapeshellcmd($cmd));
+    }
+
+    /**
+     * Calculate Dominant Color
+     *
+     * @param $path
+     * @return string|null
+     */
+    protected function calcDominantColor($path): ?string
+    {
+        $file = new UploadedFile($path, basename($path));
+
+        return (new Image($file, $this->disk, $this->localDisk))->getDominantColor();
     }
 }

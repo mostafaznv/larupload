@@ -88,6 +88,8 @@ class Attachment extends UploadEntities
      */
     public function saved(Model $model): Model
     {
+        $this->id = $model->id;
+
         if (isset($this->file)) {
             if ($this->file == LARUPLOAD_NULL) {
                 $this->clean($model->id);
@@ -309,7 +311,7 @@ class Attachment extends UploadEntities
         // upload cover by sending file
         else if ($this->fileIsSetAndHasValue($this->cover) and ($this->mimeToType($this->cover->getMimeType()) == LaruploadEnum::IMAGE)) {
             Storage::disk($this->disk)->makeDirectory($path);
-            
+
             $name = $this->setFileName($this->cover);
             $saveTo = "{$path}/{$name}";
 
@@ -340,13 +342,10 @@ class Attachment extends UploadEntities
                 case LaruploadEnum::VIDEO:
                     Storage::disk($this->disk)->makeDirectory($path);
 
-                    $this->ffmpeg()->capture($this->ffmpegCaptureFrame, $this->coverStyle, $saveTo);
-
-                    $cover = Storage::disk($this->disk)->path($saveTo);
-                    $cover = new UploadedFile($cover, $name);
+                    $color = $this->ffmpeg()->capture($this->ffmpegCaptureFrame, $this->coverStyle, $saveTo, $this->dominantColor);
 
                     $this->output['cover'] = $name;
-                    $this->output['dominant_color'] = $this->dominantColor ? $this->image($cover)->getDominantColor() : null;
+                    $this->output['dominant_color'] = $this->dominantColor ? $color : null;
 
                     break;
 
@@ -481,7 +480,7 @@ class Attachment extends UploadEntities
             }
 
 
-            ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class, $serializedClass)->delay(now()->addSeconds(1));
+            ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class, $serializedClass);
         }
         else {
             throw new HttpResponseException(redirect(URL::previous())->withErrors([
