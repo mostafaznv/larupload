@@ -91,14 +91,16 @@ trait LaraTools
     protected function tempDir(): string
     {
         if (ini_get('upload_tmp_dir')) {
-            return ini_get('upload_tmp_dir');
+            $path = ini_get('upload_tmp_dir');
         }
         else if (getenv('temp')) {
-            return getenv('temp');
+            $path = getenv('temp');
         }
         else {
-            return sys_get_temp_dir();
+            $path = sys_get_temp_dir();
         }
+
+        return rtrim($path, '/');
     }
 
     /**
