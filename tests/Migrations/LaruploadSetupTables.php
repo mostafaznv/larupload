@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Test\Migrations;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Mostafaznv\Larupload\LaruploadEnum;
 
 class LaruploadSetupTables extends Migration
 {
@@ -27,7 +28,7 @@ class LaruploadSetupTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('larupload_ffmpeg_queue', function(Blueprint $table) {
+        Schema::create(LaruploadEnum::FFMPEG_QUEUE_TABLE, function(Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('record_id');
             $table->string('record_class', 50);
@@ -48,6 +49,6 @@ class LaruploadSetupTables extends Migration
     {
         Schema::dropIfExists('upload_heavy');
         Schema::dropIfExists('upload_light');
-        Schema::dropIfExists('larupload_ffmpeg_queue');
+        Schema::dropIfExists(LaruploadEnum::FFMPEG_QUEUE_TABLE);
     }
 }

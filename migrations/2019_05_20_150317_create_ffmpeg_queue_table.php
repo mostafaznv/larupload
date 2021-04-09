@@ -3,12 +3,13 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Mostafaznv\Larupload\LaruploadEnum;
 
 class CreateFfmpegQueueTable extends Migration
 {
     public function up()
     {
-        Schema::create('larupload_ffmpeg_queue', function(Blueprint $table) {
+        Schema::create(LaruploadEnum::FFMPEG_QUEUE_TABLE, function(Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('record_id');
             $table->string('record_class', 50);
@@ -23,6 +24,6 @@ class CreateFfmpegQueueTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('larupload_ffmpeg_queue');
+        Schema::dropIfExists(LaruploadEnum::FFMPEG_QUEUE_TABLE);
     }
 }
