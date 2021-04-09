@@ -36,6 +36,9 @@ class ProcessFFMpeg implements ShouldQueue
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function handle()
     {
         $this->updateStatus(false, true);
@@ -68,6 +71,8 @@ class ProcessFFMpeg implements ShouldQueue
         }
         catch (FileNotFoundException | Exception $e) {
             $this->updateStatus(false, false, $e->getMessage());
+
+            throw new Exception($e->getMessage());
         }
     }
 
