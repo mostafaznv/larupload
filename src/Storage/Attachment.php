@@ -219,20 +219,22 @@ class Attachment extends UploadEntities
     /**
      * Handle FFMpeg queue on running ffmpeg queue:work
      *
+     * @param bool $isLastOne
      * @throws Exception
      */
-    public function handleFFMpegQueue(): void
+    public function handleFFMpegQueue(bool $isLastOne = false): void
     {
+        $driverIsLocal = $this->driverIsLocal();
+
         $path = $this->getBasePath($this->id, LaruploadEnum::ORIGINAL_FOLDER);
-        $path = Storage::disk($this->disk)->path("$path/{$this->output['name']}");
+        $path = Storage::disk($driverIsLocal ? $this->disk : $this->localDisk)->path("$path/{$this->output['name']}");
         $this->file = new UploadedFile($path, $this->output['name'], null, null, true);
         $this->type = $this->getFileType($this->file);
 
         $this->handleVideoStyles($this->id);
 
-        if ($this->driverIsNotLocal()) {
-            $localPath = $this->getBasePath($this->id, '');
-            Storage::disk($this->localDisk)->deleteDirectory($localPath);
+        if (!$driverIsLocal and $isLastOne) {
+            Storage::disk($this->localDisk)->deleteDirectory("{$this->folder}/{$this->id}");
         }
     }
 
@@ -390,7 +392,7 @@ class Attachment extends UploadEntities
 
                 break;
 
-            case 'video':
+            case LaruploadEnum::VIDEO:
                 if ($this->ffmpegQueue) {
                     $this->initializeFFMpegQueue($id, $class, $standalone);
                 }
@@ -448,7 +450,7 @@ class Attachment extends UploadEntities
             $flag = true;
         }
         else {
-            $availableQueues = DB::table('larupload_ffmpeg_queue')->where('status', 0)->count();
+            $availableQueues = DB::table(LaruploadEnum::FFMPEG_QUEUE_TABLE)->where('status', 0)->count();
 
             if ($availableQueues < $maxQueueNum) {
                 $flag = true;
@@ -463,7 +465,7 @@ class Attachment extends UploadEntities
                 Storage::disk($this->localDisk)->putFileAs($path, $this->file, $this->output['name']);
             }
 
-            $statusId = DB::table('larupload_ffmpeg_queue')->insertGetId([
+            $queueId = DB::table(LaruploadEnum::FFMPEG_QUEUE_TABLE)->insertGetId([
                 'record_id'    => $id,
                 'record_class' => $class,
                 'created_at'   => now(),
@@ -480,7 +482,7 @@ class Attachment extends UploadEntities
             }
 
 
-            ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class, $serializedClass);
+            ProcessFFMpeg::dispatch($queueId, $id, $this->name, $class, $serializedClass);
         }
         else {
             throw new HttpResponseException(redirect(URL::previous())->withErrors([

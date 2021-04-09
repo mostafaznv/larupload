@@ -36,13 +36,6 @@ class FFMpeg
     protected string $localDisk;
 
     /**
-     * Specify if driver is local or not
-     *
-     * @var bool
-     */
-    protected bool $driverIsLocal;
-
-    /**
      * Video Metadata
      *
      * @var array
@@ -90,7 +83,6 @@ class FFMpeg
         $this->file = $file;
         $this->disk = $disk;
         $this->localDisk = $localDisk;
-        $this->driverIsLocal = $this->diskDriverIsLocal($this->disk);
 
         $config = config('larupload.ffmpeg');
 
@@ -240,6 +232,8 @@ class FFMpeg
     {
         $playlist = "#EXTM3U\n#EXT-X-VERSION:3\n";
         $converted = [];
+        $driverIsLocal = $this->diskDriverIsLocal($this->disk);
+        $disk = $driverIsLocal ? $this->disk : $this->localDisk;
 
         // generate multiple video qualities from uploaded video.
         foreach ($styles as $name => $style) {
@@ -250,11 +244,11 @@ class FFMpeg
             $videoBitRate = $style['bitrate']['video'];
             $styleBasePath = "$basePath/$name-convert";
 
-            Storage::disk($this->localDisk)->makeDirectory($styleBasePath);
-            $saveTo = Storage::disk($this->localDisk)->path("$styleBasePath/$name.mp4");
+            Storage::disk($disk)->makeDirectory($styleBasePath);
+            $saveTo = Storage::disk($disk)->path("$styleBasePath/$name.mp4");
 
             $cmd = escapeshellcmd("{$this->ffmpeg} -y -i $path -s {$width}x{$height} -y -strict experimental -acodec aac -b:a $audioBitRate -ac 2 -ar 48000 -vcodec libx264 -vprofile main -g 48 -b:v $videoBitRate -threads 64");
-            $this->run($cmd, $saveTo, $this->localDisk);
+            $this->run($cmd, $saveTo, $disk);
 
             $converted[$name] = [
                 'path'      => $styleBasePath,
@@ -278,7 +272,7 @@ class FFMpeg
             $playlist .= "#EXT-X-STREAM-INF:BANDWIDTH={$value['bandwidth']},RESOLUTION={$value['width']}x{$value['height']}\n";
             $playlist .= "$name/$m3u8\n";
 
-            Storage::disk($this->localDisk)->deleteDirectory($value['path']);
+            Storage::disk($disk)->deleteDirectory($value['path']);
         }
 
         if (count($converted)) {
@@ -349,7 +343,7 @@ class FFMpeg
     {
         $disk = $disk ?? $this->disk;
 
-        if ($this->driverIsLocal) {
+        if ($this->diskDriverIsLocal($disk)) {
             $cmd = $this->cmd("$cmd $saveTo");
             $process = new Process($cmd);
             $process->setTimeout($this->timeout);
@@ -398,7 +392,7 @@ class FFMpeg
      */
     protected function streamRun(string $cmd, string $streamPath): void
     {
-        if ($this->driverIsLocal) {
+        if ($this->diskDriverIsLocal($this->disk)) {
             $cmd = $this->cmd(str_replace(':stream-path', $streamPath, $cmd));
 
             $process = new Process($cmd);
@@ -412,13 +406,13 @@ class FFMpeg
             throw new Exception($process->getErrorOutput());
         }
         else {
-            list($path, $name) = $this->splitPath($streamPath);
-
+            $name = basename($streamPath);
             $temp = $name . '-' . time();
 
             Storage::disk($this->localDisk)->makeDirectory($temp);
+            $path = Storage::disk($this->localDisk)->path($temp);
 
-            $cmd = $this->cmd(str_replace(':stream-path', $temp, $cmd));
+            $cmd = $this->cmd(str_replace(':stream-path', $path, $cmd));
 
             $process = new Process($cmd);
             $process->setTimeout($this->timeout);
@@ -426,9 +420,10 @@ class FFMpeg
 
             if ($process->isSuccessful()) {
                 $files = Storage::disk($this->localDisk)->files($temp);
+                $path = Storage::disk($this->localDisk)->path('');
 
                 foreach ($files as $file) {
-                    $fileObject = new File($file);
+                    $fileObject = new File("$path/$file");
 
                     Storage::disk($this->disk)->putFileAs($streamPath, $fileObject, $fileObject->getFilename());
 

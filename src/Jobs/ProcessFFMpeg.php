@@ -12,21 +12,22 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
 use Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished;
 use Mostafaznv\Larupload\Larupload;
+use Mostafaznv\Larupload\LaruploadEnum;
 
 class ProcessFFMpeg implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected int    $statusId;
-    protected int    $id;
-    protected string $name;
-    protected string $model;
+    protected int       $queueId;
+    protected int       $id;
+    protected string    $name;
+    protected string    $model;
     protected Larupload $standalone;
 
 
-    public function __construct(int $statusId, int $id, string $name, string $model, string $standalone = null)
+    public function __construct(int $queueId, int $id, string $name, string $model, string $standalone = null)
     {
-        $this->statusId = $statusId;
+        $this->queueId = $queueId;
         $this->id = $id;
         $this->name = $name;
         $this->model = $model;
@@ -60,7 +61,13 @@ class ProcessFFMpeg implements ShouldQueue
                     if ($model->{$this->name}->meta('name')) {
                         $modelNotSaved = false;
 
-                        $model->{$this->name}->handleFFMpegQueue();
+                        $availableQueues = DB::table(LaruploadEnum::FFMPEG_QUEUE_TABLE)
+                            ->where('record_id', $this->id)
+                            ->where('record_class', $this->model)
+                            ->where('status', false)
+                            ->count();
+
+                        $model->{$this->name}->handleFFMpegQueue($availableQueues === 1);
                     }
 
                     sleep(1);
@@ -88,14 +95,14 @@ class ProcessFFMpeg implements ShouldQueue
     {
         $dateColumn = $isStarted ? 'started_at' : 'finished_at';
 
-        $result = DB::table('larupload_ffmpeg_queue')->where('id', $this->statusId)->update([
+        $result = DB::table(LaruploadEnum::FFMPEG_QUEUE_TABLE)->where('id', $this->queueId)->update([
             'status'    => $status,
             'message'   => $message,
             $dateColumn => now(),
         ]);
 
         if ($result and $status) {
-            event(new LaruploadFFMpegQueueFinished($this->id, $this->model, $this->statusId));
+            event(new LaruploadFFMpegQueueFinished($this->id, $this->model, $this->queueId));
         }
 
         return $result;

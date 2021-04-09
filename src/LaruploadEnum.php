@@ -37,4 +37,5 @@ class LaruploadEnum
     const STREAM_FOLDER   = 'stream';
 
     const LOCAL_DRIVER = 'local';
+    const FFMPEG_QUEUE_TABLE = 'larupload_ffmpeg_queue';
 }
