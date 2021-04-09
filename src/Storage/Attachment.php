@@ -378,6 +378,8 @@ class Attachment extends UploadEntities
     {
         switch ($this->type) {
             case LaruploadEnum::IMAGE:
+                $this->image($this->file);
+
                 foreach ($this->styles as $name => $style) {
                     if (count($style['type']) and !in_array(LaruploadEnum::IMAGE, $style['type'])) {
                         continue;
