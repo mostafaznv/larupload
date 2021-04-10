@@ -269,11 +269,11 @@ class Attachment extends UploadEntities
                 break;
 
             case LaruploadEnum::IMAGE:
-                $meta = $this->image()->getMeta();
+                $meta = $this->image($this->file)->getMeta();
 
                 $this->output['width'] = $meta['width'];
                 $this->output['height'] = $meta['height'];
-                $this->output['dominant_color'] = $this->dominantColor ? $this->image()->getDominantColor($this->file) : null;
+                $this->output['dominant_color'] = $this->dominantColor ? $this->image($this->file)->getDominantColor($this->file) : null;
 
                 break;
         }
@@ -354,7 +354,7 @@ class Attachment extends UploadEntities
                 case LaruploadEnum::IMAGE:
                     Storage::disk($this->disk)->makeDirectory($path);
 
-                    $result = $this->image()->resize($saveTo, $this->coverStyle);
+                    $result = $this->image($this->file)->resize($saveTo, $this->coverStyle);
 
                     if ($result) {
                         $this->output['cover'] = $name;
@@ -378,8 +378,6 @@ class Attachment extends UploadEntities
     {
         switch ($this->type) {
             case LaruploadEnum::IMAGE:
-                $this->image($this->file);
-
                 foreach ($this->styles as $name => $style) {
                     if (count($style['type']) and !in_array(LaruploadEnum::IMAGE, $style['type'])) {
                         continue;
@@ -389,7 +387,7 @@ class Attachment extends UploadEntities
                     $saveTo = $path . '/' . $this->fixExceptionNames($this->output['name'], $name);
 
                     Storage::disk($this->disk)->makeDirectory($path);
-                    $this->image()->resize($saveTo, $style);
+                    $this->image($this->file)->resize($saveTo, $style);
                 }
 
                 break;

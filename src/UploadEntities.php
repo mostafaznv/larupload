@@ -276,14 +276,12 @@ class UploadEntities
     /**
      * Image instance
      *
-     * @param UploadedFile|null $file
+     * @param UploadedFile $file
      * @return Image
      */
-    protected function image(UploadedFile $file = null): Image
+    protected function image(UploadedFile $file): Image
     {
-        if (!isset($this->image) or $file) {
-            $this->image = new Image($file ?? $this->file, $this->disk, $this->localDisk);
-        }
+        $this->image = new Image($file ?? $this->file, $this->disk, $this->localDisk);
 
         return $this->image;
     }
