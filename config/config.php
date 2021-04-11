@@ -229,7 +229,7 @@ return [
         */
 
         'ffmpeg-binaries'  => 'ffmpeg',
-        'ffprobe-binaries' => 'ffmpeg',
+        'ffprobe-binaries' => 'ffprobe',
 
         /*
         |--------------------------------------------------------------------------
