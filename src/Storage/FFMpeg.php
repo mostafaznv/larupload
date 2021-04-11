@@ -287,12 +287,12 @@ class FFMpeg
      * Calculate scale
      *
      * @param string $mode
-     * @param int $width
-     * @param int $height
+     * @param int|null $width
+     * @param int|null $height
      * @return string
      * @throws Exception
      */
-    protected function calculateScale(string $mode, int $width, int $height): string
+    protected function calculateScale(string $mode, int $width = null, int $height = null): string
     {
         $meta = $this->getMeta();
 
