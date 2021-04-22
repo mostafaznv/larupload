@@ -22,9 +22,9 @@ class UploadEntities
     /**
      * File object
      *
-     * @var UploadedFile
+     * @var UploadedFile|mixed
      */
-    protected UploadedFile $file;
+    protected $file;
 
     /**
      * Cover Object

@@ -44,6 +44,16 @@ class Attachment extends UploadEntities
     }
 
     /**
+     * Detach
+     *
+     * @return bool
+     */
+    public function detach(): bool
+    {
+        return $this->attach(LARUPLOAD_NULL);
+    }
+    
+    /**
      * Update cover
      *
      * @param UploadedFile $file
