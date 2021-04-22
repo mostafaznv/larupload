@@ -560,6 +560,17 @@ class UploadEntities
     }
 
     /**
+     * @param bool $status
+     * @return $this
+     */
+    public function preserveFiles(bool $status): UploadEntities
+    {
+        $this->preserveFiles = $status;
+
+        return $this;
+    }
+
+    /**
      * Uploaded status
      *
      * @return bool

@@ -52,7 +52,7 @@ class Attachment extends UploadEntities
     {
         return $this->attach(LARUPLOAD_NULL);
     }
-    
+
     /**
      * Update cover
      *
