@@ -118,6 +118,8 @@ class FFMpeg
                 $output = json_decode($output);
 
                 if ($output !== null) {
+                    $rotate = 0;
+
                     foreach ($output->streams as $stream) {
                         if (isset($stream->width)) {
                             $meta['width'] = (int)$stream->width;
@@ -130,6 +132,14 @@ class FFMpeg
                         if (isset($stream->duration)) {
                             $meta['duration'] = (int)$stream->duration;
                         }
+
+                        if (isset($stream->tags->rotate)) {
+                            $rotate = $stream->tags->rotate;
+                        }
+                    }
+
+                    if ($rotate == 90 or $rotate == 270) {
+                        list($meta['height'], $meta['width']) = array($meta['width'], $meta['height']);
                     }
                 }
                 else {
