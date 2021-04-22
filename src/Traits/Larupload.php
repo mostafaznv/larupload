@@ -28,13 +28,6 @@ trait Larupload
     protected static string $laruploadNull;
 
     /**
-     * Uploaded flag to prevent infinite loop
-     *
-     * @var bool
-     */
-    protected static bool $uploaded = false;
-
-    /**
      * Initialize attachments
      */
     protected function initializeLarupload()
@@ -63,13 +56,17 @@ trait Larupload
         }
 
         static::saved(function($model) {
-            if (!self::$uploaded) {
-                self::$uploaded = true;
+            $shouldSave = false;
 
-                foreach ($model->attachments as $attachment) {
+            foreach ($model->attachments as $attachment) {
+                if (!$attachment->isUploaded()) {
+                    $shouldSave = true;
+
                     $model = $attachment->saved($model);
                 }
+            }
 
+            if ($shouldSave) {
                 $model->save();
             }
         });
@@ -123,11 +120,7 @@ trait Larupload
     public function setAttribute($key, $value)
     {
         if ($attachment = $this->getAttachment($key)) {
-            $uploaded = $attachment->attach($value);
-
-            if ($uploaded) {
-                static::$uploaded = false;
-            }
+            $attachment->attach($value);
         }
         else {
             parent::setAttribute($key, $value);

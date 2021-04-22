@@ -222,6 +222,13 @@ class UploadEntities
      */
     protected Image $image;
 
+    /**
+     * Uploaded flag to prevent infinite loop
+     *
+     * @var bool
+     */
+    protected bool $uploaded = false;
+
     public function __construct(string $name, string $mode)
     {
         $config = config('larupload');
@@ -550,6 +557,16 @@ class UploadEntities
         $this->dominantColor = $status;
 
         return $this;
+    }
+
+    /**
+     * Uploaded status
+     *
+     * @return bool
+     */
+    public function isUploaded(): bool
+    {
+        return $this->uploaded;
     }
 
     /**

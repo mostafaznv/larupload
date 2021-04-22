@@ -30,6 +30,7 @@ class Attachment extends UploadEntities
     {
         if (($this->fileIsSetAndHasValue($file) or $file == LARUPLOAD_NULL) and ($this->fileIsSetAndHasValue($cover) or $cover == null)) {
             $this->file = $file;
+            $this->uploaded = false;
 
             if ($file != LARUPLOAD_NULL) {
                 $this->cover = $cover;
@@ -89,6 +90,7 @@ class Attachment extends UploadEntities
     public function saved(Model $model): Model
     {
         $this->id = $model->id;
+        $this->uploaded = true;
 
         if (isset($this->file)) {
             if ($this->file == LARUPLOAD_NULL) {
