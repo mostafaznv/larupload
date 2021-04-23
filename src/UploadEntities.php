@@ -288,7 +288,7 @@ class UploadEntities
      */
     protected function image(UploadedFile $file): Image
     {
-        $this->image = new Image($file ?? $this->file, $this->disk, $this->localDisk);
+        $this->image = new Image($file ?? $this->file, $this->disk, $this->localDisk, $this->imageProcessingLibrary);
 
         return $this->image;
     }

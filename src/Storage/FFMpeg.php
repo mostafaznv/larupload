@@ -472,6 +472,6 @@ class FFMpeg
     {
         $file = new UploadedFile($path, basename($path));
 
-        return (new Image($file, $this->disk, $this->localDisk))->getDominantColor();
+        return (new Image($file, $this->disk, $this->localDisk, LaruploadEnum::GD_IMAGE_LIBRARY))->getDominantColor();
     }
 }

@@ -67,8 +67,9 @@ class Image
      * @param UploadedFile $file
      * @param string $disk
      * @param string $localDisk
+     * @param string $library
      */
-    public function __construct(UploadedFile $file, string $disk, string $localDisk)
+    public function __construct(UploadedFile $file, string $disk, string $localDisk, string $library)
     {
         $this->file = $file;
         $this->disk = $disk;
@@ -76,7 +77,6 @@ class Image
         $this->driverIsLocal = $this->diskDriverIsLocal($this->disk);
 
         $path = $file->getRealPath();
-        $library = config('larupload.image-processing-library');
         $imagine = new $library();
 
         $this->image = $imagine->open($path);
