@@ -57,13 +57,14 @@ trait LaraStandalone
     }
 
     /**
+     * @param bool $isLastOne
      * @throws Exception
      * @internal
      */
-    public function handleFFMpegQueue(): void
+    public function handleFFMpegQueue(bool $isLastOne = false): void
     {
         if ($this->internalFunctionIsCallable) {
-            parent::handleFFMpegQueue();
+            parent::handleFFMpegQueue($isLastOne);
         }
         else {
             self::internalException();
