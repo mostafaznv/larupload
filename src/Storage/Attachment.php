@@ -62,6 +62,7 @@ class Attachment extends UploadEntities
     public function updateCover(UploadedFile $file): bool
     {
         if ($this->output['type'] and $file->isValid()) {
+            $this->uploaded = false;
             $this->cover = $file;
             $this->type = $this->output['type'];
 
@@ -80,6 +81,7 @@ class Attachment extends UploadEntities
     public function detachCover(): bool
     {
         if ($this->output['type']) {
+            $this->uploaded = false;
             $this->cover = LARUPLOAD_NULL;
             $this->type = $this->output['type'];
 
