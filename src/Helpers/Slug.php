@@ -155,12 +155,6 @@ class Slug
      */
     protected function charsArray(string $language): array
     {
-        static $charsArray;
-
-        if (isset($charsArray)) {
-            return $charsArray;
-        }
-
         if (in_array($language, ['fa', 'ar'])) {
             return $charsArray = [
                 '0'    => ['°', '₀', '０'],
