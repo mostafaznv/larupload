@@ -96,10 +96,10 @@ class Validator
     /**
      * Validate mode
      *
-     * @param string $mode
+     * @param string|null $mode
      * @throws Exception
      */
-    public static function modeIsValid(string $mode)
+    public static function modeIsValid(string $mode = null)
     {
         if ($mode) {
             $modes = [
