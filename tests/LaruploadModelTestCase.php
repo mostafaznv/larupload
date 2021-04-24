@@ -210,7 +210,6 @@ class LaruploadModelTestCase extends LaruploadTestCase
      */
     public function uploadVideoStyles()
     {
-        return true;
         $model = $this->uploadVideo();
 
         // cover
@@ -268,7 +267,6 @@ class LaruploadModelTestCase extends LaruploadTestCase
      */
     public function uploadVideoStream()
     {
-        return true;
         $model = $this->uploadVideo();
 
         $path = public_path(str_replace(url('/'), '', $model->main_file->url('stream')));
@@ -319,7 +317,7 @@ class LaruploadModelTestCase extends LaruploadTestCase
         Config::set('larupload.cover-style', [
             'width'  => 200,
             'height' => 150,
-            'mode'   => 'exact'
+            'mode'   => LaruploadEnum::EXACT_STYLE_MODE
         ]);
 
         $this->initModel();
