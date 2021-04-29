@@ -102,13 +102,13 @@ trait LaruploadModelTestCaseTools
 
     protected function initFiles()
     {
-        $this->imageJPG = new UploadedFile(realpath(__DIR__ . '/Data/image.jpg'), 'image.jpg', null, null, true);
-        $this->imageFaTitledJPG = new UploadedFile(realpath(__DIR__ . '/Data/باشگاه بارسلونا.jpg'), 'باشگاه بارسلونا.jpg', null, null, true);
-        $this->imagePNG = new UploadedFile(realpath(__DIR__ . '/Data/image.png'), 'image.png', null, null, true);
-        $this->imageSVG = new UploadedFile(realpath(__DIR__ . '/Data/image.svg'), 'image.svg', null, null, true);
-        $this->video = new UploadedFile(realpath(__DIR__ . '/Data/video-1.mp4'), 'video-1.mp4', null, null, true);
-        $this->audio = new UploadedFile(realpath(__DIR__ . '/Data/audio-1.mp3'), 'audio-1.mp3', null, null, true);
-        $this->pdf = new UploadedFile(realpath(__DIR__ . '/Data/pdf-1.pdf'), 'pdf-1.pdf', null, null, true);
+        $this->imageJPG = new UploadedFile(realpath(__DIR__ . '/Data/image.jpg'), 'image.jpg', 'image/jpeg', null, true);
+        $this->imageFaTitledJPG = new UploadedFile(realpath(__DIR__ . '/Data/باشگاه بارسلونا.jpg'), 'باشگاه بارسلونا.jpg', 'image/jpeg', null, true);
+        $this->imagePNG = new UploadedFile(realpath(__DIR__ . '/Data/image.png'), 'image.png', 'image/png', null, true);
+        $this->imageSVG = new UploadedFile(realpath(__DIR__ . '/Data/image.svg'), 'image.svg', 'image/svg+xml', null, true);
+        $this->video = new UploadedFile(realpath(__DIR__ . '/Data/video-1.mp4'), 'video-1.mp4', 'video/mp4', null, true);
+        $this->audio = new UploadedFile(realpath(__DIR__ . '/Data/audio-1.mp3'), 'audio-1.mp3', 'audio/mpeg', null, true);
+        $this->pdf = new UploadedFile(realpath(__DIR__ . '/Data/pdf-1.pdf'), 'pdf-1.pdf', 'application/pdf', null, true);
 
         $this->imageDetails = [
             'cover' => [
