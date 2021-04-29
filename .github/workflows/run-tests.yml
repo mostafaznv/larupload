@@ -15,7 +15,7 @@ jobs:
           - laravel: 8.*
             testbench: 6.*
 
-    name: PHP${{ matrix.php }} - Laravel${{ matrix.laravel }} - ${{ matrix.dependency-version }}
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.dependency-version }}
 
     steps:
       - name: Update apt
@@ -37,13 +37,19 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json, mbstring, imagick, imagick, gd, bcmath, intl, exif, fileinfo
+          extensions: json, mbstring, imagick, gd, bcmath, intl, exif, fileinfo
           tools: composer:v2
           coverage: none
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "symfony/console:>=4.3.4" --no-interaction --no-update
+          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+         
+      - name: Fix Permissions
+        run: |
+          sudo chmod -R 777 /home/runner/work/larupload
+          sudo chown -R runner /home/runner/work/larupload
+          
       - name: Execute tests
         run: vendor/bin/phpunit
