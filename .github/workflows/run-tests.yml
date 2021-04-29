@@ -15,7 +15,7 @@ jobs:
           - laravel: 8.*
             testbench: 6.*
 
-    name: PHP${{ matrix.php }} - Laravel${{ matrix.laravel }} - ${{ matrix.dependency-version }}
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.dependency-version }}
 
     steps:
       - name: Update apt
@@ -37,15 +37,15 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json, mbstring, imagick, imagick, gd, bcmath, intl, exif, fileinfo
+          extensions: json, mbstring, imagick, gd, bcmath, intl, exif, fileinfo
           tools: composer:v2
           coverage: none
           
       - name: Fix Permissions
         run: sudo chmod -R 777 /home/runner/work/larupload/larupload/tests/Data
           
-      - name: Check Test Data
-        run: sudo ls -lah /home/runner/work/larupload/larupload/tests/Data
+      - name: Check Temp
+        run: php -ini
 
       - name: Install dependencies
         run: |
