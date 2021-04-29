@@ -43,13 +43,15 @@ jobs:
           
       - name: Fix Data Permissions
         run: sudo chmod -R 777 /home/runner/work/larupload/larupload/tests/Data
+        
           
-      - name: Fix Temp Permissions
-        run: sudo chmod -R 777 /home/runner/work/_temp
+      - name: whoami
+        run: whoami
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "symfony/console:>=4.3.4" --no-interaction --no-update
+          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+          
       - name: Execute tests
         run: vendor/bin/phpunit
