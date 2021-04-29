@@ -63,6 +63,11 @@ class LaruploadStandaloneTest extends LaruploadTestCase
      */
     public array $pdfDetails;
 
+    /**
+     * @var string
+     */
+    public string $hexRegex = '/^#[0-9A-F]{6}$/i';
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -351,7 +356,7 @@ class LaruploadStandaloneTest extends LaruploadTestCase
             ->imageProcessingLibrary(LaruploadEnum::IMAGICK_IMAGE_LIBRARY)
             ->upload($this->imageSVG);
 
-        $this->assertEquals($upload->meta->dominant_color, $this->imageDetails['svg']['color']);
+        $this->assertEquals(true, !!preg_match($this->hexRegex, $upload->meta->dominant_color));
     }
 
 
