@@ -2,6 +2,9 @@
 
 namespace Mostafaznv\Larupload\Storage;
 
+use Mostafaznv\Larupload\Helpers\LaraTools;
+use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\UploadEntities;
 use stdClass;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -9,231 +12,83 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
-use Mostafaznv\Larupload\Helpers\Helper;
 use Illuminate\Http\UploadedFile;
-use Mostafaznv\Larupload\Helpers\Str;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class Attachment
+class Attachment extends UploadEntities
 {
     /**
-     * Column name
+     * Attach files into entity
      *
-     * @var string
+     * @param mixed $file
+     * @param UploadedFile|null $cover
+     * @return bool
      */
-    protected $name;
-
-    /**
-     * Folder Name (table name)
-     *
-     * @var string
-     */
-    protected $folder;
-
-    /**
-     * Options on the Fly
-     *
-     * @var string
-     */
-    protected $injectedOptions;
-
-    /**
-     * File path
-     *
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * Larupload configurations
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Storage driver
-     *
-     * @var string
-     */
-    protected $storage;
-
-    /**
-     * Details mode, light or heavy
-     *
-     * @var string
-     */
-    protected $mode;
-
-    /**
-     * @var boolean
-     */
-    protected $withMeta;
-
-    /**
-     * Naming method
-     *
-     * @var string
-     */
-    protected $namingMethod;
-
-    /**
-     * Style options
-     *
-     * @var array
-     */
-    protected $styles;
-
-    /**
-     * dominant color flag
-     *
-     * @var boolean
-     */
-    protected $dominantColor;
-
-    /**
-     * Generate cover flag
-     *
-     * @var boolean
-     */
-    protected $generateCover;
-
-    /**
-     * Cover Style
-     *
-     * @var array
-     */
-    protected $coverStyle;
-
-    /**
-     * Keep old files or not
-     *
-     * @var boolean
-     */
-    protected $keepOldFiles;
-
-    /**
-     * Preserve files or not
-     *
-     * @var boolean
-     */
-    protected $preserveFiles;
-
-    /**
-     * Allowed mime types
-     *
-     * @var array
-     */
-    protected $allowedMimeTypes;
-
-    /**
-     * Allowed file extensions
-     *
-     * @var array
-     */
-    protected $allowedMimes;
-
-    /**
-     * File object
-     *
-     * @var UploadedFile
-     */
-    protected $file;
-
-    /**
-     * Predefined cover file by user
-     *
-     * @var object
-     */
-    protected $cover;
-
-    /**
-     * Type to get type of attached file
-     *
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * Output array to save in database
-     *
-     * @var array
-     */
-    protected $output = [
-        'name'           => null,
-        'size'           => null,
-        'type'           => null,
-        'mime_type'      => null,
-        'width'          => null,
-        'height'         => null,
-        'duration'       => null,
-        'dominant_color' => null,
-        'format'         => null,
-        'cover'          => null,
-    ];
-
-
-    /**
-     * Attachment constructor
-     *
-     * @param string $name
-     * @param string $folder
-     * @param array $options
-     * @throws Exception
-     */
-    public function __construct(string $name, string $folder, array $options = [])
+    public function attach($file, $cover = null): bool
     {
-        $this->config = config('larupload');
-        $errors = Helper::validate($options);
+        if (($this->fileIsSetAndHasValue($file) or $file == LARUPLOAD_NULL) and ($this->fileIsSetAndHasValue($cover) or $cover == null)) {
+            $this->file = $file;
+            $this->uploaded = false;
 
-        if (empty($errors)) {
-            $this->folder = $folder;
-            $this->injectedOptions = $options;
+            if ($file != LARUPLOAD_NULL) {
+                $this->cover = $cover;
+                $this->type = $this->getFileType($file);
+            }
 
-            $options = Helper::arrayMergeRecursiveDistinct($this->getDefaultOptions(), $options);
+            return true;
+        }
 
-            $this->name = $name;
-            $this->path = $this->config['path'] . "/" . strtolower($folder);
+        return false;
+    }
 
-            $this->storage = $options['storage'];
-            $this->mode = $options['mode'];
-            $this->withMeta = $options['with_meta'];
-            $this->namingMethod = $options['naming_method'];
-            $this->dominantColor = $options['dominant_color'];
-            $this->styles = $options['styles'];
-            $this->generateCover = $options['generate_cover'];
-            $this->coverStyle = $options['cover_style'];
-            $this->keepOldFiles = $options['keep_old_files'];
-            $this->preserveFiles = $options['preserve_files'];
-            $this->allowedMimeTypes = $options['allowed_mime_types'];
-            $this->allowedMimes = $options['allowed_mimes'];
+    /**
+     * Detach
+     *
+     * @return bool
+     */
+    public function detach(): bool
+    {
+        return $this->attach(LARUPLOAD_NULL);
+    }
+
+    /**
+     * Update cover
+     *
+     * @param UploadedFile $file
+     * @return bool
+     */
+    public function updateCover(UploadedFile $file): bool
+    {
+        if ($this->output['type'] and $file->isValid()) {
+            $this->uploaded = false;
+            $this->cover = $file;
+            $this->type = $this->output['type'];
+
+            return true;
         }
         else {
-            $fields = implode(', ', array_keys($errors));
-
-            throw new Exception("invalid fields: $fields");
+            return false;
         }
     }
 
     /**
-     * Set uploaded file
+     * Detach cover
      *
-     * @param UploadedFile $file
-     * @param UploadedFile|null $cover
+     * @return bool
      */
-    public function setUploadedFile($file, $cover = null): void
+    public function detachCover(): bool
     {
-        if (($file instanceof UploadedFile or $file == LARUPLOAD_NULL) and ($cover instanceof UploadedFile or $cover == null)) {
-            if ($this->validation($file)) {
-                $this->file = $file;
+        if ($this->output['type']) {
+            $this->uploaded = false;
+            $this->cover = LARUPLOAD_NULL;
+            $this->type = $this->output['type'];
 
-                if ($file != LARUPLOAD_NULL) {
-                    $this->cover = $cover;
-                    $this->type = $this->getFileType($file);
-                }
-            }
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
@@ -246,15 +101,12 @@ class Attachment
      */
     public function saved(Model $model): Model
     {
-        if ($this->file) {
+        $this->id = $model->id;
+        $this->uploaded = true;
+
+        if (isset($this->file)) {
             if ($this->file == LARUPLOAD_NULL) {
                 $this->clean($model->id);
-
-                if ($this->mode == 'light') {
-                    foreach ($this->output as $key => $value) {
-                        $this->output[$key] = null;
-                    }
-                }
             }
             else {
                 if (!$this->keepOldFiles) {
@@ -262,13 +114,16 @@ class Attachment
                 }
 
                 $this->setBasicDetails();
-
                 $this->setMediaDetails();
-
-                $this->handleStyles($model->id, $model->getMorphClass());
-
+                $this->uploadOriginalFile($model->id);
                 $this->setCover($model->id);
+                $this->handleStyles($model->id, $model->getMorphClass());
             }
+
+            $model = $this->setAttributes($model);
+        }
+        else if (isset($this->cover)) {
+            $this->setCover($model->id);
 
             $model = $this->setAttributes($model);
         }
@@ -284,8 +139,7 @@ class Attachment
     public function deleted(Model $model): void
     {
         if (!$this->preserveFiles) {
-            $path = $this->path . '/' . $model->id;
-            Storage::disk($this->storage)->deleteDirectory($path);
+            Storage::disk($this->disk)->deleteDirectory("{$this->folder}/{$model->id}");
         }
     }
 
@@ -293,35 +147,15 @@ class Attachment
      * Generate URL for attached file
      * Remember, if you are using the local driver, all files that should be publicly accessible should be placed in the storage/app/public directory. Furthermore, you should create a symbolic link at public/storage which points to the  storage/app/public directory
      *
-     * @param Model $model
      * @param string $style
      * @return null|string
      */
-    public function url(Model $model, string $style = 'original')
+    public function url(string $style = LaruploadEnum::ORIGINAL_FOLDER): ?string
     {
-        if (in_array($style, ['original', 'cover']) or array_key_exists($style, $this->styles)) {
-            list('name' => $name, 'type' => $type) = $this->getTypeAndName($model, $style);
+        $path = $this->prepareStylePath($style);
 
-            if ($name and $style == 'stream') {
-                if ($type == 'video') {
-                    $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
-                    $path = $this->getPath($model->id, $style);
-                    $path = "$path/$name";
-
-                    return $this->storageUrl($path);
-                }
-                else {
-                    return null;
-                }
-
-            }
-            else if ($name and $this->hasFile($model, $style)) {
-                $name = $this->fixExceptionNames($name, $style);
-                $path = $this->getPath($model->id, $style);
-                $path = "$path/$name";
-
-                return $this->storageUrl($path);
-            }
+        if ($path) {
+            return $this->storageUrl($path);
         }
 
         return null;
@@ -330,224 +164,92 @@ class Attachment
     /**
      * Download attached file
      *
-     * @param Model $model
      * @param string $style
-     * @return null|string
+     * @return RedirectResponse|StreamedResponse|null
      */
-    public function download(Model $model, string $style = 'original')
+    public function download(string $style = 'original')
     {
-        if (in_array($style, ['original', 'cover']) or array_key_exists($style, $this->styles)) {
-            list('name' => $name, 'type' => $type) = $this->getTypeAndName($model, $style);
+        $path = $this->prepareStylePath($style);
 
-            if ($name and $style == 'stream') {
-                if ($type == 'video') {
-                    $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
-                    $path = $this->getPath($model->id, $style);
-                    $path = "$path/$name";
-
-                    return $this->storageDownload($path);
-                }
-                else {
-                    return null;
-                }
-
-            }
-            else if ($name and $this->hasFile($model, $style)) {
-                $name = $this->fixExceptionNames($name, $style);
-                $path = $this->getPath($model->id, $style);
-                $path = "$path/$name";
-
-                return $this->storageDownload($path);
-            }
+        if ($path) {
+            return $this->storageDownload($path);
         }
 
         return null;
     }
 
     /**
-     * Get All styles (original, cover and ...) for attached field
+     * Get meta data as an array or object
      *
-     * @param Model $model
+     * @param string|null $key
+     * @return object|string|integer|null
+     */
+    public function meta(string $key = null)
+    {
+        if ($key) {
+            $meta = $this->output;
+
+            if (array_key_exists($key, $meta)) {
+                return $meta[$key];
+            }
+
+            return null;
+        }
+
+        return $this->outputToObject();
+    }
+
+    /**
+     * Get url for all styles (original, cover and ...) of current entity
+     *
      * @return object
      */
-    public function getFiles(Model $model): object
+    public function urls(): object
     {
-        $styleNames = array_merge(['original', 'cover'], array_keys($this->styles));
+        $staticStyles = [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER, LaruploadEnum::STREAM_FOLDER];
+        $allStyles = array_merge($staticStyles, array_keys($this->styles));
         $styles = new stdClass();
 
-        foreach ($styleNames as $style) {
-            if ($style == 'cover' and $this->generateCover == false) {
+        foreach ($allStyles as $style) {
+            if ($style == LaruploadEnum::COVER_FOLDER and $this->generateCover == false) {
                 $styles->{$style} = null;
                 continue;
             }
+            else if ($style == LaruploadEnum::STREAM_FOLDER and empty($this->streams)) {
+                unset($styles->{$style});
+                continue;
+            }
 
-            $styles->{$style} = $this->url($model, $style);
+            $styles->{$this->nameStyle($style)} = $this->url($style);
         }
 
         if ($this->withMeta) {
-            $styles->meta = $this->getMeta($model);
+            $styles->meta = $this->meta();
         }
 
         return $styles;
     }
 
     /**
-     * Get meta data as an array or object
-     *
-     * @param Model $model
-     * @param string $key
-     * @return object|string|integer|null
-     */
-    public function getMeta(Model $model, string $key = null)
-    {
-        if ($this->mode == 'heavy') {
-            $meta = (object)$this->output;
-
-            if ($key) {
-                if (property_exists($meta, $key)) {
-                    return $model->{"{$this->name}_file_$key"};
-                }
-
-                return null;
-            }
-            else {
-                foreach ($meta as $index => $item) {
-                    if ($this->file == LARUPLOAD_NULL) {
-                        $meta->{$index} = null;
-                    }
-                    else {
-                        $meta->{$index} = $model->{"{$this->name}_file_$index"};
-                    }
-                }
-
-                return $meta;
-            }
-        }
-        else {
-            $meta = json_decode($model->{"{$this->name}_file_meta"});
-
-            if ($key) {
-                return property_exists($meta, $key) ? $meta->{$key} : null;
-            }
-
-            return $meta;
-        }
-    }
-
-    /**
      * Handle FFMpeg queue on running ffmpeg queue:work
      *
-     * @param $id
-     * @param array $meta
+     * @param bool $isLastOne
      * @throws Exception
      */
-    public function handleFFMpegQueue($id, array $meta): void
+    public function handleFFMpegQueue(bool $isLastOne = false): void
     {
-        $shouldDeletePath = null;
-        $path = $this->getPath($id, 'original');
+        $driverIsLocal = $this->driverIsLocal();
 
-        if ($this->storage == 'local') {
-            $path = Storage::disk($this->storage)->path("$path/{$meta['name']}");
+        $path = $this->getBasePath($this->id, LaruploadEnum::ORIGINAL_FOLDER);
+        $path = Storage::disk($driverIsLocal ? $this->disk : $this->localDisk)->path("$path/{$this->output['name']}");
+        $this->file = new UploadedFile($path, $this->output['name'], null, null, true);
+        $this->type = $this->getFileType($this->file);
+
+        $this->handleVideoStyles($this->id);
+
+        if (!$driverIsLocal and $isLastOne) {
+            Storage::disk($this->localDisk)->deleteDirectory("{$this->folder}/{$this->id}");
         }
-        else {
-            $shouldDeletePath = $this->getPath($id, '');
-
-            $path = Storage::disk('local')->path("$path/{$meta['name']}");
-        }
-
-        $file = new UploadedFile($path, $meta['name'], $meta['mime_type']);
-        $this->file = $file;
-
-        $this->type = $this->getFileType($file);
-        $this->setBasicDetails();
-
-        $this->handleVideoStyles($id, $file);
-
-        if ($shouldDeletePath) {
-            Storage::disk('local')->deleteDirectory($shouldDeletePath);
-        }
-    }
-
-    /**
-     * Validate files with mime type and file extension
-     *
-     * @param UploadedFile $file
-     * @return bool
-     */
-    protected function validation($file): bool
-    {
-        if ($file != LARUPLOAD_NULL) {
-            if (count($this->allowedMimes) and !in_array($file->getClientOriginalExtension(), $this->allowedMimes)) {
-                return false;
-            }
-
-            if (count($this->allowedMimeTypes) and !in_array($file->getMimeType(), $this->allowedMimeTypes)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Get default larupload options
-     *
-     * @return array
-     */
-    protected function getDefaultOptions(): array
-    {
-        return [
-            'storage'            => $this->config['storage'],
-            'mode'               => $this->config['mode'],
-            'naming_method'      => $this->config['naming_method'],
-            'with_meta'          => $this->config['with_meta'],
-            'styles'             => $this->config['styles'],
-            'dominant_color'     => $this->config['dominant_color'],
-            'generate_cover'     => $this->config['generate_cover'],
-            'cover_style'        => $this->config['cover_style'],
-            'keep_old_files'     => $this->config['keep_old_files'],
-            'preserve_files'     => $this->config['preserve_files'],
-            'allowed_mime_types' => $this->config['allowed_mime_types'],
-            'allowed_mimes'      => $this->config['allowed_mimes'],
-        ];
-    }
-
-    /**
-     * Get file type
-     *
-     * @param UploadedFile $file
-     * @return null|string
-     */
-    protected function getFileType(UploadedFile $file)
-    {
-        if ($file) {
-            $mime = $file->getMimeType();
-
-            return $this->mimeToType($mime);
-        }
-
-        return null;
-    }
-
-    /**
-     * Convert MimeType to human readable type
-     *
-     * @param string $mime
-     * @return string
-     */
-    protected function mimeToType(string $mime): string
-    {
-        if (strstr($mime, "image/")) {
-            return 'image';
-        }
-        else if (strstr($mime, "video/")) {
-            return 'video';
-        }
-        else if (strstr($mime, "audio/")) {
-            return 'audio';
-        }
-
-        return 'file';
     }
 
     /**
@@ -555,32 +257,10 @@ class Attachment
      */
     protected function setBasicDetails(): void
     {
-        $format = $this->file->getClientOriginalExtension();
-
-        switch ($this->namingMethod) {
-            case 'hash_file':
-                $name = hash_file('md5', $this->file->getRealPath());
-                break;
-
-            case 'time':
-                $name = time();
-                break;
-
-
-            default:
-                $name = $this->file->getClientOriginalName();
-                $name = pathinfo($name, PATHINFO_FILENAME);
-                $num = rand(0, 9999);
-
-                $str = new Str($this->config['lang']);
-                $name = $str->generateSlug($name) . "-" . $num;
-                break;
-        }
-
-        $this->output['name'] = $name . "." . $format;
-        $this->output['format'] = $format;
+        $this->output['name'] = $this->setFileName();
+        $this->output['format'] = $this->file->getClientOriginalExtension();
         $this->output['size'] = $this->file->getSize();
-        $this->output['type'] = $this->getHumanReadableFileType($this->file->getMimeType());
+        $this->output['type'] = $this->type;
         $this->output['mime_type'] = $this->file->getMimeType();
     }
 
@@ -592,28 +272,36 @@ class Attachment
     protected function setMediaDetails(): void
     {
         switch ($this->type) {
-            case 'video':
-            case 'audio':
-                $ffmpeg = new FFMpeg($this->file);
-                $meta = $ffmpeg->getMeta();
+            case LaruploadEnum::VIDEO:
+            case LaruploadEnum::AUDIO:
+                $meta = $this->ffmpeg()->getMeta();
 
-                $this->output['width'] = (int)$meta['width'];
-                $this->output['height'] = (int)$meta['height'];
-                $this->output['duration'] = (int)$meta['duration'];
+                $this->output['width'] = $meta['width'];
+                $this->output['height'] = $meta['height'];
+                $this->output['duration'] = $meta['duration'];
 
                 break;
 
-            case 'image':
-                $image = new Image($this->file);
-                $meta = $image->getMeta();
+            case LaruploadEnum::IMAGE:
+                $meta = $this->image($this->file)->getMeta();
 
-                $dominantColor = $this->dominantColor ? Image::dominant($this->file) : null;
+                $this->output['width'] = $meta['width'];
+                $this->output['height'] = $meta['height'];
+                $this->output['dominant_color'] = $this->dominantColor ? $this->image($this->file)->getDominantColor($this->file) : null;
 
-                $this->output['width'] = (int)$meta['width'];
-                $this->output['height'] = (int)$meta['height'];
-                $this->output['dominant_color'] = $dominantColor;
                 break;
         }
+    }
+
+    /**
+     * Upload original file
+     *
+     * @param int $id
+     */
+    protected function uploadOriginalFile(int $id)
+    {
+        $path = $this->getBasePath($id, LaruploadEnum::ORIGINAL_FOLDER);
+        Storage::disk($this->disk)->putFileAs($path, $this->file, $this->output['name']);
     }
 
     /**
@@ -625,48 +313,62 @@ class Attachment
      */
     protected function setCover($id): void
     {
-        $path = $this->getPath($id, 'cover');
+        $path = $this->getBasePath($id, LaruploadEnum::COVER_FOLDER);
+        Storage::disk($this->disk)->deleteDirectory($path);
 
-        $pathInfo = pathinfo($this->output['name']);
-        $fileName = $pathInfo['filename'];
+        // delete cover
+        if (isset($this->cover) and $this->cover == LARUPLOAD_NULL) {
+            $this->output['cover'] = null;
 
-        if ($this->type == 'image') {
-            $name = "$fileName." . ($pathInfo['extension'] == 'svg' ? 'png' : $pathInfo['extension']);
+            if ($this->type != LaruploadEnum::IMAGE) {
+                $this->output['dominant_color'] = null;
+            }
         }
-        else {
-            $name = "$fileName.jpg";
-        }
+        // upload cover by sending file
+        else if ($this->fileIsSetAndHasValue($this->cover) and ($this->mimeToType($this->cover->getMimeType()) == LaruploadEnum::IMAGE)) {
+            Storage::disk($this->disk)->makeDirectory($path);
 
-        if ($this->cover and ($this->cover instanceof UploadedFile) and ($this->mimeToType($this->cover->getMimeType()) == 'image')) {
-            Storage::disk($this->storage)->putFileAs($path, $this->cover, $name);
+            $name = $this->setFileName($this->cover);
+            $saveTo = "{$path}/{$name}";
 
-            $this->output['cover'] = $name;
+            $result = $this->image($this->cover)->resize($saveTo, $this->coverStyle);
+
+            if ($result) {
+                $this->output['cover'] = $name;
+
+                if ($this->type != LaruploadEnum::IMAGE) {
+                    $this->output['dominant_color'] = $this->dominantColor ? $this->image($this->cover)->getDominantColor() : null;
+                }
+            }
         }
+        // generate cover
         else {
             if (!$this->generateCover) {
                 return;
             }
 
-            switch ($this->type) {
-                case 'video':
-                    Storage::disk($this->storage)->makeDirectory($path);
-                    $saveTo = $path . "/$name";
+            Storage::disk($this->disk)->makeDirectory($path);
 
-                    $ffmpeg = new FFMpeg($this->file);
-                    $ffmpeg->capture($this->config['ffmpeg-capture-frame'], $this->coverStyle, $this->storage, $saveTo);
+            $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME);
+            $format = $this->type == LaruploadEnum::IMAGE ? ($this->output['format'] == 'svg' ? 'png' : $this->output['format']) : 'jpg';
+            $name = "{$fileName}.{$format}";
+            $saveTo = "{$path}/{$name}";
+
+            switch ($this->type) {
+                case LaruploadEnum::VIDEO:
+                    Storage::disk($this->disk)->makeDirectory($path);
+
+                    $color = $this->ffmpeg()->capture($this->ffmpegCaptureFrame, $this->coverStyle, $saveTo, $this->dominantColor);
 
                     $this->output['cover'] = $name;
-                    $this->output['dominant_color'] = ($this->dominantColor) ? Image::dominant($saveTo) : null;
+                    $this->output['dominant_color'] = $this->dominantColor ? $color : null;
 
                     break;
 
+                case LaruploadEnum::IMAGE:
+                    Storage::disk($this->disk)->makeDirectory($path);
 
-                case 'image':
-                    Storage::disk($this->storage)->makeDirectory($path);
-                    $saveTo = $path . "/$name";
-
-                    $image = new Image($this->file);
-                    $result = $image->resize($this->storage, $saveTo, $this->coverStyle);
+                    $result = $this->image($this->file)->resize($saveTo, $this->coverStyle);
 
                     if ($result) {
                         $this->output['cover'] = $name;
@@ -681,75 +383,35 @@ class Attachment
      * Handle styles
      * resize, crop and generate styles from original file
      *
-     * @param $id
-     * @param $class
+     * @param int $id
+     * @param string $class
+     * @param bool $standalone
      * @throws Exception
      */
-    protected function handleStyles($id, $class): void
+    protected function handleStyles(int $id, string $class, bool $standalone = false): void
     {
-        // Handle original
-        $path = $this->getPath($id, 'original');
-        Storage::disk($this->storage)->putFileAs($path, $this->file, $this->output['name']);
-
-
-        // Handle styles by file type
         switch ($this->type) {
-            case 'image':
+            case LaruploadEnum::IMAGE:
                 foreach ($this->styles as $name => $style) {
-                    if ($name == 'stream' or (isset($style['type']) and !in_array($this->type, $style['type']))) {
+                    if (count($style['type']) and !in_array(LaruploadEnum::IMAGE, $style['type'])) {
                         continue;
                     }
 
-                    $path = $this->getPath($id, $name);
+                    $path = $this->getBasePath($id, $name);
+                    $saveTo = $path . '/' . $this->fixExceptionNames($this->output['name'], $name);
 
-                    Storage::disk($this->storage)->makeDirectory($path);
-                    $saveTo = $path . '/' . $this->fixExceptionNames($this->output['name'], $style);
-
-                    $image = new Image($this->file);
-                    $image->resize($this->storage, $saveTo, $style);
+                    Storage::disk($this->disk)->makeDirectory($path);
+                    $this->image($this->file)->resize($saveTo, $style);
                 }
 
                 break;
 
-
-            case 'video':
-                if ($this->config['ffmpeg-queue']) {
-                    $maxQueueNum = $this->config['ffmpeg-max-queue-num'];
-                    $flag = false;
-
-                    if ($maxQueueNum == 0) {
-                        $flag = true;
-                    }
-                    else {
-                        $availableQueues = DB::table('larupload_ffmpeg_queue')->where('status', 0)->count();
-
-                        if ($availableQueues < $maxQueueNum) {
-                            $flag = true;
-                        }
-                    }
-
-
-                    if ($flag) {
-                        // Save a copy of original file to use it on process ffmpeg queue, then delete it
-                        Storage::disk('local')->putFileAs($path, $this->file, $this->output['name']);
-
-                        $statusId = DB::table('larupload_ffmpeg_queue')->insertGetId([
-                            'record_id'    => $id,
-                            'record_class' => $class,
-                            'created_at'   => now(),
-                        ]);
-
-                        ProcessFFMpeg::dispatch($statusId, $id, $this->name, $class, $this->folder, $this->injectedOptions, $this->output)->delay(now()->addSeconds(1));
-                    }
-                    else {
-                        throw new HttpResponseException(redirect(URL::previous())->withErrors([
-                            'ffmpeg_queue_max_num' => trans('larupload::messages.max-queue-num-exceeded')
-                        ]));
-                    }
-
+            case LaruploadEnum::VIDEO:
+                if ($this->ffmpegQueue) {
+                    $this->initializeFFMpegQueue($id, $class, $standalone);
                 }
                 else {
-                    $this->handleVideoStyles($id, $this->file);
+                    $this->handleVideoStyles($id);
                 }
 
                 break;
@@ -760,53 +422,87 @@ class Attachment
      * Handle styles for videos
      *
      * @param $id
-     * @param UploadedFile $file
      * @throws Exception
      */
-    protected function handleVideoStyles($id, UploadedFile $file): void
+    protected function handleVideoStyles($id): void
     {
         foreach ($this->styles as $name => $style) {
-            if ($name == 'stream' or (isset($style['type']) and !in_array($this->type, $style['type']))) {
+            if ((count($style['type']) and !in_array(LaruploadEnum::VIDEO, $style['type']))) {
                 continue;
             }
 
-            $path = $this->getPath($id, $name);
-            Storage::disk($this->storage)->makeDirectory($path);
-            $saveTo = $path . '/' . $this->output['name'];
+            $path = $this->getBasePath($id, $name);
+            Storage::disk($this->disk)->makeDirectory($path);
+            $saveTo = "{$path}/{$this->output['name']}";
 
-            $ffmpeg = new FFMpeg($file);
-            $ffmpeg->manipulate($style, $this->storage, $saveTo);
-
-            unset($ffmpeg);
+            $this->ffmpeg()->manipulate($style, $saveTo);
         }
 
-        if (isset($this->styles['stream'])) {
+        if (count($this->streams)) {
             $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME) . '.m3u8';
 
-            $path = $this->getPath($id, 'stream');
-            Storage::disk($this->storage)->makeDirectory($path);
+            $path = $this->getBasePath($id, LaruploadEnum::STREAM_FOLDER);
+            Storage::disk($this->disk)->makeDirectory($path);
 
-            $ffmpeg = new FFMpeg($file);
-            $ffmpeg->stream($this->styles['stream'], $this->storage, $path, $fileName);
-
-            unset($ffmpeg);
+            $this->ffmpeg()->stream($this->streams, $path, $fileName);
         }
     }
 
     /**
-     * Path Helper to generate relative path string
+     * Initialize FFMPEG Queue
      *
-     * @param $id
-     * @param string $folder
-     * @return string
+     * @param int $id
+     * @param string $class
+     * @param bool $standalone
      */
-    protected function getPath($id, string $folder = null): string
+    protected function initializeFFMpegQueue(int $id, string $class, bool $standalone = false)
     {
-        if ($folder) {
-            return $this->path . '/' . $id . '/' . $this->name . '/' . $folder;
+        $maxQueueNum = $this->ffmpegMaxQueueNum;
+        $flag = false;
+
+        if ($maxQueueNum == 0) {
+            $flag = true;
+        }
+        else {
+            $availableQueues = DB::table(LaruploadEnum::FFMPEG_QUEUE_TABLE)->where('status', 0)->count();
+
+            if ($availableQueues < $maxQueueNum) {
+                $flag = true;
+            }
         }
 
-        return $this->path . '/' . $id . '/' . $this->name;
+
+        if ($flag) {
+            // save a copy of original file to use it on process ffmpeg queue, then delete it
+            if ($this->driverIsNotLocal()) {
+                $path = $this->getBasePath($id, LaruploadEnum::ORIGINAL_FOLDER);
+                Storage::disk($this->localDisk)->putFileAs($path, $this->file, $this->output['name']);
+            }
+
+            $queueId = DB::table(LaruploadEnum::FFMPEG_QUEUE_TABLE)->insertGetId([
+                'record_id'    => $id,
+                'record_class' => $class,
+                'created_at'   => now(),
+            ]);
+
+            $serializedClass = null;
+            if ($standalone) {
+                unset($this->file);
+                unset($this->cover);
+                unset($this->image);
+                unset($this->ffmpeg);
+
+                $serializedClass = base64_encode(serialize($this));
+            }
+
+
+            ProcessFFMpeg::dispatch($queueId, $id, $this->name, $class, $serializedClass);
+        }
+        else {
+            throw new HttpResponseException(redirect(URL::previous())->withErrors([
+                'ffmpeg_queue_max_num' => trans('larupload::messages.max-queue-num-exceeded')
+            ]));
+        }
     }
 
     /**
@@ -816,8 +512,12 @@ class Attachment
      */
     protected function clean($id): void
     {
-        $path = $this->getPath($id);
-        Storage::disk($this->storage)->deleteDirectory($path);
+        $path = $this->getBasePath($id);
+        Storage::disk($this->disk)->deleteDirectory($path);
+
+        foreach ($this->output as $key => $value) {
+            $this->output[$key] = null;
+        }
     }
 
     /**
@@ -828,7 +528,6 @@ class Attachment
      */
     protected function setAttributes(Model $model): Model
     {
-
         if ($this->mode == 'heavy') {
             foreach ($this->output as $key => $value) {
                 $model->{"{$this->name}_file_$key"} = $value;
@@ -843,182 +542,40 @@ class Attachment
     }
 
     /**
-     * Check if style has file
+     * Prepare style path
+     * this function will use to prepare full path of given style to generate url/download response
      *
-     * @param Model $model
-     * @param $style
-     * @return bool
-     */
-    protected function hasFile(Model $model, $style): bool
-    {
-        if (array_key_exists($style, $this->styles)) {
-            $mime = null;
-            if ($this->mode == 'heavy') {
-                $mime = $model->{"{$this->name}_file_mime_type"};
-            }
-            else {
-                $details = json_decode($model->{"{$this->name}_file_meta"});
-                if (isset($details->mime_type) and $details->mime_type) {
-                    $mime = $details->mime_type;
-                }
-            }
-
-            if ($mime) {
-                $type = $this->mimeToType($mime);
-
-                if (isset($this->styles[$style]['type']) and !in_array($type, $this->styles[$style]['type'])) {
-                    return false;
-                }
-            }
-            else {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Convert path to URL based on storage driver
-     *
-     * @param string $path
+     * @param string $style
      * @return string|null
      */
-    protected function storageUrl(string $path)
+    protected function prepareStylePath(string $style): ?string
     {
-        $storage = $this->storage;
+        $staticStyles = [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER, LaruploadEnum::STREAM_FOLDER];
 
-        if ($this->file == LARUPLOAD_NULL) {
-            return null;
-        }
+        if ($this->id and (in_array($style, $staticStyles) or array_key_exists($style, $this->styles))) {
+            $name = $style == LaruploadEnum::COVER_FOLDER ? $this->output['cover'] : $this->output['name'];
+            $type = $this->output['type'];
 
-        if ($storage == 'local') {
-            $url = Storage::disk($storage)->url($path);
-            return url($url);
-        }
+            if ($name and $style == LaruploadEnum::STREAM_FOLDER) {
+                if ($type == LaruploadEnum::VIDEO) {
+                    $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
+                    $path = $this->getBasePath($this->id, $style);
+                    $path = "$path/$name";
 
-        $base = config("filesystems.disks.$storage.url");
-        if ($base) {
-            return "$base/$path";
-        }
+                    return $path;
+                }
 
-        return $path;
-    }
+                return null;
+            }
+            else if ($name and $this->styleHasFile($style)) {
+                $name = $this->fixExceptionNames($name, $style);
+                $path = $this->getBasePath($this->id, $style);
+                $path = "$path/$name";
 
-    /**
-     * Download path based on storage driver
-     *
-     * @param string $path
-     * @return RedirectResponse|StreamedResponse|null
-     */
-    protected function storageDownload(string $path)
-    {
-        $storage = $this->storage;
-
-        if ($this->file == LARUPLOAD_NULL) {
-            return null;
-        }
-
-        if ($storage == 'local') {
-            return Storage::disk($storage)->download($path);
-        }
-
-        $base = config("filesystems.disks.$storage.url");
-        if ($base) {
-            return redirect("$base/$path");
+                return $path;
+            }
         }
 
         return null;
-    }
-
-    /**
-     * In some special cases we should use other file names instead of the original one
-     * Example: when user uploads a svg image, we should change the converted format to jpg! so we have to manipulate file name
-     *
-     * @param string $name
-     * @param $style
-     * @return mixed
-     */
-    protected function fixExceptionNames(string $name, $style): string
-    {
-        if (!in_array($style, ['original', 'cover'])) {
-            if (Str::endsWith($name, 'svg')) {
-                $name = str_replace('svg', 'jpg', $name);
-            }
-        }
-
-        return $name;
-    }
-
-    /**
-     * Get human readable file type from mime-type
-     *
-     * @param string $mimeType
-     * @return null|string
-     */
-    protected function getHumanReadableFileType(string $mimeType)
-    {
-        if ($mimeType) {
-
-            if (strstr($mimeType, "image/")) {
-                return 'image';
-            }
-            else if (strstr($mimeType, "video/")) {
-                return 'video';
-            }
-            else if (strstr($mimeType, "audio/")) {
-                return 'audio';
-            }
-            else if ($mimeType == 'application/pdf') {
-                return 'pdf';
-            }
-            else if ($mimeType == 'application/zip' or $mimeType == 'application/x-rar-compressed') {
-                return 'compressed';
-            }
-
-            return 'file';
-        }
-
-        return null;
-    }
-
-    /**
-     * Retrieve Type and Name of attached style
-     *
-     * @param Model $model
-     * @param $style
-     * return array
-     */
-    protected function getTypeAndName(Model $model, $style)
-    {
-        $name = null;
-
-        if ($this->mode == 'heavy') {
-            $type = $model->{"{$this->name}_file_type"};
-
-            if ($style == 'cover') {
-                $name = $model->{"{$this->name}_file_cover"};
-            }
-            else {
-                $name = $model->{"{$this->name}_file_name"};
-            }
-        }
-        else {
-            $details = json_decode($model->{"{$this->name}_file_meta"});
-            $type = null;
-
-            if ($details and isset($details->type)) {
-                $type = $details->type;
-            }
-
-            if ($style == 'cover' and isset($details->cover) and $details->cover) {
-                $name = $details->cover;
-            }
-            else if (isset($details->name) and $details->name) {
-                $name = $details->name;
-            }
-        }
-
-        return compact('name', 'type');
     }
 }

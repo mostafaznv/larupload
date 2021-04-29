@@ -4,47 +4,64 @@ namespace Mostafaznv\Larupload\Storage;
 
 use Exception;
 use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\Helpers\LaraTools;
+use Mostafaznv\Larupload\LaruploadEnum;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
-use Mostafaznv\Larupload\Helpers\Helper;
 use Symfony\Component\Process\Process;
 
 class FFMpeg
 {
+    use LaraTools;
+
     /**
      * Attached file
      *
-     * @var object
+     * @var UploadedFile
      */
-    protected $file;
+    protected UploadedFile $file;
 
     /**
-     * Larupload configurations
+     * Storage Disk
      *
-     * @var array
+     * @var string
      */
-    protected $config;
+    protected string $disk;
+
+    /**
+     * Storage local disk
+     *
+     * @var string
+     */
+    protected string $localDisk;
 
     /**
      * Video Metadata
      *
      * @var array
      */
-    protected $meta = [];
+    protected array $meta = [];
 
     /**
      * FFMPEG binary address
      *
      * @var string
      */
-    protected $ffmpeg;
+    protected string $ffmpeg;
 
     /**
      * FFProbe binary address
      *
      * @var string
      */
-    protected $ffprobe;
+    protected string $ffprobe;
+
+    /**
+     * Timeout
+     *
+     * @var int
+     */
+    protected int $timeout;
 
     /**
      * Default scale size
@@ -58,20 +75,20 @@ class FFMpeg
      * FFMpeg constructor
      *
      * @param UploadedFile $file
+     * @param string $disk
+     * @param string $localDisk
      */
-    public function __construct(UploadedFile $file)
+    public function __construct(UploadedFile $file, string $disk, string $localDisk)
     {
-        $this->config = config('larupload');
         $this->file = $file;
+        $this->disk = $disk;
+        $this->localDisk = $localDisk;
 
-        if (count($this->config['ffmpeg']) and $this->config['ffmpeg']['ffmpeg.binaries'] and $this->config['ffmpeg']['ffprobe.binaries']) {
-            $this->ffmpeg = $this->config['ffmpeg']['ffmpeg.binaries'];
-            $this->ffprobe = $this->config['ffmpeg']['ffprobe.binaries'];
-        }
-        else {
-            $this->ffmpeg = 'ffmpeg';
-            $this->ffprobe = 'ffprobe';
-        }
+        $config = config('larupload.ffmpeg');
+
+        $this->ffmpeg = $config['ffmpeg-binaries'];
+        $this->ffprobe = $config['ffprobe-binaries'];
+        $this->timeout = $config['timeout'];
     }
 
     /**
@@ -87,24 +104,43 @@ class FFMpeg
             $meta = [
                 'width'    => null,
                 'height'   => null,
-                'duration' => null,
+                'duration' => 0,
             ];
 
             $cmd = $this->cmd("{$this->ffprobe} -i $path -loglevel quiet -show_format -show_streams -print_format json");
 
             $process = new Process($cmd);
-            $process->setTimeout($this->config['ffmpeg-timeout']);
+            $process->setTimeout($this->timeout);
             $process->run();
             $output = $process->getOutput();
 
             if ($process->isSuccessful()) {
                 $output = json_decode($output);
-                if ($output !== null) {
-                    $stream = $output->streams[0];
 
-                    $meta['width'] = isset($stream->width) ? (int)$stream->width : null;
-                    $meta['height'] = isset($stream->height) ? (int)$stream->height : null;
-                    $meta['duration'] = (int)$stream->duration;
+                if ($output !== null) {
+                    $rotate = 0;
+
+                    foreach ($output->streams as $stream) {
+                        if (isset($stream->width)) {
+                            $meta['width'] = (int)$stream->width;
+                        }
+
+                        if (isset($stream->height)) {
+                            $meta['height'] = (int)$stream->height;
+                        }
+
+                        if (isset($stream->duration)) {
+                            $meta['duration'] = (int)$stream->duration;
+                        }
+
+                        if (isset($stream->tags->rotate)) {
+                            $rotate = $stream->tags->rotate;
+                        }
+                    }
+
+                    if ($rotate == 90 or $rotate == 270) {
+                        list($meta['height'], $meta['width']) = array($meta['width'], $meta['height']);
+                    }
                 }
                 else {
                     $process->addErrorOutput('ffprobe output is null');
@@ -126,58 +162,59 @@ class FFMpeg
      *
      * @param $fromSecond
      * @param array $style
-     * @param string $storage
      * @param string $saveTo
+     * @param bool $withDominantColor
+     * @return string|null
      * @throws Exception
      */
-    public function capture($fromSecond, array $style, string $storage, string $saveTo): void
+    public function capture($fromSecond, array $style, string $saveTo, bool $withDominantColor): ?string
     {
+        $meta = $this->getMeta();
         $width = isset($style['width']) ? $style['width'] : null;
         $height = isset($style['height']) ? $style['height'] : null;
-        $scale = $width ? $width : ($height ? $height : 850);
+        $scale = $width ? $width : ($height ? $height : self::DEFAULT_SCALE);
+        $scaleType = $meta['width'] >= $meta['height'] ? "-1:$scale" : "$scale:-1";
         $mode = isset($style['mode']) ? $style['mode'] : null;
-        $saveTo = Storage::disk($storage)->path($saveTo);
         $path = $this->file->getRealPath();
+        $saveTo = Storage::disk($this->disk)->path($saveTo);
 
         if (is_null($fromSecond)) {
-            $meta = $this->getMeta();
             $fromSecond = floor($meta['duration'] / 2);
             $fromSecond = number_format($fromSecond, 1);
         }
 
-        if ($mode == 'crop') {
+        if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
             if ($width and $height) {
-                $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=-1:$scale,crop=$width:$height");
+                $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$width:$height");
             }
             else {
-                $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=-1:$scale,crop=$scale:$scale");
+                $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$scale:$scale");
             }
         }
         else {
-            $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=-1:$scale");
+            $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType");
         }
 
-        $this->run($cmd, $storage, $saveTo);
+        return $this->run($cmd, $saveTo, null, $withDominantColor);
     }
 
     /**
      * Manipulate original video file to crop/resize
      *
-     * @param $style
-     * @param $storage
-     * @param $saveTo
+     * @param array $style
+     * @param string $saveTo
      * @throws Exception
      */
-    public function manipulate($style, $storage, $saveTo): void
+    public function manipulate(array $style, string $saveTo): void
     {
         $width = isset($style['width']) ? $style['width'] : null;
         $height = isset($style['height']) ? $style['height'] : null;
         $mode = isset($style['mode']) ? $style['mode'] : null;
         $scale = $this->calculateScale($mode, $width, $height);
-        $saveTo = Storage::disk($storage)->path($saveTo);
         $path = $this->file->getRealPath();
+        $saveTo = Storage::disk($this->disk)->path($saveTo);
 
-        if ($mode == 'crop') {
+        if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
             if ($scale) {
                 $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale,crop=$width:$height,setsar=1");
             }
@@ -189,40 +226,39 @@ class FFMpeg
             $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale,setsar=1");
         }
 
-        $this->run($cmd, $storage, $saveTo);
+        $this->run($cmd, $saveTo);
     }
 
     /**
      * Stream - Generate HLS video from source file
      *
      * @param array $styles
-     * @param string $storage
      * @param string $basePath
      * @param string $fileName
      * @return bool
      * @throws Exception
      */
-    public function stream(array $styles, string $storage, string $basePath, string $fileName)
+    public function stream(array $styles, string $basePath, string $fileName): bool
     {
         $playlist = "#EXTM3U\n#EXT-X-VERSION:3\n";
         $converted = [];
+        $driverIsLocal = $this->diskDriverIsLocal($this->disk);
+        $disk = $driverIsLocal ? $this->disk : $this->localDisk;
 
-        /*
-         * Generate multiple video qualities from uploaded video.
-         */
+        // generate multiple video qualities from uploaded video.
         foreach ($styles as $name => $style) {
-            $path = $this->file->getRealPath();
             $width = $style['width'];
             $height = $style['height'];
-            $audioBitRate = $this->shortNumberToInteger($style['bitrate']['audio']);
-            $videoBitRate = $this->shortNumberToInteger($style['bitrate']['video']);
+            $path = $this->file->getRealPath();
+            $audioBitRate = $style['bitrate']['audio'];
+            $videoBitRate = $style['bitrate']['video'];
             $styleBasePath = "$basePath/$name-convert";
 
-            Storage::disk('local')->makeDirectory($styleBasePath);
-            $saveTo = Storage::disk('local')->path("$styleBasePath/$name.mp4");
+            Storage::disk($disk)->makeDirectory($styleBasePath);
+            $saveTo = Storage::disk($disk)->path("$styleBasePath/$name.mp4");
 
             $cmd = escapeshellcmd("{$this->ffmpeg} -y -i $path -s {$width}x{$height} -y -strict experimental -acodec aac -b:a $audioBitRate -ac 2 -ar 48000 -vcodec libx264 -vprofile main -g 48 -b:v $videoBitRate -threads 64");
-            $this->run($cmd, 'local', $saveTo);
+            $this->run($cmd, $saveTo, $disk);
 
             $converted[$name] = [
                 'path'      => $styleBasePath,
@@ -233,26 +269,24 @@ class FFMpeg
             ];
         }
 
-        /*
-         * Convert generated videos to ts
-         */
+        // convert generated videos to ts
         foreach ($converted as $name => $value) {
             $m3u8 = 'chunk-list.m3u8';
             $streamBasePath = "$basePath/$name";
-            Storage::disk($storage)->makeDirectory($streamBasePath);
-            $streamBasePath = Storage::disk($storage)->path($streamBasePath);
+            Storage::disk($this->disk)->makeDirectory($streamBasePath);
+            $streamBasePath = Storage::disk($this->disk)->path($streamBasePath);
 
             $cmd = escapeshellcmd("{$this->ffmpeg} -y -i {$value['file']} -hls_time 9 -hls_segment_filename :stream-path/file-sequence-%d.ts -hls_playlist_type vod :stream-path/$m3u8");
-            $this->streamRun($cmd, $storage, $streamBasePath);
+            $this->streamRun($cmd, $streamBasePath);
 
             $playlist .= "#EXT-X-STREAM-INF:BANDWIDTH={$value['bandwidth']},RESOLUTION={$value['width']}x{$value['height']}\n";
             $playlist .= "$name/$m3u8\n";
 
-            Storage::disk('local')->deleteDirectory($value['path']);
+            Storage::disk($disk)->deleteDirectory($value['path']);
         }
 
         if (count($converted)) {
-            Storage::disk($storage)->put("$basePath/$fileName", $playlist);
+            Storage::disk($this->disk)->put("$basePath/$fileName", $playlist);
             return true;
         }
 
@@ -262,17 +296,17 @@ class FFMpeg
     /**
      * Calculate scale
      *
-     * @param $mode
-     * @param $width
-     * @param $height
-     * @return float|string
+     * @param string $mode
+     * @param int|null $width
+     * @param int|null $height
+     * @return string
      * @throws Exception
      */
-    protected function calculateScale(string $mode, $width, $height)
+    protected function calculateScale(string $mode, int $width = null, int $height = null): string
     {
         $meta = $this->getMeta();
 
-        if ($mode == 'crop') {
+        if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
             if ($width >= $meta['width'] or $height >= $meta['height']) {
                 if ($meta['width'] >= $meta['height']) {
                     $scale = ceil(($meta['width'] * $height) / $meta['height']);
@@ -309,45 +343,49 @@ class FFMpeg
      * Handle local/non-local drivers
      *
      * @param string $cmd
-     * @param string $storage
      * @param string $saveTo
+     * @param string|null $disk
+     * @param bool $withDominantColor
+     * @return string|null
      * @throws Exception
      */
-    protected function run(string $cmd, string $storage, string $saveTo): void
+    protected function run(string $cmd, string $saveTo, string $disk = null, bool $withDominantColor = false): ?string
     {
-        $driver = Helper::diskToDriver($storage);
+        $disk = $disk ?? $this->disk;
 
-        if ($driver == 'local') {
+        if ($this->diskDriverIsLocal($disk)) {
             $cmd = $this->cmd("$cmd $saveTo");
             $process = new Process($cmd);
-            $process->setTimeout($this->config['ffmpeg-timeout']);
+            $process->setTimeout($this->timeout);
             $process->run();
 
             if ($process->isSuccessful()) {
-                return;
+                return $withDominantColor ? $this->calcDominantColor($saveTo) : null;
             }
 
             throw new Exception($process->getErrorOutput());
         }
         else {
-            list($path, $name) = Helper::splitPath($saveTo);
+            list($path, $name) = $this->splitPath($saveTo);
 
-            $tempDir = Helper::tempDir();
+            $tempDir = $this->tempDir();
             $tempName = time() . '-' . $name;
-            $temp = $tempDir . '/' . $tempName;
+            $temp = "{$tempDir}/{$tempName}";
 
             $cmd = $this->cmd("$cmd $temp");
             $process = new Process($cmd);
-            $process->setTimeout($this->config['ffmpeg-timeout']);
+            $process->setTimeout($this->timeout);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $file = new File($temp);
 
-                Storage::disk($storage)->putFileAs($path, $file, $name);
+                $dominantColor = $withDominantColor ? $this->calcDominantColor($temp) : null;
+                Storage::disk($disk)->putFileAs($path, $file, $name);
+
                 @unlink($temp);
 
-                return;
+                return $dominantColor;
             }
 
             throw new Exception($process->getErrorOutput());
@@ -359,19 +397,16 @@ class FFMpeg
      * Handle local/non-local drivers
      *
      * @param string $cmd
-     * @param string $storage
      * @param string $streamPath
      * @throws Exception
      */
-    protected function streamRun(string $cmd, string $storage, string $streamPath): void
+    protected function streamRun(string $cmd, string $streamPath): void
     {
-        $driver = Helper::diskToDriver($storage);
-
-        if ($driver == 'local') {
+        if ($this->diskDriverIsLocal($this->disk)) {
             $cmd = $this->cmd(str_replace(':stream-path', $streamPath, $cmd));
 
             $process = new Process($cmd);
-            $process->setTimeout($this->config['ffmpeg-timeout']);
+            $process->setTimeout($this->timeout);
             $process->run();
 
             if ($process->isSuccessful()) {
@@ -381,63 +416,37 @@ class FFMpeg
             throw new Exception($process->getErrorOutput());
         }
         else {
-            list($path, $name) = Helper::splitPath($streamPath);
-
+            $name = basename($streamPath);
             $temp = $name . '-' . time();
 
-            Storage::disk('local')->makeDirectory($temp);
+            Storage::disk($this->localDisk)->makeDirectory($temp);
+            $path = Storage::disk($this->localDisk)->path($temp);
 
-            $cmd = $this->cmd(str_replace(':stream-path', $temp, $cmd));
+            $cmd = $this->cmd(str_replace(':stream-path', $path, $cmd));
 
             $process = new Process($cmd);
-            $process->setTimeout($this->config['ffmpeg-timeout']);
+            $process->setTimeout($this->timeout);
             $process->run();
 
             if ($process->isSuccessful()) {
-                $files = Storage::disk('local')->files($temp);
+                $files = Storage::disk($this->localDisk)->files($temp);
+                $path = Storage::disk($this->localDisk)->path('');
 
                 foreach ($files as $file) {
-                    $fileObject = new File($file);
+                    $fileObject = new File("$path/$file");
 
-                    Storage::disk($storage)->putFileAs($streamPath, $fileObject, $fileObject->getFilename());
+                    Storage::disk($this->disk)->putFileAs($streamPath, $fileObject, $fileObject->getFilename());
 
                     unset($fileObject);
                 }
 
-                Storage::disk('local')->deleteDirectory($temp);
+                Storage::disk($this->localDisk)->deleteDirectory($temp);
 
                 return;
             }
 
             throw new Exception($process->getErrorOutput());
         }
-    }
-
-    /**
-     * Convert short number formats to integer
-     * Example: 1M -> 1000000
-     *
-     * @param $number
-     * @return int
-     */
-    protected function shortNumberToInteger($number): int
-    {
-        $number = strtoupper($number);
-
-        $units = [
-            'M' => '1000000',
-            'K' => '1000',
-        ];
-
-        $unit = substr($number, -1);
-
-        if (!array_key_exists($unit, $units)) {
-            return (int)$number;
-        }
-
-        $number = (float)$number * $units[$unit];
-
-        return (int)$number;
     }
 
     /**
@@ -451,5 +460,18 @@ class FFMpeg
         $cmd = str_replace('\\', '/', $cmd);
 
         return explode(' ', escapeshellcmd($cmd));
+    }
+
+    /**
+     * Calculate Dominant Color
+     *
+     * @param $path
+     * @return string|null
+     */
+    protected function calcDominantColor($path): ?string
+    {
+        $file = new UploadedFile($path, basename($path));
+
+        return (new Image($file, $this->disk, $this->localDisk, LaruploadEnum::GD_IMAGE_LIBRARY))->getDominantColor();
     }
 }

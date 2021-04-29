@@ -2,33 +2,45 @@
 
 namespace Mostafaznv\Larupload\Traits;
 
+use Mostafaznv\Larupload\LaruploadEnum;
 use stdClass;
-use Exception;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Mostafaznv\Larupload\Models\LaruploadFFMpegQueue;
-use Mostafaznv\Larupload\Storage\Attachment;
 
 trait Larupload
 {
+    /**
+     * Attachment Entities
+     *
+     * @var array
+     */
+    protected array $attachments = [];
+
+    protected bool $hideLaruploadColumns;
+
     /**
      * Holds the hash value for the current LARUPLOAD_NULL constant
      *
      * @var string
      */
-    protected static $laruploadNull;
+    protected static string $laruploadNull;
 
     /**
-     * Uploaded flag to prevent infinite loop
-     *
-     * @var bool
+     * Initialize attachments
      */
-    protected static $uploaded = false;
+    protected function initializeLarupload()
+    {
+        $this->hideLaruploadColumns = config('larupload.hide-table-columns');
 
-    /**
-     * All of the model's current file attachments
-     *
-     * @var array
-     */
-    protected $attachedFiles = [];
+        $this->attachments = $this->attachments();
+        $table = $this->getTable();
+
+        foreach ($this->attachments as $attachment) {
+            $attachment->folder($table);
+        }
+    }
 
     /**
      * Boot the Larupload trait for the model
@@ -44,76 +56,73 @@ trait Larupload
         }
 
         static::saved(function($model) {
-            if (!self::$uploaded) {
-                self::$uploaded = true;
+            $shouldSave = false;
 
-                foreach ($model->attachedFiles as $name => $attachedFile) {
-                    $model = $attachedFile->saved($model);
+            foreach ($model->attachments as $attachment) {
+                if (!$attachment->isUploaded()) {
+                    $shouldSave = true;
+
+                    $model = $attachment->saved($model);
                 }
+            }
 
+            if ($shouldSave) {
                 $model->save();
             }
         });
 
         static::deleted(function($model) {
-            foreach ($model->attachedFiles as $name => $attachedFile) {
-                if ($model->forceDeleting) {
-                    $attachedFile->deleted($model);
+            if (!$model->hasGlobalScope(SoftDeletingScope::class) or $model->isForceDeleting()) {
+                foreach ($model->attachments as $attachment) {
+                    $attachment->deleted($model);
                 }
+            }
+        });
+
+        static::retrieved(function($model) {
+            foreach ($model->attachments as $attachment) {
+                $attachment->setOutput($model);
             }
         });
     }
 
     /**
-     * Add a new file attachment type to the list of available attachments
-     * This function acts as a quasi constructor for this trait
+     * Override toArray method
      *
-     * @param string $name
-     * @param array $options
-     * @throws Exception
+     * @return array
      */
-    public function hasUploadFile(string $name, array $options = []): void
+    public function toArray(): array
     {
-        $folder = self::getTable();
-        $attachment = new Attachment($name, $folder, $options);
+        $array = $this->hideLaruploadColumns(parent::toArray());
 
-        $this->attachedFiles[$name] = $attachment;
+        // attach attachment entities to array/json response
+        foreach ($this->getAttachments() as $name => $attachment) {
+            $array[$name] = $attachment;
+        }
+
+        return $array;
     }
 
     /**
-     * Assign file and cover to registered fields
+     * Get the entities should upload into the model
      *
-     * @param $key
-     * @param $file
-     * @param null $cover
-     *
-     * @return bool
+     * @return array
      */
-    public function setUploadedFile(string $key, $file, $cover = null): bool
-    {
-        if (array_key_exists($key, $this->attachedFiles)) {
-            if ($file) {
-                static::$uploaded = false;
-
-                $attachedFile = $this->attachedFiles[$key];
-                $attachedFile->setUploadedFile($file, $cover);
-            }
-
-            return true;
-        }
-
-        return false;
-    }
+    abstract public function attachments(): array;
 
     /**
      * Handle the dynamic setting of attachment objects
      *
      * @param string $key
-     * @param mixed $value
+     * @param $value
+     * @return mixed
      */
     public function setAttribute($key, $value)
     {
-        if (!$this->setUploadedFile($key, $value)) {
+        if ($attachment = $this->getAttachment($key)) {
+            $attachment->attach($value);
+        }
+        else {
             parent::setAttribute($key, $value);
         }
     }
@@ -122,145 +131,99 @@ trait Larupload
      * Handle the dynamic retrieval of attachment objects
      *
      * @param string $key
-     * @return mixed
+     * @return mixed|null
      */
     public function getAttribute($key)
     {
-        if (array_key_exists($key, $this->attachedFiles)) {
-            return $this->getFiles($key);
+        if ($attachment = $this->getAttachment($key)) {
+            return $attachment;
         }
 
         return parent::getAttribute($key);
     }
 
     /**
-     * Get all of the current attributes and attachment objects on the model
+     * Get All styles (original, cover and ...) of entities for this model
      *
-     * @return mixed
-     */
-    /*public function getAttributes()
-    {
-        return array_merge(parent::getAttributes(), $this->attachedFiles);
-    }*/
-
-    /**
-     * Remove attachment from get dirty array
-     * Fix for getAttributes()
-     *
-     * @return array
-     */
-    public function getDirty()
-    {
-        $dirty = parent::getDirty();
-
-        return array_filter($dirty, function($var) {
-            return !($var instanceof Attachment);
-        });
-    }
-
-    /**
-     * Get URL for specified style of attachable field
-     *
-     * @param string $name
-     * @param string $style
-     * @return null|string
-     */
-    public function laruploadUrl(string $name, string $style = 'original')
-    {
-        if (array_key_exists($name, $this->attachedFiles) and $this->attributes['id']) {
-            return $this->attachedFiles[$name]->url($this, $style);
-        }
-
-        return null;
-    }
-
-    /**
-     * Get URL for specified style of attachable field
-     *
-     * @param string $name
-     * @param string $style
-     * @return null|string
-     */
-    public function url(string $name, string $style = 'original')
-    {
-        return $this->laruploadUrl($name, $style);
-    }
-
-    /**
-     * Download specified style of attachable field
-     *
-     * @param string $name
-     * @param string $style
-     * @return null|string
-     */
-    public function laruploadDownload(string $name, string $style = 'original')
-    {
-        if (array_key_exists($name, $this->attachedFiles) and $this->attributes['id']) {
-            return $this->attachedFiles[$name]->download($this, $style);
-        }
-
-        return null;
-    }
-
-    /**
-     * Download specified style of attachable field
-     *
-     * @param string $name
-     * @param string $style
-     * @return null|string
-     */
-    public function download(string $name, string $style = 'original')
-    {
-        return $this->laruploadDownload($name, $style);
-    }
-
-    /**
-     * Get All styles (original, cover and ...) for attached field
-     *
-     * @param string $name
+     * @param string|null $name
      * @return object|null
      */
-    public function getFiles(string $name = null)
+    public function getAttachments(string $name = null)
     {
         if ($name) {
-            if (isset($this->attachedFiles[$name])) {
-                return $this->attachedFiles[$name]->getFiles($this);
+            if ($attachment = $this->getAttachment($name)) {
+                return $attachment->urls();
             }
 
             return null;
         }
         else {
-            $files = new stdClass();
-            foreach ($this->attachedFiles as $name => $attachedFile) {
-                $files->{$name} = $attachedFile->getFiles($this);
+            $attachments = new stdClass();
+            foreach ($this->attachments as $attachment) {
+                $attachments->{$attachment->getName()} = $attachment->urls();
             }
 
-            return $files;
+            return $attachments;
         }
     }
 
     /**
-     * Get meta data as an array or object
+     * Retrieve attachment if exists, otherwise return null
      *
-     * @param string $name
-     * @param string $key
-     * @return object|string|integer|null
+     * @param $name
+     * @return mixed|null
      */
-    public function meta(string $name, string $key = null)
+    protected function getAttachment($name)
     {
-        if (array_key_exists($name, $this->attachedFiles) and $this->attributes['id']) {
-            return $this->attachedFiles[$name]->getMeta($this, $key);
+        foreach ($this->attachments as $attachment) {
+            if ($attachment->getName() == $name) {
+                return $attachment;
+            }
         }
 
-        return ($key) ? null : new stdClass();
+        return null;
+    }
+
+    /**
+     * Hide larupload columns
+     *
+     * @param array $array
+     * @return array
+     */
+    protected function hideLaruploadColumns(array $array): array
+    {
+        if ($this->hideLaruploadColumns) {
+            foreach ($this->attachments as $attachment) {
+                $name = $attachment->getName();
+
+                unset($array["{$name}_file_name"]);
+
+                if ($attachment->getMode() == LaruploadEnum::HEAVY_MODE) {
+                    unset($array["{$name}_file_size"]);
+                    unset($array["{$name}_file_type"]);
+                    unset($array["{$name}_file_mime_type"]);
+                    unset($array["{$name}_file_width"]);
+                    unset($array["{$name}_file_height"]);
+                    unset($array["{$name}_file_duration"]);
+                    unset($array["{$name}_file_dominant_color"]);
+                    unset($array["{$name}_file_format"]);
+                    unset($array["{$name}_file_cover"]);
+                }
+                else {
+                    unset($array["{$name}_file_meta"]);
+                }
+            }
+        }
+
+        return $array;
     }
 
     /**
      * Retrieve latest status log for ffmpeg queue process
      *
-     * @return mixed
+     * @return HasOne
      */
-    public function laruploadQueue()
+    public function laruploadQueue(): HasOne
     {
         return $this->hasOne(LaruploadFFMpegQueue::class, 'record_id')->where('record_class', self::class)->orderBy('id', 'desc');
     }
@@ -268,9 +231,9 @@ trait Larupload
     /**
      * Retrieve all status logs for ffmpeg queue process
      *
-     * @return mixed
+     * @return HasMany
      */
-    public function laruploadQueues()
+    public function laruploadQueues(): HasMany
     {
         return $this->hasMany(LaruploadFFMpegQueue::class, 'record_id')->where('record_class', self::class)->orderBy('id', 'desc');
     }

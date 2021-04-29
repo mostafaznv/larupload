@@ -8,18 +8,19 @@ use Mostafaznv\Larupload\Database\Schema\Blueprint;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - automatically attach file into model after toArray/toJson
+    // TODO - upload with create() function
+
     // TODO - update m3u8 catalog
-    // TODO - Return Meta Object on Light Mode when attached file is null
-    // TODO - upload with url
-    // TODO - add an ability to upload files without orm.
-    // TODO - dpi for resized/cropped images and videos
-    // TODO - test s3
     // TODO - import php-ffmpeg package into the project [NOTICE: wait for a stable version]
     // TODO - add an ability to custom ffmpeg scripts (video and stream)
     // TODO - check possibility of change video ffmpeg script to streaming one (none crop mode).
 
-    const VERSION = '0.0.9';
+    // TODO - dpi for resized/cropped images and videos
+    // TODO - test s3
+    // TODO - mix with download php-x-sendfile
+    // TODO - add some comments to help IDEs to show attachment functions
+
+    const VERSION = '0.0.11';
 
     public function boot()
     {
@@ -41,11 +42,11 @@ class LaruploadServiceProvider extends ServiceProvider
 
     protected function registerMacros()
     {
-        BlueprintIlluminate::macro('upload', function(string $name, string $mode = 'heavy') {
+        BlueprintIlluminate::macro('upload', function(string $name, string $mode = LaruploadEnum::HEAVY_MODE) {
             Blueprint::columns($this, $name, $mode);
         });
 
-        BlueprintIlluminate::macro('dropUpload', function(string $name, string $mode = 'heavy') {
+        BlueprintIlluminate::macro('dropUpload', function(string $name, string $mode = LaruploadEnum::HEAVY_MODE) {
             Blueprint::dropColumns($this, $name, $mode);
         });
     }

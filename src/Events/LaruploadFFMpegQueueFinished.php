@@ -8,11 +8,11 @@ class LaruploadFFMpegQueueFinished
 {
     use SerializesModels;
 
-    public $id;
-    public $model;
-    public $statusId;
+    public int    $id;
+    public string $model;
+    public int    $statusId;
 
-    public function __construct($id, $model, $statusId)
+    public function __construct(int $id, string $model, int $statusId)
     {
         $this->id = $id;
         $this->model = $model;

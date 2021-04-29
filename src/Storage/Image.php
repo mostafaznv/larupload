@@ -5,13 +5,14 @@ namespace Mostafaznv\Larupload\Storage;
 use ColorThief\ColorThief;
 use Exception;
 use Illuminate\Http\UploadedFile;
-use Symfony\Component\Console\Style\StyleInterface;
+use Imagine\Image\BoxInterface;
+use Mostafaznv\Larupload\Helpers\LaraTools;
+use Mostafaznv\Larupload\LaruploadEnum;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\Point;
-use Mostafaznv\Larupload\Helpers\Helper;
 
 /**
  * Class Image
@@ -23,39 +24,59 @@ use Mostafaznv\Larupload\Helpers\Helper;
  */
 class Image
 {
+    use LaraTools;
+
     /**
      * Attached file
      *
-     * @var object
+     * @var UploadedFile
      */
-    protected $file;
-
-    /**
-     * Larupload configurations
-     *
-     * @var array
-     */
-    protected $config;
+    protected UploadedFile $file;
 
     /**
      * Imagine object
      *
      * @var object
      */
-    protected $image;
+    protected object $image;
+
+    /**
+     * Storage Disk
+     *
+     * @var string
+     */
+    protected string $disk;
+
+    /**
+     * Storage local disk
+     *
+     * @var string
+     */
+    protected string $localDisk;
+
+    /**
+     * Specify if driver is local or not
+     *
+     * @var bool
+     */
+    protected bool $driverIsLocal;
 
     /**
      * Image constructor
      *
      * @param UploadedFile $file
+     * @param string $disk
+     * @param string $localDisk
+     * @param string $library
      */
-    public function __construct(UploadedFile $file)
+    public function __construct(UploadedFile $file, string $disk, string $localDisk, string $library)
     {
-        $this->config = config('larupload');
         $this->file = $file;
+        $this->disk = $disk;
+        $this->localDisk = $localDisk;
+        $this->driverIsLocal = $this->diskDriverIsLocal($this->disk);
 
         $path = $file->getRealPath();
-        $library = $this->config['image_processing_library'];
         $imagine = new $library();
 
         $this->image = $imagine->open($path);
@@ -71,43 +92,41 @@ class Image
         $size = $this->image->getSize();
 
         return [
-            'width'  => $size->getWidth(),
-            'height' => $size->getHeight(),
+            'width'  => (int)$size->getWidth(),
+            'height' => (int)$size->getHeight(),
         ];
     }
 
     /**
      * Resize an image using the computed settings
      *
-     * @param string $storage
      * @param string $saveTo
      * @param array $style
      *
      * @return bool
      */
-    public function resize(string $storage, string $saveTo, array $style): bool
+    public function resize(string $saveTo, array $style): bool
     {
         list($width, $height, $option) = $this->parseStyleDimensions($style);
+
         $method = 'resize' . ucfirst($option);
-        $saveTo = Storage::disk($storage)->path($saveTo);
-        $driver = Helper::diskToDriver($storage);
+        $saveTo = Storage::disk($this->disk)->path($saveTo);
         $image = $this->image;
 
-        if ($driver == 'local') {
+        if ($this->driverIsLocal) {
             $this->$method($image, $width, $height)->save($saveTo);
         }
         else {
-            list($path, $name) = Helper::splitPath($saveTo);
+            list($path, $name) = $this->splitPath($saveTo);
 
-            $tempDir = Helper::tempDir();
+            $tempDir = $this->tempDir();
             $tempName = time() . '-' . $name;
-            $temp = $tempDir . "/" . $tempName;
+            $temp = "{$tempDir}/{$tempName}";
 
             $this->$method($image, $width, $height)->save($temp);
 
-            $file = new File($temp);
+            Storage::disk($this->disk)->putFileAs($path, new File($temp), $name);
 
-            Storage::disk($storage)->putFileAs($path, $file, $name);
             @unlink($temp);
         }
 
@@ -127,15 +146,13 @@ class Image
      * image being resized to a square).
      *
      * @param ImageInterface $image
-     * @param string $width - The image's new width
-     * @param string $height - The image's new height
-     *
+     * @param int|null $width
+     * @param int|null $height
      * @return ImageInterface
      */
-    protected function resizeAuto(ImageInterface $image, $width, $height)
+    protected function resizeAuto(ImageInterface $image, int $width = null, int $height = null): ImageInterface
     {
         $size = $this->image->getSize();
-
         $originalWidth = $size->getWidth();
         $originalHeight = $size->getHeight();
 
@@ -170,16 +187,16 @@ class Image
      * Resize an image and then center crop it
      *
      * @param ImageInterface $image
-     * @param string $width - The image's new width
-     * @param string $height - The image's new height
+     * @param int $width - The image's new width
+     * @param int $height - The image's new height
      *
      * @return ImageInterface
      */
-    protected function resizeCrop(ImageInterface $image, $width, $height)
+    protected function resizeCrop(ImageInterface $image, int $width, int $height): ImageInterface
     {
         list($optimalWidth, $optimalHeight) = $this->getOptimalCrop($image->getSize(), $width, $height);
 
-        // Find center - this will be used for the crop
+        // find center - this will be used for the crop
         $centerX = ($optimalWidth / 2) - ($width / 2);
         $centerY = ($optimalHeight / 2) - ($height / 2);
 
@@ -187,15 +204,15 @@ class Image
     }
 
     /**
-     * Resize an image as a landscape (width fixed).
+     * Resize an image as a landscape (width fixed)
      *
      * @param ImageInterface $image
-     * @param string $width - The image's new width.
-     * @param string $height - The image's new height.
+     * @param int $width - The image's new width.
+     * @param int|null $height - The image's new height.
      *
      * @return ImageInterface
      */
-    protected function resizeLandscape(ImageInterface $image, $width, $height)
+    protected function resizeLandscape(ImageInterface $image, int $width, int $height = null): ImageInterface
     {
         $optimalHeight = $this->getSizeByFixedWidth($image, $width);
         $dimensions = $image->getSize()->widen($width)->heighten($optimalHeight);
@@ -208,17 +225,17 @@ class Image
      * Resize an image as a portrait (height fixed).
      *
      * @param ImageInterface $image
-     * @param string $width - The image's new width.
-     * @param string $height - The image's new height.
+     * @param int|null $width - The image's new width.
+     * @param int $height - The image's new height.
      *
      * @return ImageInterface
      */
-    protected function resizePortrait(ImageInterface $image, $width, $height)
+    protected function resizePortrait(ImageInterface $image, int $width = null, int $height): ImageInterface
     {
         $optimalWidth = $this->getSizeByFixedHeight($image, $height);
         $dimensions = $image->getSize()->heighten($height)->widen($optimalWidth);
-        $image = $image->resize($dimensions);
-        return $image;
+
+        return $image->resize($dimensions);
     }
 
     /**
@@ -229,7 +246,7 @@ class Image
      *
      * @return int
      */
-    protected function getSizeByFixedWidth(ImageInterface $image, $newWidth)
+    protected function getSizeByFixedWidth(ImageInterface $image, int $newWidth): int
     {
         $box = $image->getSize();
         $ratio = $box->getHeight() / $box->getWidth();
@@ -245,7 +262,7 @@ class Image
      *
      * @return int
      */
-    protected function getSizeByFixedHeight(ImageInterface $image, $newHeight)
+    protected function getSizeByFixedHeight(ImageInterface $image, int $newHeight): int
     {
         $box = $image->getSize();
         $ratio = $box->getWidth() / $box->getHeight();
@@ -257,12 +274,12 @@ class Image
      * Resize an image to an exact width and height.
      *
      * @param ImageInterface $image
-     * @param string $width - The image's new width.
-     * @param string $height - The image's new height.
+     * @param int $width - The image's new width.
+     * @param int $height - The image's new height.
      *
      * @return ImageInterface
      */
-    protected function resizeExact(ImageInterface $image, $width, $height)
+    protected function resizeExact(ImageInterface $image, int $width, int $height): ImageInterface
     {
         return $image->resize(new Box($width, $height));
     }
@@ -271,23 +288,16 @@ class Image
      * Attempts to find the best way to crop.
      * Takes into account the image being a portrait or landscape.
      *
-     * @param Box $size - The image's current size.
-     * @param string $width - The image's new width.
-     * @param string $height - The image's new height.
-     *
+     * @param BoxInterface $size - The image's current size.
+     * @param int $width - The image's new width.
+     * @param int $height - The image's new height.
      * @return array
      */
-    protected function getOptimalCrop(Box $size, $width, $height)
+    protected function getOptimalCrop(BoxInterface $size, int $width, int $height): array
     {
         $heightRatio = $size->getHeight() / $height;
         $widthRatio = $size->getWidth() / $width;
-
-        if ($heightRatio < $widthRatio) {
-            $optimalRatio = $heightRatio;
-        }
-        else {
-            $optimalRatio = $widthRatio;
-        }
+        $optimalRatio = ($heightRatio < $widthRatio) ? $heightRatio : $widthRatio;
 
         $optimalHeight = round($size->getHeight() / $optimalRatio, 2);
         $optimalWidth = round($size->getWidth() / $optimalRatio, 2);
@@ -296,55 +306,57 @@ class Image
     }
 
     /**
-     * parseStyleDimensions method.
+     * Parse Style Dimensions
      *
      * Parse the given style dimensions to extract out the file processing options,
      * perform any necessary image resizing for a given style.
      *
-     * @param StyleInterface $style
-     *
+     * @param array $style
      * @return array
      */
-    protected function parseStyleDimensions($style)
+    protected function parseStyleDimensions(array $style): array
     {
         $width = isset($style['width']) ? $style['width'] : null;
         $height = isset($style['height']) ? $style['height'] : null;
         $mode = isset($style['mode']) ? $style['mode'] : null;
 
         if ($mode) {
-            if ($mode == 'landscape' and $width) {
-                // Width given, height automatically selected to preserve aspect ratio (landscape).
+            // width given, height automatically selected to preserve aspect ratio (landscape).
+            if ($mode == LaruploadEnum::LANDSCAPE_STYLE_MODE and $width) {
                 return [$width, null, 'landscape'];
             }
-            else if ($mode == 'portrait' and $height) {
-                // Height given, width automatically selected to preserve aspect ratio (portrait).
+            // height given, width automatically selected to preserve aspect ratio (portrait).
+            else if ($mode == LaruploadEnum::PORTRAIT_STYLE_MODE and $height) {
                 return [null, $height, 'portrait'];
             }
-            else if ($mode == 'crop' and $height and $width) {
-                // Resize, then crop.
+            // resize, then crop.
+            else if ($mode == LaruploadEnum::CROP_STYLE_MODE and $height and $width) {
                 return [$width, $height, 'crop'];
             }
-            else if ($mode == 'exact' and $height and $width) {
-                // Resize by exact width/height (does not preserve aspect ratio).
+            // resize by exact width/height (does not preserve aspect ratio).
+            else if ($mode == LaruploadEnum::EXACT_STYLE_MODE and $height and $width) {
                 return [$width, $height, 'exact'];
             }
         }
 
-        // Let the script decide the best way to resize.
+        // let the script decide the best way to resize.
         return [$width, $height, 'auto'];
     }
 
     /**
-     * Fetch dominant color from image file.
+     * Retrieve dominant color from image file.
      *
      * @param $file
      * @return null|string
      */
-    public static function dominant($file)
+    public function getDominantColor($file = null): ?string
     {
+        if (is_null($file)) {
+            $file = $this->file;
+        }
+
         try {
             $path = null;
-
 
             if ($file instanceof UploadedFile) {
                 $path = $file->getRealPath();
@@ -374,7 +386,7 @@ class Image
      * @param string $prefix
      * @return string
      */
-    protected static function toHexString($rgb, $prefix = '#')
+    protected static function toHexString($rgb, string $prefix = '#'): string
     {
         return $prefix . str_pad(dechex(self::toInt($rgb)), 6, '0', STR_PAD_LEFT);
     }
@@ -386,7 +398,7 @@ class Image
      * @param string $prefix
      * @return null|string
      */
-    protected static function toRgbString($rgb, $prefix = 'rgb')
+    protected static function toRgbString($rgb, string $prefix = 'rgb'): ?string
     {
         if (is_array($rgb) and isset($rgb[0]) and isset($rgb[1]) and isset($rgb[2])) {
             return "$prefix({$rgb[0]},{$rgb[1]},{$rgb[2]})";
@@ -402,7 +414,7 @@ class Image
      * @param $rgb
      * @return int|null
      */
-    protected static function toInt($rgb)
+    protected static function toInt($rgb): ?int
     {
         if (is_array($rgb) and isset($rgb[0]) and isset($rgb[1]) and isset($rgb[2])) {
             return ($rgb[0] << 16) | ($rgb[1] << 8) | $rgb[2];
