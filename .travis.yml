@@ -29,8 +29,8 @@ install:
   - sudo apt-get -qq update
   - sudo apt-get install -y --allow-unauthenticated software-properties-common ffmpeg libmagickwand-dev imagemagick php-pear
   - yes | sudo pecl install imagick
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.4" ]]; then echo 'extension=imagick.so' >> `php --ini | grep 'Loaded Configuration' | sed -e 's|.*:\s*||'` fi
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "8.0" ]]; then sudo apt-get install php8.0-imagick fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.4" ]]; then echo 'extension=imagick.so' >> `php --ini | grep 'Loaded Configuration' | sed -e 's|.*:\s*||'`; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "8.0" ]]; then sudo apt-get install php8.0-imagick; fi
 
 script:
   - vendor/bin/phpunit
