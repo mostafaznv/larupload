@@ -41,11 +41,11 @@ jobs:
           tools: composer:v2
           coverage: none
           
-      - name: Fix Permissions
+      - name: Fix Data Permissions
         run: sudo chmod -R 777 /home/runner/work/larupload/larupload/tests/Data
           
-      - name: Check Temp
-        run: php -ini
+      - name: Fix Temp Permissions
+        run: sudo chmod -R 777 /home/runner/work/_temp
 
       - name: Install dependencies
         run: |
