@@ -40,6 +40,9 @@ jobs:
           extensions: json, mbstring, imagick, imagick, gd, bcmath, intl, exif, fileinfo
           tools: composer:v2
           coverage: none
+          
+      - name: Fix Permissions
+        run: sudo chmod -R 777 /home/runner/work/larupload/larupload/tests/Data
 
       - name: Install dependencies
         run: |
