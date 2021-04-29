@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.0.11 - 2021/04/29
+new
+- drop support for laravel 6,7 and set minimum php version to 7.4
+- standalone uploader
+- replace attachments method with old construction method to define upload entities
+- specific meta/url/getAttachment function for each attachment
+- detach/delete cover
+- update cover
+- hide larupload columns from toArray/toJson
+- automatically attach entities into model after toArray/toJson
+- add an ability to return cameCase response
+- convert style names to kebab-case to storing them into disk
+- rename setUploadedFile to attach
+- drop support for validating files
+
+improvement
+
+- throw exception on failed ffmpeg process
+- calc dominant color for videos in remote drivers
+- rename and remove some config keys
+
+bugfix
+
+- calculate dominant color when cover uploaded manually
+- handle deleting uploaded files with soft-delete and force-deleting
+
+## v0.0.10 - 2021/02/21
+- download attachments using download function 
+- fix a bug on escapeshellcmd for windows #2
+
 ## v0.0.9 - 2020/09/27
 - Support laravel 8.*
 - Return object instead of array in getFiles and meta functions

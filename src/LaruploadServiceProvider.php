@@ -20,7 +20,7 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - mix with download php-x-sendfile
     // TODO - add some comments to help IDEs to show attachment functions
 
-    const VERSION = '0.0.9';
+    const VERSION = '0.0.11';
 
     public function boot()
     {

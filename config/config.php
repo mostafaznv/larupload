@@ -49,7 +49,7 @@ return [
     | With Meta
     |--------------------------------------------------------------------------
     |
-    | With set this value enable, meta details will return with file getAttribute (retrieve file urls)
+    | With set this value true, meta details will return whenever you retrieve urls
     |
     | Example: true, false
     |
@@ -62,9 +62,7 @@ return [
     | Camel Case Response
     |--------------------------------------------------------------------------
     |
-    | By default, larupload returns all meta keys, entity names and any other
-    | responses snaked case. with enabling this option, we return them came-
-    | cased
+    | By default, larupload returns all meta keys in snake_case style. with enabling this option, we return them cameCase
     |
     | Example: true, false
     |
@@ -92,7 +90,7 @@ return [
     | Naming Method
     |--------------------------------------------------------------------------
     |
-    | Larupload use some different methods to generate file name
+    | Larupload uses some different methods to generate file name
     |
     | Example: slug, hash_file, time
     | Note: Larupload appends an increment number to end of slug to prevent caching for different files with same name
@@ -118,40 +116,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Styles
-    |--------------------------------------------------------------------------
-    |
-    | An array of image/video sizes defined for the file attachment.
-    | Larupload will attempt to format the file upload into the defined style.
-    |
-    | Example:
-    | 'styles' => [
-    |   'thumbnail' => [
-    |       'height' => 500, // numeric
-    |       'width'  => 500, // numeric
-    |       'mode'   => 'crop', // string value in: landscape, portrait, crop, exact, auto
-    |       'type'   => ['image', 'video'], // array: image, video
-    |   ],
-    |   'medium' => [
-    |       'height' => 1000,
-    |       'width'  => 1000,
-    |       'mode'   => 'auto',
-    |       'type'   => ['image']
-    |   ]
-    | ]
-    */
-
-    'styles' => [],
-
-    /*
-    |--------------------------------------------------------------------------
     | Cover Flag
     |--------------------------------------------------------------------------
     |
     | Larupload will generate a cover image from video/image if cover flag is true.
-    | Trait will store cover data in cover_file_name, cover_file_size and cover_file_content
     |
-    | Note: cover only work in detailed mode
+    | Example: true, false
     |
     */
 
