@@ -43,6 +43,9 @@ jobs:
           
       - name: Fix Permissions
         run: sudo chmod -R 777 /home/runner/work/larupload/larupload/tests/Data
+          
+      - name: Check Test Data
+        run: sudo ls -lah /home/runner/work/larupload/larupload/tests/Data
 
       - name: Install dependencies
         run: |
