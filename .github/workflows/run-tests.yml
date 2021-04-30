@@ -37,7 +37,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json, mbstring, imagick, gd, bcmath, dom, intl, exif, fileinfo, sqlite3, libxml, pcntl, pdo, sqlite, pdo_sqlite
+          extensions: imagick, gd
           tools: composer:v2
           coverage: none
           
