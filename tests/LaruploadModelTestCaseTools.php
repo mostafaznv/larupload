@@ -103,7 +103,6 @@ trait LaruploadModelTestCaseTools
     protected function initFiles()
     {
         $this->imageJPG = new UploadedFile(realpath(__DIR__ . '/Data/image.jpg'), 'image.jpg', 'image/jpeg', null, true);
-        dd($this->imageJPG, realpath(__DIR__ . '/Data/image.jpg'), @imagecreatefromstring($this->imageJPG->getContent()));
         $this->imageFaTitledJPG = new UploadedFile(realpath(__DIR__ . '/Data/باشگاه بارسلونا.jpg'), 'باشگاه بارسلونا.jpg', 'image/jpeg', null, true);
         $this->imagePNG = new UploadedFile(realpath(__DIR__ . '/Data/image.png'), 'image.png', 'image/png', null, true);
         $this->imageSVG = new UploadedFile(realpath(__DIR__ . '/Data/image.svg'), 'image.svg', 'image/svg+xml', null, true);
