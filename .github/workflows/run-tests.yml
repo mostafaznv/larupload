@@ -46,6 +46,11 @@ jobs:
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
          
+      - name: Check Image
+        run: |
+          php -r "echo realpath(__DIR__); echo PHP_EOL;" 
+          php -r "var_dump(\is_resource(@imagecreatefromstring(file_get_contents('/home/runner/work/larupload/larupload/tests/Data/image.jpg'))));"
+         
       - name: Fix Permissions
         run: |
           sudo chmod -R 777 /home/runner/work/larupload
