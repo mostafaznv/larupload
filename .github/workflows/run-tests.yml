@@ -40,6 +40,9 @@ jobs:
           extensions: json, mbstring, imagick, gd, bcmath, intl, exif, fileinfo, sqlite3
           tools: composer:v2
           coverage: none
+          
+      - name: Fix Imagick Policy
+        run: sudo sed -i 's/none/read|write/g' /etc/ImageMagick-6/policy.xml
 
       - name: Install dependencies
         run: |
