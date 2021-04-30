@@ -156,11 +156,11 @@ class Image
         $originalWidth = $size->getWidth();
         $originalHeight = $size->getHeight();
 
-        if (!$width) {
+        if ($width === null) {
             $width = $originalWidth;
         }
 
-        if (!$height) {
+        if ($height === null) {
             $height = $originalHeight;
         }
 

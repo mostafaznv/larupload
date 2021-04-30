@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Helpers\LaraTools;
@@ -45,9 +46,9 @@ class UploadEntities
      * Model ID
      * this property will initiated only on retrieving model.
      *
-     * @var string
+     * @var int
      */
-    protected string $id;
+    protected int $id;
 
     /**
      * Mode of uploadable entity
@@ -683,7 +684,7 @@ class UploadEntities
      * Download path based on storage driver
      *
      * @param string $path
-     * @return RedirectResponse|StreamedResponse|null
+     * @return RedirectResponse|StreamedResponse|Redirector|null
      */
     protected function storageDownload(string $path)
     {

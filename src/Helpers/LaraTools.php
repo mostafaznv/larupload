@@ -27,25 +27,27 @@ trait LaraTools
     /**
      * Convert mimetype to human readable type
      *
-     * @param string $mime
+     * @param string|null $mime
      * @return string
      */
-    protected function mimeToType(string $mime): string
+    protected function mimeToType(string $mime = null): string
     {
-        if (strstr($mime, 'image/')) {
-            return LaruploadEnum::IMAGE;
-        }
-        else if (strstr($mime, 'video/')) {
-            return LaruploadEnum::VIDEO;
-        }
-        else if (strstr($mime, 'audio/')) {
-            return LaruploadEnum::AUDIO;
-        }
-        else if ($mime == 'application/pdf') {
-            return LaruploadEnum::PDF;
-        }
-        else if ($mime == 'application/zip' or $mime == 'application/x-rar-compressed') {
-            return LaruploadEnum::COMPRESSED;
+        if ($mime) {
+            if (strstr($mime, 'image/')) {
+                return LaruploadEnum::IMAGE;
+            }
+            else if (strstr($mime, 'video/')) {
+                return LaruploadEnum::VIDEO;
+            }
+            else if (strstr($mime, 'audio/')) {
+                return LaruploadEnum::AUDIO;
+            }
+            else if ($mime == 'application/pdf') {
+                return LaruploadEnum::PDF;
+            }
+            else if ($mime == 'application/zip' or $mime == 'application/x-rar-compressed') {
+                return LaruploadEnum::COMPRESSED;
+            }
         }
 
         return LaruploadEnum::FILE;

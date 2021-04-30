@@ -211,7 +211,7 @@ class Attachment extends UploadEntities
         $styles = new stdClass();
 
         foreach ($allStyles as $style) {
-            if ($style == LaruploadEnum::COVER_FOLDER and $this->generateCover == false) {
+            if ($style == LaruploadEnum::COVER_FOLDER and $this->generateCover === false) {
                 $styles->{$style} = null;
                 continue;
             }

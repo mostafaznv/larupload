@@ -115,18 +115,6 @@ trait LaraStandalone
     }
 
     /**
-     * @param mixed $file
-     * @param null $cover
-     * @return bool
-     * @throws Exception
-     * @internal
-     */
-    public function setUploadedFile($file, $cover = null): bool
-    {
-        self::internalException();
-    }
-
-    /**
      * @param Model $model
      * @return Model
      * @throws Exception
