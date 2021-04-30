@@ -39,7 +39,7 @@
         "php": "^7.4|^8.0",
         "laravel/framework": "~8.0",
         "ksubileau/color-thief-php": "^1.4",
-        "imagine/imagine": "^1.2",
+        "imagine/imagine": "^1.2.2",
         "ext-json": "*"
     },
     "require-dev": {
