@@ -55,6 +55,8 @@ jobs:
         run: |
           sudo chmod -R 777 /home/runner/work/larupload
           sudo chown -R runner /home/runner/work/larupload
+          sudo chmod -R 777 /tmp
+          sudo chown -R runner /tmp
           
       - name: Execute tests
         run: vendor/bin/phpunit
