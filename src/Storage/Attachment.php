@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Storage;
 
+use Illuminate\Routing\Redirector;
 use Mostafaznv\Larupload\Helpers\LaraTools;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\UploadEntities;
@@ -165,7 +166,7 @@ class Attachment extends UploadEntities
      * Download attached file
      *
      * @param string $style
-     * @return RedirectResponse|StreamedResponse|null
+     * @return RedirectResponse|StreamedResponse|Redirector|null
      */
     public function download(string $style = 'original')
     {
