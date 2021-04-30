@@ -3,7 +3,7 @@ name: "Run Tests"
 on: [push, pull_request]
 
 jobs:
-  test:
+  run-tests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -37,7 +37,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json, mbstring, imagick, gd, bcmath, intl, exif, fileinfo, sqlite3
+          extensions: json, mbstring, imagick, gd, bcmath, dom, intl, exif, fileinfo, sqlite3, libxml, pcntl, pdo, sqlite, pdo_sqlite
           tools: composer:v2
           coverage: none
           
@@ -47,7 +47,7 @@ jobs:
       - name: Install dependencies
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
-          composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+          composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
          
       - name: Execute tests
         run: vendor/bin/phpunit
