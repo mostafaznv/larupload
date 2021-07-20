@@ -8,6 +8,7 @@ use Mostafaznv\Larupload\Database\Schema\Blueprint;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
+    // TODO - calculate width/height and dominant color for webp images
     // TODO - upload with create() function
 
     // TODO - update m3u8 catalog
