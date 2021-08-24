@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.0.12 - 2021/08/24
+- fix "Illegal byte sequence" bug during extracting github archive file
+
 ## v0.0.11 - 2021/04/29
 new
 - drop support for laravel 6,7 and set minimum php version to 7.4
