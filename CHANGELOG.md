@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.1.0 - 2021/09/06
+- fix `id check` in attachment class for compatibility with php 8 
+
 ## v0.0.12 - 2021/08/24
 - fix "Illegal byte sequence" bug during extracting github archive file
 
