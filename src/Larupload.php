@@ -162,7 +162,6 @@ class Larupload extends Attachment
      * Check if .meta is exists or not
      *
      * @return bool
-     * @throws FileNotFoundException
      */
     protected function metaIsExists(): bool
     {

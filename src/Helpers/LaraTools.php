@@ -15,7 +15,7 @@ trait LaraTools
      */
     protected function getFileType(UploadedFile $file): string
     {
-        if ($file and $file->isValid()) {
+        if ($file->isValid()) {
             $mime = $file->getMimeType();
 
             return $this->mimeToType($mime);
@@ -25,29 +25,27 @@ trait LaraTools
     }
 
     /**
-     * Convert mimetype to human readable type
+     * Convert mimetype to human-readable type
      *
      * @param string|null $mime
      * @return string
      */
     protected function mimeToType(string $mime = null): string
     {
-        if ($mime) {
-            if (strstr($mime, 'image/')) {
-                return LaruploadEnum::IMAGE;
-            }
-            else if (strstr($mime, 'video/')) {
-                return LaruploadEnum::VIDEO;
-            }
-            else if (strstr($mime, 'audio/')) {
-                return LaruploadEnum::AUDIO;
-            }
-            else if ($mime == 'application/pdf') {
-                return LaruploadEnum::PDF;
-            }
-            else if ($mime == 'application/zip' or $mime == 'application/x-rar-compressed') {
-                return LaruploadEnum::COMPRESSED;
-            }
+        if (str_contains($mime, 'image/')) {
+            return LaruploadEnum::IMAGE;
+        }
+        else if (str_contains($mime, 'video/')) {
+            return LaruploadEnum::VIDEO;
+        }
+        else if (str_contains($mime, 'audio/')) {
+            return LaruploadEnum::AUDIO;
+        }
+        else if ($mime == 'application/pdf') {
+            return LaruploadEnum::PDF;
+        }
+        else if ($mime == 'application/zip' or $mime == 'application/x-rar-compressed') {
+            return LaruploadEnum::COMPRESSED;
         }
 
         return LaruploadEnum::FILE;
@@ -62,7 +60,7 @@ trait LaraTools
      */
     protected function getBasePath(int $id, string $folder = null): string
     {
-        $path = $this->mode == LaruploadEnum::STANDALONE_MODE ? "{$this->folder}/{$this->nameKebab}" : "{$this->folder}/$id/{$this->nameKebab}";
+        $path = $this->mode == LaruploadEnum::STANDALONE_MODE ? "$this->folder/$this->nameKebab" : "$this->folder/$id/$this->nameKebab";
         $path = trim($path, '/');
 
         if ($folder) {
@@ -127,6 +125,6 @@ trait LaraTools
      */
     protected function diskDriverIsLocal($disk): bool
     {
-        return config("filesystems.disks.{$disk}.driver") == LaruploadEnum::LOCAL_DRIVER;
+        return config("filesystems.disks.$disk.driver") == LaruploadEnum::LOCAL_DRIVER;
     }
 }

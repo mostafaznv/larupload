@@ -8,6 +8,7 @@ use Mostafaznv\Larupload\Database\Schema\Blueprint;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
+    // TODO - use hashids/hashids instead of actual model id in file path (path/model/id/file ==> path/model/hashid/file)
     // TODO - calculate width/height and dominant color for webp images
     // TODO - upload with create() function
 
@@ -21,7 +22,7 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - mix with download php-x-sendfile
     // TODO - add some comments to help IDEs to show attachment functions
 
-    const VERSION = '0.1.0';
+    const VERSION = '0.1.1';
 
     public function boot()
     {
@@ -48,7 +49,7 @@ class LaruploadServiceProvider extends ServiceProvider
         });
 
         BlueprintIlluminate::macro('dropUpload', function(string $name, string $mode = LaruploadEnum::HEAVY_MODE) {
-            Blueprint::dropColumns($this, $name, $mode);
+            Blueprint::dropColumns($this, $name);
         });
     }
 }

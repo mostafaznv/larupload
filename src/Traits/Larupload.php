@@ -115,9 +115,9 @@ trait Larupload
      *
      * @param string $key
      * @param $value
-     * @return mixed
+     * @return void
      */
-    public function setAttribute($key, $value)
+    public function setAttribute($key, $value): void
     {
         if ($attachment = $this->getAttachment($key)) {
             $attachment->attach($value);
@@ -133,7 +133,7 @@ trait Larupload
      * @param string $key
      * @return mixed|null
      */
-    public function getAttribute($key)
+    public function getAttribute($key): mixed
     {
         if ($attachment = $this->getAttachment($key)) {
             return $attachment;
@@ -173,7 +173,7 @@ trait Larupload
      * @param $name
      * @return mixed|null
      */
-    protected function getAttachment($name)
+    protected function getAttachment($name): mixed
     {
         foreach ($this->attachments as $attachment) {
             if ($attachment->getName() == $name) {

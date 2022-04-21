@@ -25,14 +25,14 @@ class UploadEntities
      *
      * @var UploadedFile|mixed
      */
-    protected $file;
+    protected mixed $file;
 
     /**
      * Cover Object
      *
      * @var UploadedFile|mixed
      */
-    protected $cover;
+    protected mixed $cover;
 
     /**
      * Name of uploadable entity
@@ -44,7 +44,7 @@ class UploadEntities
 
     /**
      * Model ID
-     * this property will initiated only on retrieving model.
+     * this property will be initiated only on retrieving model.
      *
      * @var int
      */
@@ -112,7 +112,7 @@ class UploadEntities
      *
      * @var string|null
      */
-    protected string $lang;
+    protected ?string $lang;
 
     /**
      * Image processing library
@@ -136,7 +136,7 @@ class UploadEntities
     protected array $streams = [];
 
     /**
-     * Specify that larupload should generates cover for image and videos or not
+     * Specify that larupload should generate cover for image and videos or not
      *
      * @var bool
      */
@@ -214,7 +214,7 @@ class UploadEntities
      *
      * @var mixed
      */
-    protected $ffmpegCaptureFrame;
+    protected mixed $ffmpegCaptureFrame;
 
     /**
      * Image instance
@@ -289,7 +289,7 @@ class UploadEntities
      */
     protected function image(UploadedFile $file): Image
     {
-        $this->image = new Image($file ?? $this->file, $this->disk, $this->localDisk, $this->imageProcessingLibrary);
+        $this->image = new Image($file, $this->disk, $this->localDisk, $this->imageProcessingLibrary);
 
         return $this->image;
     }
@@ -321,11 +321,11 @@ class UploadEntities
                 $num = rand(0, 9999);
 
                 $slug = Slug::make($this->lang)->generate($name);
-                $name = "{$slug}-{$num}";
+                $name = "$slug-$num";
                 break;
         }
 
-        return "{$name}.$format";
+        return "$name.$format";
     }
 
     /**
@@ -354,7 +354,7 @@ class UploadEntities
      *
      * @param Model $model
      */
-    public function setOutput(Model $model)
+    public function setOutput(Model $model): void
     {
         $this->id = $model->id;
 
@@ -491,14 +491,14 @@ class UploadEntities
      * @param string $name
      * @param int $width
      * @param int $height
-     * @param string|int $audioBitrate
-     * @param string|int $videoBitrate
+     * @param int|string $audioBitrate
+     * @param int|string $videoBitrate
      * @return $this
      * @throws Exception
      */
-    public function stream(string $name, int $width, int $height, $audioBitrate, $videoBitrate): UploadEntities
+    public function stream(string $name, int $width, int $height, int|string $audioBitrate, int|string $videoBitrate): UploadEntities
     {
-        Validator::streamIsValid($name, $width, $height, $audioBitrate, $videoBitrate);
+        Validator::streamIsValid($audioBitrate, $videoBitrate);
 
         $this->streams[$name] = [
             'width'   => $width,
@@ -609,9 +609,9 @@ class UploadEntities
     }
 
     /**
-     * Check if style has file
+     * Check if style has files
      *
-     * @param $style
+     * @param string $style
      * @return bool
      */
     protected function styleHasFile(string $style): bool
@@ -672,7 +672,7 @@ class UploadEntities
             return url($url);
         }
 
-        $baseUrl = config("filesystems.disks.{$this->disk}.url");
+        $baseUrl = config("filesystems.disks.$this->disk.url");
         if ($baseUrl) {
             return "$baseUrl/$path";
         }
@@ -686,7 +686,7 @@ class UploadEntities
      * @param string $path
      * @return RedirectResponse|StreamedResponse|Redirector|null
      */
-    protected function storageDownload(string $path)
+    protected function storageDownload(string $path): StreamedResponse|RedirectResponse|null
     {
         if (isset($this->file) and $this->file == LARUPLOAD_NULL) {
             return null;
@@ -696,7 +696,7 @@ class UploadEntities
             return Storage::disk($this->disk)->download($path);
         }
 
-        $baseUrl = config("filesystems.disks.{$this->disk}.url");
+        $baseUrl = config("filesystems.disks.$this->disk.url");
         if ($baseUrl) {
             return redirect("$baseUrl/$path");
         }

@@ -40,42 +40,30 @@ class Blueprint
      * Drop upload columns
      *
      * @param BlueprintIlluminate $table
-     * @param $name
-     * @param string $mode
+     * @param string $name
      */
-    public static function dropColumns(BlueprintIlluminate $table, string $name, string $mode = LaruploadEnum::HEAVY_MODE): void
+    public static function dropColumns(BlueprintIlluminate $table, string $name): void
     {
-        $columns = static::getDefaultColumns($name, $mode);
-        $table->dropColumn($columns);
+        $table->dropColumn(static::getDefaultColumns($name));
     }
 
     /**
      * Get a list of default columns
      *
-     * @param $name
-     * @param string $mode
+     * @param string $name
      * @return array
      */
-    public static function getDefaultColumns(string $name, string $mode = LaruploadEnum::HEAVY_MODE): array
+    public static function getDefaultColumns(string $name): array
     {
         $columns = [
             "{$name}_file_name"
         ];
 
-        if ($mode == LaruploadEnum::HEAVY_MODE) {
-            $coverColumns = [
-                "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type", "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration", "{$name}_file_format", "{$name}_file_cover"
-            ];
-        }
-        else {
-            $coverColumns = [
-                "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type", "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration", "{$name}_file_format", "{$name}_file_cover"
-            ];
-        }
+        $coverColumns = [
+            "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type", "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration", "{$name}_file_format", "{$name}_file_cover"
+        ];
 
-        $columns = array_merge($columns, $coverColumns);
-
-        return $columns;
+        return array_merge($columns, $coverColumns);
     }
 
     /**

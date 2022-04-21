@@ -36,7 +36,7 @@ return [
     |
     | Larupload work with two modes, light and heavy! in light mode the trait store
     | file name in database and metadata in a json column named as meta.
-    | But in heavy mode, it store more columns.
+    | But in heavy mode, it stores more columns.
     |
     | Example: light, heavy
     |
@@ -246,9 +246,10 @@ return [
         |--------------------------------------------------------------------------
         |
         | Set timeout to control ffmpeg max execution time
+        | To disable the timeout, set this value to null
         |
         */
 
-        'timeout' => 60,
+        'timeout' => 90,
     ],
 ];

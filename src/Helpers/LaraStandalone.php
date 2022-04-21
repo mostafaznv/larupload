@@ -33,7 +33,7 @@ trait LaraStandalone
      * @throws Exception
      * @internal
      */
-    public function meta(string $key = null)
+    public function meta(string $key = null): object|int|string|null
     {
         if ($this->internalFunctionIsCallable) {
             return parent::meta($key);
@@ -141,7 +141,7 @@ trait LaraStandalone
      * @throws Exception
      * @internal
      */
-    public function download(string $style = 'original')
+    public function download(string $style = 'original'): StreamedResponse|RedirectResponse|null
     {
         self::internalException();
     }
@@ -151,7 +151,7 @@ trait LaraStandalone
      * @throws Exception
      * @internal
      */
-    public function setOutput(Model $model)
+    public function setOutput(Model $model): void
     {
         self::internalException();
     }

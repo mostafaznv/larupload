@@ -13,7 +13,7 @@ class Validator
      * @param string $value
      * @throws Exception
      */
-    public static function namingMethodIsValid(string $value)
+    public static function namingMethodIsValid(string $value): void
     {
         $namingMethods = [LaruploadEnum::SLUG_NAMING_METHOD, LaruploadEnum::HASH_FILE_NAMING_METHOD, LaruploadEnum::TIME_NAMING_METHOD];
 
@@ -28,12 +28,12 @@ class Validator
      * @param string $value
      * @throws Exception
      */
-    public static function imageProcessingLibraryIsValid(string $value)
+    public static function imageProcessingLibraryIsValid(string $value): void
     {
         $imageLibrary = [LaruploadEnum::GD_IMAGE_LIBRARY, LaruploadEnum::IMAGICK_IMAGE_LIBRARY, LaruploadEnum::GMAGICK_IMAGE_LIBRARY];
 
         if (!in_array($value, $imageLibrary)) {
-            throw new Exception("Image processing library [$value] is not valid. valid librarys: [" . implode(', ', $imageLibrary) . "]");
+            throw new Exception("Image processing library [$value] is not valid. valid libraries: [" . implode(', ', $imageLibrary) . "]");
         }
     }
 
@@ -47,7 +47,7 @@ class Validator
      * @param int|null $height
      * @throws Exception
      */
-    public static function styleIsValid(string $name, array $type = [], string $mode = null, int $width = null, int $height = null)
+    public static function styleIsValid(string $name, array $type = [], string $mode = null, int $width = null, int $height = null): void
     {
         self::modeIsValid($mode);
 
@@ -80,14 +80,11 @@ class Validator
     /**
      * Validate stream styles
      *
-     * @param string $name
-     * @param int|null $width
-     * @param int|null $height
-     * @param $audioBitrate
-     * @param $videoBitrate
+     * @param int|string $audioBitrate
+     * @param int|string $videoBitrate
      * @throws Exception
      */
-    public static function streamIsValid(string $name, int $width, int $height, $audioBitrate, $videoBitrate)
+    public static function streamIsValid(int|string $audioBitrate, int|string $videoBitrate): void
     {
         if (ctype_alnum($name) === false) {
             throw new Exception('stream name [' . $name . '] should be an alpha numeric string');
@@ -111,7 +108,7 @@ class Validator
      * @param string|null $mode
      * @throws Exception
      */
-    public static function modeIsValid(string $mode = null)
+    public static function modeIsValid(string $mode = null): void
     {
         if ($mode) {
             $modes = [
@@ -132,7 +129,7 @@ class Validator
      * @param $value
      * @throws Exception
      */
-    protected static function numericBitrateRule($attribute, $value)
+    protected static function numericBitrateRule($attribute, $value): void
     {
         $units = ['k', 'm'];
         $value = str_ireplace($units, '', $value);

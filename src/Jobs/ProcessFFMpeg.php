@@ -22,10 +22,10 @@ class ProcessFFMpeg implements ShouldQueue
     protected int       $id;
     protected string    $name;
     protected string    $model;
-    protected Larupload $standalone;
+    protected ?Larupload $standalone = null;
 
 
-    public function __construct(int $queueId, int $id, string $name, string $model, string $standalone = null)
+    public function __construct(int $queueId, int $id, string $name, string $model, ?string $standalone = null)
     {
         $this->queueId = $queueId;
         $this->id = $id;
@@ -48,10 +48,11 @@ class ProcessFFMpeg implements ShouldQueue
         sleep(1);
 
         try {
-            if (isset($this->standalone) and $this->standalone) {
+            if ($this->standalone) {
                 $this->standalone->handleFFMpegQueue();
             }
             else {
+                /** @var \Illuminate\Database\Eloquent\Model $class */
                 $class = $this->model;
                 $modelNotSaved = true;
 

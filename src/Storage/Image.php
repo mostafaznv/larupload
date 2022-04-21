@@ -6,6 +6,7 @@ use ColorThief\ColorThief;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Imagine\Image\BoxInterface;
+use JetBrains\PhpStorm\ArrayShape;
 use Mostafaznv\Larupload\Helpers\LaraTools;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Symfony\Component\HttpFoundation\File\File;
@@ -87,6 +88,7 @@ class Image
      *
      * @return array
      */
+    #[ArrayShape(['width' => 'int', 'height' => 'int'])]
     public function getMeta(): array
     {
         $size = $this->image->getSize();
@@ -121,7 +123,7 @@ class Image
 
             $tempDir = $this->tempDir();
             $tempName = time() . '-' . $name;
-            $temp = "{$tempDir}/{$tempName}";
+            $temp = "$tempDir/$tempName";
 
             $this->$method($image, $width, $height)->save($temp);
 
@@ -216,9 +218,8 @@ class Image
     {
         $optimalHeight = $this->getSizeByFixedWidth($image, $width);
         $dimensions = $image->getSize()->widen($width)->heighten($optimalHeight);
-        $image = $image->resize($dimensions);
 
-        return $image;
+        return $image->resize($dimensions);
     }
 
     /**
@@ -316,9 +317,9 @@ class Image
      */
     protected function parseStyleDimensions(array $style): array
     {
-        $width = isset($style['width']) ? $style['width'] : null;
-        $height = isset($style['height']) ? $style['height'] : null;
-        $mode = isset($style['mode']) ? $style['mode'] : null;
+        $width = $style['width'] ?? null;
+        $height = $style['height'] ?? null;
+        $mode = $style['mode'] ?? null;
 
         if ($mode) {
             // width given, height automatically selected to preserve aspect ratio (landscape).
@@ -372,7 +373,7 @@ class Image
                 }
             }
         }
-        catch (Exception $e) {
+        catch (Exception) {
             // do nothing
         }
 
@@ -401,7 +402,7 @@ class Image
     protected static function toRgbString($rgb, string $prefix = 'rgb'): ?string
     {
         if (is_array($rgb) and isset($rgb[0]) and isset($rgb[1]) and isset($rgb[2])) {
-            return "$prefix({$rgb[0]},{$rgb[1]},{$rgb[2]})";
+            return "$prefix($rgb[0],$rgb[1],$rgb[2])";
         }
 
         return null;
