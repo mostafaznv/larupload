@@ -6,7 +6,6 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Helpers\LaraTools;
@@ -684,7 +683,7 @@ class UploadEntities
      * Download path based on storage driver
      *
      * @param string $path
-     * @return RedirectResponse|StreamedResponse|Redirector|null
+     * @return StreamedResponse|RedirectResponse|null
      */
     protected function storageDownload(string $path): StreamedResponse|RedirectResponse|null
     {

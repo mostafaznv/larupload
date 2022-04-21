@@ -48,7 +48,7 @@ class LaruploadServiceProvider extends ServiceProvider
             Blueprint::columns($this, $name, $mode);
         });
 
-        BlueprintIlluminate::macro('dropUpload', function(string $name, string $mode = LaruploadEnum::HEAVY_MODE) {
+        BlueprintIlluminate::macro('dropUpload', function(string $name) {
             Blueprint::dropColumns($this, $name);
         });
     }
