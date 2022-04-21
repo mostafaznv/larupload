@@ -498,7 +498,7 @@ class UploadEntities
      */
     public function stream(string $name, int $width, int $height, int|string $audioBitrate, int|string $videoBitrate): UploadEntities
     {
-        Validator::streamIsValid($audioBitrate, $videoBitrate);
+        Validator::streamIsValid($name, $width, $height, $audioBitrate, $videoBitrate);
 
         $this->streams[$name] = [
             'width'   => $width,
