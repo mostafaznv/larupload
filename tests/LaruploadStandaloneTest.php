@@ -592,9 +592,11 @@ class LaruploadStandaloneTest extends LaruploadTestCase
 
         $path = public_path(str_replace(url('/'), '', $upload->original));
 
+        $this->assertTrue(file_exists($path));
+
         $upload = Larupload::init('uploader')->delete();
 
-        $this->assertTrue($upload);
         $this->assertFalse(file_exists($path));
+        $this->assertTrue($upload);
     }
 }

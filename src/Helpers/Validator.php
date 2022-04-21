@@ -80,11 +80,14 @@ class Validator
     /**
      * Validate stream styles
      *
+     * @param string $name
+     * @param int $width
+     * @param int $height
      * @param int|string $audioBitrate
      * @param int|string $videoBitrate
      * @throws Exception
      */
-    public static function streamIsValid(int|string $audioBitrate, int|string $videoBitrate): void
+    public static function streamIsValid(string $name, int $width, int $height, int|string $audioBitrate, int|string $videoBitrate): void
     {
         if (ctype_alnum($name) === false) {
             throw new Exception('stream name [' . $name . '] should be an alpha numeric string');
