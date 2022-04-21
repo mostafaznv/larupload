@@ -25,8 +25,8 @@ class LaruploadTestCase extends TestCase
 
         $app['config']->set('filesystems.default', 'local');
         $app['config']->set('filesystems.disks.local.driver', 'local');
-        $app['config']->set('filesystems.disks.local.root', public_path());
-        $app['config']->set('filesystems.disks.local.url', env('APP_URL'));
+        $app['config']->set('filesystems.disks.local.root', public_path('uploads'));
+        $app['config']->set('filesystems.disks.local.url', env('APP_URL') . '/uploads');
     }
 
     public function migrate()
