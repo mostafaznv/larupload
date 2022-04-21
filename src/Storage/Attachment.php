@@ -2,7 +2,6 @@
 
 namespace Mostafaznv\Larupload\Storage;
 
-use Mostafaznv\Larupload\Helpers\LaraTools;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\UploadEntities;
 use stdClass;
@@ -26,7 +25,7 @@ class Attachment extends UploadEntities
      * @param UploadedFile|null $cover
      * @return bool
      */
-    public function attach($file, $cover = null): bool
+    public function attach(mixed $file, ?UploadedFile $cover = null): bool
     {
         if (($this->fileIsSetAndHasValue($file) or $file == LARUPLOAD_NULL) and ($this->fileIsSetAndHasValue($cover) or $cover == null)) {
             $this->file = $file;
@@ -139,7 +138,7 @@ class Attachment extends UploadEntities
     public function deleted(Model $model): void
     {
         if (!$this->preserveFiles) {
-            Storage::disk($this->disk)->deleteDirectory("{$this->folder}/{$model->id}");
+            Storage::disk($this->disk)->deleteDirectory("$this->folder/$model->id");
         }
     }
 
@@ -167,7 +166,7 @@ class Attachment extends UploadEntities
      * @param string $style
      * @return RedirectResponse|StreamedResponse|null
      */
-    public function download(string $style = 'original')
+    public function download(string $style = 'original'): StreamedResponse|RedirectResponse|null
     {
         $path = $this->prepareStylePath($style);
 
@@ -179,12 +178,12 @@ class Attachment extends UploadEntities
     }
 
     /**
-     * Get meta data as an array or object
+     * Get metadata as an array or object
      *
      * @param string|null $key
      * @return object|string|integer|null
      */
-    public function meta(string $key = null)
+    public function meta(string $key = null): object|int|string|null
     {
         if ($key) {
             $meta = $this->output;
@@ -211,7 +210,7 @@ class Attachment extends UploadEntities
         $styles = new stdClass();
 
         foreach ($allStyles as $style) {
-            if ($style == LaruploadEnum::COVER_FOLDER and $this->generateCover == false) {
+            if ($style == LaruploadEnum::COVER_FOLDER and !$this->generateCover) {
                 $styles->{$style} = null;
                 continue;
             }
@@ -248,7 +247,7 @@ class Attachment extends UploadEntities
         $this->handleVideoStyles($this->id);
 
         if (!$driverIsLocal and $isLastOne) {
-            Storage::disk($this->localDisk)->deleteDirectory("{$this->folder}/{$this->id}");
+            Storage::disk($this->localDisk)->deleteDirectory("$this->folder/$this->id");
         }
     }
 
@@ -329,7 +328,7 @@ class Attachment extends UploadEntities
             Storage::disk($this->disk)->makeDirectory($path);
 
             $name = $this->setFileName($this->cover);
-            $saveTo = "{$path}/{$name}";
+            $saveTo = "$path/$name";
 
             $result = $this->image($this->cover)->resize($saveTo, $this->coverStyle);
 
@@ -351,8 +350,8 @@ class Attachment extends UploadEntities
 
             $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME);
             $format = $this->type == LaruploadEnum::IMAGE ? ($this->output['format'] == 'svg' ? 'png' : $this->output['format']) : 'jpg';
-            $name = "{$fileName}.{$format}";
-            $saveTo = "{$path}/{$name}";
+            $name = "$fileName.$format";
+            $saveTo = "$path/$name";
 
             switch ($this->type) {
                 case LaruploadEnum::VIDEO:
@@ -433,7 +432,7 @@ class Attachment extends UploadEntities
 
             $path = $this->getBasePath($id, $name);
             Storage::disk($this->disk)->makeDirectory($path);
-            $saveTo = "{$path}/{$this->output['name']}";
+            $saveTo = "$path/{$this->output['name']}";
 
             $this->ffmpeg()->manipulate($style, $saveTo);
         }
@@ -560,9 +559,8 @@ class Attachment extends UploadEntities
                 if ($type == LaruploadEnum::VIDEO) {
                     $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
                     $path = $this->getBasePath($this->id, $style);
-                    $path = "$path/$name";
 
-                    return $path;
+                    return "$path/$name";
                 }
 
                 return null;
@@ -570,9 +568,8 @@ class Attachment extends UploadEntities
             else if ($name and $this->styleHasFile($style)) {
                 $name = $this->fixExceptionNames($name, $style);
                 $path = $this->getBasePath($this->id, $style);
-                $path = "$path/$name";
 
-                return $path;
+                return "$path/$name";
             }
         }
 

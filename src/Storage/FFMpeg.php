@@ -59,9 +59,9 @@ class FFMpeg
     /**
      * Timeout
      *
-     * @var int
+     * @var ?int
      */
-    protected int $timeout;
+    protected ?int $timeout = null;
 
     /**
      * Default scale size
@@ -107,10 +107,11 @@ class FFMpeg
                 'duration' => 0,
             ];
 
-            $cmd = $this->cmd("{$this->ffprobe} -i $path -loglevel quiet -show_format -show_streams -print_format json");
+            $cmd = $this->cmd("$this->ffprobe -i $path -loglevel quiet -show_format -show_streams -print_format json");
 
             $process = new Process($cmd);
             $process->setTimeout($this->timeout);
+            $process->setIdleTimeout($this->timeout);
             $process->run();
             $output = $process->getOutput();
 
@@ -170,11 +171,11 @@ class FFMpeg
     public function capture($fromSecond, array $style, string $saveTo, bool $withDominantColor): ?string
     {
         $meta = $this->getMeta();
-        $width = isset($style['width']) ? $style['width'] : null;
-        $height = isset($style['height']) ? $style['height'] : null;
-        $scale = $width ? $width : ($height ? $height : self::DEFAULT_SCALE);
+        $width = $style['width'] ?? null;
+        $height = $style['height'] ?? null;
+        $scale = $width ?: ($height ?: self::DEFAULT_SCALE);
         $scaleType = $meta['width'] >= $meta['height'] ? "-1:$scale" : "$scale:-1";
-        $mode = isset($style['mode']) ? $style['mode'] : null;
+        $mode = $style['mode'] ?? null;
         $path = $this->file->getRealPath();
         $saveTo = Storage::disk($this->disk)->path($saveTo);
 
@@ -185,14 +186,14 @@ class FFMpeg
 
         if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
             if ($width and $height) {
-                $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$width:$height");
+                $cmd = escapeshellcmd("$this->ffmpeg -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$width:$height");
             }
             else {
-                $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$scale:$scale");
+                $cmd = escapeshellcmd("$this->ffmpeg -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$scale:$scale");
             }
         }
         else {
-            $cmd = escapeshellcmd("{$this->ffmpeg} -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType");
+            $cmd = escapeshellcmd("$this->ffmpeg -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType");
         }
 
         return $this->run($cmd, $saveTo, null, $withDominantColor);
@@ -207,23 +208,23 @@ class FFMpeg
      */
     public function manipulate(array $style, string $saveTo): void
     {
-        $width = isset($style['width']) ? $style['width'] : null;
-        $height = isset($style['height']) ? $style['height'] : null;
-        $mode = isset($style['mode']) ? $style['mode'] : null;
+        $width = $style['width'] ?? null;
+        $height = $style['height'] ?? null;
+        $mode = $style['mode'] ?? null;
         $scale = $this->calculateScale($mode, $width, $height);
         $path = $this->file->getRealPath();
         $saveTo = Storage::disk($this->disk)->path($saveTo);
 
         if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
             if ($scale) {
-                $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale,crop=$width:$height,setsar=1");
+                $cmd = escapeshellcmd("$this->ffmpeg -i $path -vf scale=$scale,crop=$width:$height,setsar=1");
             }
             else {
-                $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf crop=$width:$height,setsar=1");
+                $cmd = escapeshellcmd("$this->ffmpeg -i $path -vf crop=$width:$height,setsar=1");
             }
         }
         else {
-            $cmd = escapeshellcmd("{$this->ffmpeg} -i $path -vf scale=$scale,setsar=1");
+            $cmd = escapeshellcmd("$this->ffmpeg -i $path -vf scale=$scale,setsar=1");
         }
 
         $this->run($cmd, $saveTo);
@@ -257,7 +258,7 @@ class FFMpeg
             Storage::disk($disk)->makeDirectory($styleBasePath);
             $saveTo = Storage::disk($disk)->path("$styleBasePath/$name.mp4");
 
-            $cmd = escapeshellcmd("{$this->ffmpeg} -y -i $path -s {$width}x{$height} -y -strict experimental -acodec aac -b:a $audioBitRate -ac 2 -ar 48000 -vcodec libx264 -vprofile main -g 48 -b:v $videoBitRate -threads 64");
+            $cmd = escapeshellcmd("$this->ffmpeg -y -i $path -s {$width}x$height -y -strict experimental -acodec aac -b:a $audioBitRate -ac 2 -ar 48000 -vcodec libx264 -vprofile main -g 48 -b:v $videoBitRate -threads 64");
             $this->run($cmd, $saveTo, $disk);
 
             $converted[$name] = [
@@ -276,7 +277,7 @@ class FFMpeg
             Storage::disk($this->disk)->makeDirectory($streamBasePath);
             $streamBasePath = Storage::disk($this->disk)->path($streamBasePath);
 
-            $cmd = escapeshellcmd("{$this->ffmpeg} -y -i {$value['file']} -hls_time 9 -hls_segment_filename :stream-path/file-sequence-%d.ts -hls_playlist_type vod :stream-path/$m3u8");
+            $cmd = escapeshellcmd("$this->ffmpeg -y -i {$value['file']} -hls_time 9 -hls_segment_filename :stream-path/file-sequence-%d.ts -hls_playlist_type vod :stream-path/$m3u8");
             $this->streamRun($cmd, $streamBasePath);
 
             $playlist .= "#EXT-X-STREAM-INF:BANDWIDTH={$value['bandwidth']},RESOLUTION={$value['width']}x{$value['height']}\n";
@@ -357,6 +358,7 @@ class FFMpeg
             $cmd = $this->cmd("$cmd $saveTo");
             $process = new Process($cmd);
             $process->setTimeout($this->timeout);
+            $process->setIdleTimeout($this->timeout);
             $process->run();
 
             if ($process->isSuccessful()) {
@@ -370,11 +372,12 @@ class FFMpeg
 
             $tempDir = $this->tempDir();
             $tempName = time() . '-' . $name;
-            $temp = "{$tempDir}/{$tempName}";
+            $temp = "$tempDir/$tempName";
 
             $cmd = $this->cmd("$cmd $temp");
             $process = new Process($cmd);
             $process->setTimeout($this->timeout);
+            $process->setIdleTimeout($this->timeout);
             $process->run();
 
             if ($process->isSuccessful()) {
@@ -407,6 +410,7 @@ class FFMpeg
 
             $process = new Process($cmd);
             $process->setTimeout($this->timeout);
+            $process->setIdleTimeout($this->timeout);
             $process->run();
 
             if ($process->isSuccessful()) {
@@ -426,6 +430,7 @@ class FFMpeg
 
             $process = new Process($cmd);
             $process->setTimeout($this->timeout);
+            $process->setIdleTimeout($this->timeout);
             $process->run();
 
             if ($process->isSuccessful()) {

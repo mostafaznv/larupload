@@ -246,9 +246,10 @@ return [
         |--------------------------------------------------------------------------
         |
         | Set timeout to control ffmpeg max execution time
+        | To disable the timeout, set this value to null
         |
         */
 
-        'timeout' => 60,
+        'timeout' => 90,
     ],
 ];
