@@ -551,7 +551,7 @@ class Attachment extends UploadEntities
     {
         $staticStyles = [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER, LaruploadEnum::STREAM_FOLDER];
 
-        if ($this->id and (in_array($style, $staticStyles) or array_key_exists($style, $this->styles))) {
+        if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->styles))) {
             $name = $style == LaruploadEnum::COVER_FOLDER ? $this->output['cover'] : $this->output['name'];
             $type = $this->output['type'];
 

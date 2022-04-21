@@ -27,10 +27,10 @@ trait LaraTools
     /**
      * Convert mimetype to human-readable type
      *
-     * @param string $mime
+     * @param string|null $mime
      * @return string
      */
-    protected function mimeToType(string $mime): string
+    protected function mimeToType(string $mime = null): string
     {
         if (str_contains($mime, 'image/')) {
             return LaruploadEnum::IMAGE;

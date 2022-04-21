@@ -58,17 +58,17 @@ class Validator
 
         // validate width and height
         if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
-            if (!$height) {
+            if ($height === null or $height === 0) {
                 throw new Exception('Height is required when you are in crop mode');
             }
 
-            if (!$width) {
+            if ($width === null or $width === 0) {
                 throw new Exception('Width is required when you are in crop mode');
             }
         }
 
         // validate type
-        if ($type) {
+        if (!empty($type)) {
             $types = [LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE];
 
             if (count(array_intersect($type, $types)) != count($type)) {
@@ -86,6 +86,18 @@ class Validator
      */
     public static function streamIsValid(int|string $audioBitrate, int|string $videoBitrate): void
     {
+        if (ctype_alnum($name) === false) {
+            throw new Exception('stream name [' . $name . '] should be an alpha numeric string');
+        }
+
+        if($width <= 0) {
+            throw new Exception('width [' . $width . '] should be a positive number');
+        }
+
+        if($height <= 0) {
+            throw new Exception('height [' . $height . '] should be a positive number');
+        }
+
         self::numericBitrateRule('audioBitrate', $audioBitrate);
         self::numericBitrateRule('videoBitrate', $videoBitrate);
     }
