@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php: [8.0]
+        php: [8.0, 8.1]
         laravel: [9.*]
         dependency-version: [prefer-lowest, prefer-stable]
         include:
@@ -24,7 +24,7 @@ jobs:
 
       - name: Install ffmpeg
         run: sudo apt-get install ffmpeg
-              
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -41,7 +41,7 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, sqlite3, pdo_sqlite, bcmath, fileinfo, gd, imagick
           tools: composer:v2
           coverage: none
-          
+
       - name: Fix Imagick Policy
         run: sudo sed -i 's/none/read|write/g' /etc/ImageMagick-6/policy.xml
 
@@ -49,6 +49,6 @@ jobs:
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
-         
+
       - name: Execute tests
         run: vendor/bin/phpunit
