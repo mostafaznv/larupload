@@ -32,6 +32,13 @@ in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/file
 - Queue FFMpeg processes and finish them in background
 - Easy to use
 
+----
+🚀 If you find this project interesting, please consider supporting me on the open source journey
+
+[![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
+
+----
+
 ## Requirements:
 - Laravel 8.* or higher
 - GD library
@@ -734,6 +741,13 @@ if you want generate m3u8 files from video sources, you should use `stream`. for
 | 3     | height       | int        | true     | -       |                                                                               |
 | 4     | audioBitrate | string/int | true     | -       | you can pass bitrate as an integer or pass it with strings like 64k or ...    |
 | 5     | videoBitrate | string/int | true     | -       | you can pass bitrate as an integer or pass it with strings like 64k or ...    |
+
+----
+🚀 If you find this project interesting, please consider supporting me on the open source journey
+
+[![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
+
+----
 
 ## Changelog
 Refer to the [Changelog](CHANGELOG.md) for a full history of the project.
