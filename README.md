@@ -745,6 +745,13 @@ if you want generate m3u8 files from video sources, you should use `stream`. for
 ## Changelog
 Refer to the [Changelog](CHANGELOG.md) for a full history of the project.
 
+----
+I develop in a open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
+
+[![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
+
+----
+
 ## License
 This software is released under [The MIT License (MIT)](LICENSE).
 
