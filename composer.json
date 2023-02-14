@@ -36,7 +36,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": "^8.0.2",
+        "php": "^8.1",
         "laravel/framework": "~9.0",
         "ksubileau/color-thief-php": "^2.0",
         "imagine/imagine": "^1.3",
