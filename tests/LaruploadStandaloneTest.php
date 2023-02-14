@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Imagine\Gd\Imagine;
 use Imagine\Image\ImageInterface;
+use Mostafaznv\Larupload\DTOs\Stream;
+use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\FFMpeg;
@@ -257,7 +259,9 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testSmallStyleDimensions()
     {
         $upload = Larupload::init('uploader')
-            ->style('small', 200, 200, LaruploadEnum::CROP_STYLE_MODE)
+            ->style(
+                Style::make('small', 200, 200, LaruploadEnum::CROP_STYLE_MODE)
+            )
             ->upload($this->imageJPG);
 
         $image = $this->image($upload->small);
@@ -270,7 +274,9 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testMediumStyleDimensions()
     {
         $upload = Larupload::init('uploader')
-            ->style('medium', 800, 800, LaruploadEnum::AUTO_STYLE_MODE)
+            ->style(
+                Style::make('medium', 800, 800, LaruploadEnum::AUTO_STYLE_MODE)
+            )
             ->upload($this->imageJPG);
 
         $image = $this->image($upload->medium);
@@ -283,7 +289,13 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testLandscapeStyleDimensions()
     {
         $upload = Larupload::init('uploader')
-            ->style('landscape', 400, null, LaruploadEnum::LANDSCAPE_STYLE_MODE)
+            ->style(
+                Style::make(
+                    name: 'landscape',
+                    width: 400,
+                    mode: LaruploadEnum::LANDSCAPE_STYLE_MODE
+                )
+            )
             ->upload($this->imageJPG);
 
         $image = $this->image($upload->landscape);
@@ -296,7 +308,13 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testPortraitStyleDimensions()
     {
         $upload = Larupload::init('uploader')
-            ->style('portrait', null, 400, LaruploadEnum::PORTRAIT_STYLE_MODE)
+            ->style(
+                Style::make(
+                    name: 'portrait',
+                    height: 400,
+                    mode: LaruploadEnum::PORTRAIT_STYLE_MODE
+                )
+            )
             ->upload($this->imageJPG);
 
         $image = $this->image($upload->portrait);
@@ -309,7 +327,9 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testExactStyleDimensions()
     {
         $upload = Larupload::init('uploader')
-            ->style('exact', 300, 190, LaruploadEnum::EXACT_STYLE_MODE)
+            ->style(
+                Style::make('exact', 300, 190, LaruploadEnum::EXACT_STYLE_MODE)
+            )
             ->upload($this->imageJPG);
 
         $image = $this->image($upload->exact);
@@ -322,7 +342,9 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testAutoStyleDimensions()
     {
         $upload = Larupload::init('uploader')
-            ->style('auto', 300, 190, LaruploadEnum::AUTO_STYLE_MODE)
+            ->style(
+                Style::make('auto', 300, 190, LaruploadEnum::AUTO_STYLE_MODE)
+            )
             ->upload($this->imageJPG);
 
         $image = $this->image($upload->auto);
@@ -416,13 +438,66 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     {
         $upload = Larupload::init('uploader')
             ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
-            ->style('small_size', 200, 200, LaruploadEnum::CROP_STYLE_MODE, [LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE])
-            ->style('small', 200, 200, LaruploadEnum::CROP_STYLE_MODE, [LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE])
-            ->style('medium', 800, 800, LaruploadEnum::AUTO_STYLE_MODE)
-            ->style('landscape', 400, null, LaruploadEnum::LANDSCAPE_STYLE_MODE)
-            ->style('portrait', null, 400, LaruploadEnum::PORTRAIT_STYLE_MODE)
-            ->style('exact', 300, 190, LaruploadEnum::EXACT_STYLE_MODE)
-            ->style('auto', 300, 190, LaruploadEnum::AUTO_STYLE_MODE)
+            ->style(
+                Style::make(
+                    name: 'small_size',
+                    width: 200,
+                    height: 200,
+                    mode: LaruploadEnum::CROP_STYLE_MODE,
+                    type: [
+                        LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE
+                    ]
+                )
+            )
+            ->style(
+                Style::make(
+                    name: 'small',
+                    width: 200,
+                    height: 200,
+                    mode: LaruploadEnum::CROP_STYLE_MODE,
+                    type: [
+                        LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE
+                    ]
+                )
+            )
+            ->style(
+                Style::make(
+                    name: 'medium',
+                    width: 800,
+                    height: 800,
+                    mode: LaruploadEnum::AUTO_STYLE_MODE
+                )
+            )
+            ->style(
+                Style::make(
+                    name: 'landscape',
+                    width: 400,
+                    mode: LaruploadEnum::LANDSCAPE_STYLE_MODE
+                )
+            )
+            ->style(
+                Style::make(
+                    name: 'portrait',
+                    height: 400,
+                    mode: LaruploadEnum::PORTRAIT_STYLE_MODE
+                )
+            )
+            ->style(
+                Style::make(
+                    name: 'exact',
+                    width: 300,
+                    height: 190,
+                    mode: LaruploadEnum::EXACT_STYLE_MODE
+                )
+            )
+            ->style(
+                Style::make(
+                    name: 'auto',
+                    width: 300,
+                    height: 190,
+                    mode: LaruploadEnum::AUTO_STYLE_MODE
+                )
+            )
             ->upload($this->video);
 
         // cover
@@ -482,8 +557,12 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     {
         $upload = Larupload::init('uploader')
             ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
-            ->stream('480p', 640, 480, '64k', '300000')
-            ->stream('720p', 1280, 720, '64K', '1M')
+            ->stream(
+                Stream::make('480p', 640, 480, '64k', '300000')
+            )
+            ->stream(
+                Stream::make('720p', 1280, 720, '64K', '1M')
+            )
             ->upload($this->video);
 
 
@@ -521,8 +600,15 @@ class LaruploadStandaloneTest extends LaruploadTestCase
      */
     public function testCustomCoverStyle()
     {
+        $style = Style::make(
+            name: 'cover',
+            width: 200,
+            height: 150,
+            mode: LaruploadEnum::EXACT_STYLE_MODE
+        );
+
         $upload = Larupload::init('uploader')
-            ->coverStyle(200, 150, LaruploadEnum::EXACT_STYLE_MODE)
+            ->coverStyle($style)
             ->upload($this->imageJPG);
 
         $cover = $upload->cover;
@@ -575,7 +661,9 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testKebabCaseFolderName()
     {
         $upload = Larupload::init('uploader')
-            ->style('small_size', 200, 200)
+            ->style(
+                Style::make('small_size', 200, 200)
+            )
             ->upload($this->imageJPG);
 
         $this->assertTrue(Str::contains($upload->small_size, '/small-size/'));

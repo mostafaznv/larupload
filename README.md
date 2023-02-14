@@ -12,7 +12,7 @@
 in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/filesystem). Thanks to laravel filesystem, it’s easy to switch between "any" desired driver (such as local, sftp, s3, etc.)
 
 ----
-I develop in a open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
+I develop in an open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
 
 [![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
 
@@ -459,9 +459,20 @@ As you know, larupload works with 2 strategies, ORM-Based and standalone. in the
    
      $upload = Larupload::init('path')
             ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
-            ->style('thumbnail', 1000, 750, LaruploadEnum::CROP_STYLE_MODE)
-            ->stream('480p', 640, 480, '64K', '1M')
-            ->stream('720p', 1280, 720, '64K', '1M')
+            ->style(
+                Style::make(
+                    name: 'thumbnail',
+                    width: 1000,
+                    height: 750,
+                    mode: LaruploadEnum::CROP_STYLE_MODE
+                )
+            )
+            ->stream(
+                Stream::make('480p', 640, 480, '64K', '1M')
+            )
+            ->stream(
+                Stream::make('720p', 1280, 720, '64K', '1M')
+            )
             ->upload($file, $cover);
     ```
 
@@ -527,11 +538,12 @@ In larupload, we’ve put a lot of effort into making the package more customize
 - #### Cover Style
     With this field, you can manage the configuration of the created cover.
     ```php
-    'cover_style' => [
-        'height' => 500,
-        'width'  => 500,
-        'mode'   => 'crop'
-    ]
+    'cover_style' => Style::make(
+        name: 'cover',
+        width: 500,
+        height: 500,
+        mode: LaruploadEnum::CROP_STYLE_MODE
+    )
     ```
 
 - #### Dominant color
@@ -619,6 +631,8 @@ namespace App\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Mostafaznv\Larupload\DTOs\Stream;
+use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
@@ -643,17 +657,54 @@ class Media extends Model
                 ->lang('fa')
                 ->imageProcessingLibrary(LaruploadEnum::GD_IMAGE_LIBRARY)
                 ->generateCover(false)
-                ->coverStyle(400, 400, LaruploadEnum::CROP_STYLE_MODE)
+                ->coverStyle(
+                    Style::make(
+                        name: 'cover',
+                        width: 400,
+                        height: 400,
+                        mode: LaruploadEnum::CROP_STYLE_MODE
+                    )
+                )
                 ->dominantColor(true)
                 ->preserveFiles(true)
-                ->style('thumbnail', 250, 250, LaruploadEnum::AUTO_STYLE_MODE, [])
-                ->style('crop_mode', 1100, 1100, LaruploadEnum::CROP_STYLE_MODE, [])
-                ->style('portrait_mode', 1000, 1000, LaruploadEnum::PORTRAIT_STYLE_MODE, [LaruploadEnum::IMAGE_STYLE_TYPE])
-                ->stream('480p', 640, 480, '64K', '1M')
-                ->stream('720p', 1280, 720, '64K', '1M'),
+                ->style(
+                    Style::make(
+                        name: 'thumbnail',
+                        width: 250,
+                        height: 250,
+                        mode: LaruploadEnum::AUTO_STYLE_MODE
+                    )
+                )
+                ->style(
+                    Style::make(
+                        name: 'crop_mode',
+                        width: 1100,
+                        height: 1100,
+                        mode: LaruploadEnum::CROP_STYLE_MODE
+                    )
+                )
+                ->style(
+                    Style::make(
+                        name: 'portrait_mode',
+                        width: 1000,
+                        height: 1000,
+                        mode: LaruploadEnum::PORTRAIT_STYLE_MODE,
+                        type: [
+                            LaruploadEnum::IMAGE_STYLE_TYPE
+                        ] 
+                    )
+                )
+                ->stream(
+                    Stream::make('480p', 640, 480, '64K', '1M')
+                )
+                ->stream(
+                    Stream::make('720p', 1280, 720, '64K', '1M')
+                ),
 
             Attachment::make('other_file', LaruploadEnum::LIGHT_MODE)
-                ->stream('480p', 640, 480, '64K', '1M'),
+                ->stream(
+                    Stream::make('480p', 640, 480, '64K', '1M')
+                ),
         ];
     }
 }
@@ -719,20 +770,20 @@ Upload::where('id', 21)->with('laruploadQueue', 'laruploadQueues')->first();
 ## Some notes about stream and style functions in larupload
 As you know, if you want to create hls stream (m3u8) you should use stream function in your attachments function of the model, and if you want to manipulate images or videos, you should handle it with style function.
 
-to use this functions, you should pass some arguments to these functions. here we show you how:
+to use this functions, you should pass `Style` or `Stream` objects to these functions. here we show you how:
 
 #### Style
 
-| index | name   | type   | required | default | description                                                                                                                                                                                                                                                                                        |
-|-------|--------|--------|----------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | name   | string | true     | -       | name of style.  examples: thumbnail, small, ...                                                                                                                                                                                                                                                    |
-| 2     | width  | int    | false    | null    | height of the photo or video.                                                                                                                                                                                                                                                                      |
-| 3     | height | int    | false    | null    | width of the photo or video                                                                                                                                                                                                                                                                        |
-| 4     | mode   | string | false    | null    | larupload decides how to deal with the uploaded video or photo with this field. acceptable values for this field are:larupload decides how to deal with the uploaded video or photo with this field. acceptable values for this field are: `landscape`, `portrait`, `crop`, `exact`, `auto`        |
-| 5     | type   | array  | false    | []      | with this field, you can determine that the defined style is usable for what type of files, `image`, `video` or `both`.                                                                                                                                                                            |
+| index | name   | type    | required | default | description                                                                                                                                                                                                                                                                                        |
+|-------|--------|---------|----------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1     | name   | string  | true     | -       | name of style.  examples: thumbnail, small, ...                                                                                                                                                                                                                                                    |
+| 2     | width  | ?int    | false    | null    | height of the photo or video.                                                                                                                                                                                                                                                                      |
+| 3     | height | ?int    | false    | null    | width of the photo or video                                                                                                                                                                                                                                                                        |
+| 4     | mode   | ?string | false    | null    | larupload decides how to deal with the uploaded video or photo with this field. acceptable values for this field are:larupload decides how to deal with the uploaded video or photo with this field. acceptable values for this field are: `landscape`, `portrait`, `crop`, `exact`, `auto`        |
+| 5     | type   | ?array  | false    | []      | with this field, you can determine that the defined style is usable for what type of files, `image`, `video` or `both`.                                                                                                                                                                            |
 
 #### Stream
-if you want generate m3u8 files from video sources, you should use `stream`. for now larupload supports hls videos only on stream style.
+if you want to generate m3u8 files from video sources, you should use `stream`. for now larupload supports hls videos only on stream style.
 
 | index | name         | type       | required | default | description                                                                   |
 |-------|--------------|------------|----------|---------|-------------------------------------------------------------------------------|

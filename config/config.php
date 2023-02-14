@@ -1,5 +1,6 @@
 <?php
 
+use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\LaruploadEnum;
 
 return [
@@ -139,11 +140,12 @@ return [
     |
     */
 
-    'cover-style' => [
-        'width'  => 500,
-        'height' => 500,
-        'mode'   => 'crop',
-    ],
+    'cover-style' => Style::make(
+        name: 'cover',
+        width: 500,
+        height: 500,
+        mode: LaruploadEnum::CROP_STYLE_MODE
+    ),
 
     /*
     |--------------------------------------------------------------------------

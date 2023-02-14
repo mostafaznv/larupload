@@ -13,6 +13,10 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - upload with create() function
 
     // TODO - update m3u8 catalog
+    // TODO - configurable threads
+    // TODO - DTO for all data types
+    // TODO - PEST
+    // TODO - configurable video format
     // TODO - import php-ffmpeg package into the project [NOTICE: wait for a stable version]
     // TODO - add an ability to custom ffmpeg scripts (video and stream)
     // TODO - check possibility of change video ffmpeg script to streaming one (none crop mode).

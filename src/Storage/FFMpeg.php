@@ -4,6 +4,8 @@ namespace Mostafaznv\Larupload\Storage;
 
 use Exception;
 use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\DTOs\Stream;
+use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Helpers\LaraTools;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Symfony\Component\HttpFoundation\File\File;
@@ -159,23 +161,20 @@ class FFMpeg
     }
 
     /**
-     * Capture screen shot from video file
+     * Capture screenshot from video file
      *
      * @param $fromSecond
-     * @param array $style
+     * @param Style $style
      * @param string $saveTo
      * @param bool $withDominantColor
      * @return string|null
      * @throws Exception
      */
-    public function capture($fromSecond, array $style, string $saveTo, bool $withDominantColor): ?string
+    public function capture($fromSecond, Style $style, string $saveTo, bool $withDominantColor): ?string
     {
         $meta = $this->getMeta();
-        $width = $style['width'] ?? null;
-        $height = $style['height'] ?? null;
-        $scale = $width ?: ($height ?: self::DEFAULT_SCALE);
+        $scale = $style->width ?: ($style->height ?: self::DEFAULT_SCALE);
         $scaleType = $meta['width'] >= $meta['height'] ? "-1:$scale" : "$scale:-1";
-        $mode = $style['mode'] ?? null;
         $path = $this->file->getRealPath();
         $saveTo = Storage::disk($this->disk)->path($saveTo);
 
@@ -184,9 +183,9 @@ class FFMpeg
             $fromSecond = number_format($fromSecond, 1);
         }
 
-        if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
-            if ($width and $height) {
-                $cmd = escapeshellcmd("$this->ffmpeg -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$width:$height");
+        if ($style->mode == LaruploadEnum::CROP_STYLE_MODE) {
+            if ($style->width and $style->height) {
+                $cmd = escapeshellcmd("$this->ffmpeg -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$style->width:$style->height");
             }
             else {
                 $cmd = escapeshellcmd("$this->ffmpeg -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$scale:$scale");
@@ -202,25 +201,22 @@ class FFMpeg
     /**
      * Manipulate original video file to crop/resize
      *
-     * @param array $style
+     * @param Style $style
      * @param string $saveTo
      * @throws Exception
      */
-    public function manipulate(array $style, string $saveTo): void
+    public function manipulate(Style $style, string $saveTo): void
     {
-        $width = $style['width'] ?? null;
-        $height = $style['height'] ?? null;
-        $mode = $style['mode'] ?? null;
-        $scale = $this->calculateScale($mode, $width, $height);
+        $scale = $this->calculateScale($style->mode, $style->width, $style->height);
         $path = $this->file->getRealPath();
         $saveTo = Storage::disk($this->disk)->path($saveTo);
 
-        if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
+        if ($style->mode == LaruploadEnum::CROP_STYLE_MODE) {
             if ($scale) {
-                $cmd = escapeshellcmd("$this->ffmpeg -i $path -vf scale=$scale,crop=$width:$height,setsar=1");
+                $cmd = escapeshellcmd("$this->ffmpeg -i $path -vf scale=$scale,crop=$style->width:$style->height,setsar=1");
             }
             else {
-                $cmd = escapeshellcmd("$this->ffmpeg -i $path -vf crop=$width:$height,setsar=1");
+                $cmd = escapeshellcmd("$this->ffmpeg -i $path -vf crop=$style->width:$style->height,setsar=1");
             }
         }
         else {
@@ -233,7 +229,7 @@ class FFMpeg
     /**
      * Stream - Generate HLS video from source file
      *
-     * @param array $styles
+     * @param Stream[] $styles
      * @param string $basePath
      * @param string $fileName
      * @return bool
@@ -248,25 +244,21 @@ class FFMpeg
 
         // generate multiple video qualities from uploaded video.
         foreach ($styles as $name => $style) {
-            $width = $style['width'];
-            $height = $style['height'];
             $path = $this->file->getRealPath();
-            $audioBitRate = $style['bitrate']['audio'];
-            $videoBitRate = $style['bitrate']['video'];
             $styleBasePath = "$basePath/$name-convert";
 
             Storage::disk($disk)->makeDirectory($styleBasePath);
             $saveTo = Storage::disk($disk)->path("$styleBasePath/$name.mp4");
 
-            $cmd = escapeshellcmd("$this->ffmpeg -y -i $path -s {$width}x$height -y -strict experimental -acodec aac -b:a $audioBitRate -ac 2 -ar 48000 -vcodec libx264 -vprofile main -g 48 -b:v $videoBitRate -threads 64");
+            $cmd = escapeshellcmd("$this->ffmpeg -y -i $path -s {$style->width}x$style->height -y -strict experimental -acodec aac -b:a $style->audioBitrate -ac 2 -ar 48000 -vcodec libx264 -vprofile main -g 48 -b:v $style->videoBitrate -threads 64");
             $this->run($cmd, $saveTo, $disk);
 
             $converted[$name] = [
                 'path'      => $styleBasePath,
                 'file'      => $saveTo,
-                'bandwidth' => $videoBitRate,
-                'width'     => $width,
-                'height'    => $height,
+                'bandwidth' => $style->videoBitrate,
+                'width'     => $style->width,
+                'height'    => $style->height,
             ];
         }
 

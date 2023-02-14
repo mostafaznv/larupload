@@ -8,6 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Mostafaznv\Larupload\DTOs\Stream;
+use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Helpers\LaraTools;
 use Mostafaznv\Larupload\Helpers\Slug;
 use Mostafaznv\Larupload\Helpers\Validator;
@@ -123,14 +125,14 @@ class UploadEntities
     /**
      * Styles for image/video files
      *
-     * @var array
+     * @var Style[]
      */
     protected array $styles = [];
 
     /**
      * Stream styles
      *
-     * @var array
+     * @var Stream[]
      */
     protected array $streams = [];
 
@@ -144,9 +146,9 @@ class UploadEntities
     /**
      * Cover style
      *
-     * @var array
+     * @var Style|null
      */
-    protected array $coverStyle = [];
+    protected ?Style $coverStyle = null;
 
     /**
      * dominant color flag
@@ -462,24 +464,12 @@ class UploadEntities
     /**
      * Set style
      *
-     * @param string $name
-     * @param int|null $width
-     * @param int|null $height
-     * @param string|null $mode
-     * @param array $type
+     * @param Style $style
      * @return $this
-     * @throws Exception
      */
-    public function style(string $name, int $width = null, int $height = null, string $mode = null, array $type = []): UploadEntities
+    public function style(Style $style): UploadEntities
     {
-        Validator::styleIsValid($name, $type, $mode, $width, $height);
-
-        $this->styles[$name] = [
-            'type'   => $type,
-            'mode'   => $mode,
-            'width'  => $width,
-            'height' => $height
-        ];
+        $this->styles[$style->name] = $style;
 
         return $this;
     }
@@ -487,26 +477,12 @@ class UploadEntities
     /**
      * Set stream style
      *
-     * @param string $name
-     * @param int $width
-     * @param int $height
-     * @param int|string $audioBitrate
-     * @param int|string $videoBitrate
+     * @param Stream $stream
      * @return $this
-     * @throws Exception
      */
-    public function stream(string $name, int $width, int $height, int|string $audioBitrate, int|string $videoBitrate): UploadEntities
+    public function stream(Stream $stream): UploadEntities
     {
-        Validator::streamIsValid($name, $width, $height, $audioBitrate, $videoBitrate);
-
-        $this->streams[$name] = [
-            'width'   => $width,
-            'height'  => $height,
-            'bitrate' => [
-                'audio' => $this->shortNumberToInteger($audioBitrate),
-                'video' => $this->shortNumberToInteger($videoBitrate)
-            ]
-        ];
+        $this->streams[$stream->name] = $stream;
 
         return $this;
     }
@@ -527,21 +503,12 @@ class UploadEntities
     /**
      * Set cover style
      *
-     * @param int $width
-     * @param int $height
-     * @param string $mode
+     * @param Style $style
      * @return $this
-     * @throws Exception
      */
-    public function coverStyle(int $width, int $height, string $mode): UploadEntities
+    public function coverStyle(Style $style): UploadEntities
     {
-        Validator::modeIsValid($mode);
-
-        $this->coverStyle = [
-            'width'  => $width,
-            'height' => $height,
-            'mode'   => $mode
-        ];
+        $this->coverStyle = $style;
 
         return $this;
     }
@@ -623,7 +590,7 @@ class UploadEntities
             $type = $this->output['type'];
 
             if (in_array($type, [LaruploadEnum::VIDEO, LaruploadEnum::IMAGE])) {
-                $styleTypes = $this->styles[$style]['type'];
+                $styleTypes = $this->styles[$style]->type;
 
                 return count($styleTypes) == 0 or in_array($type, $styleTypes);
             }

@@ -166,7 +166,7 @@ class Attachment extends UploadEntities
      * @param string $style
      * @return RedirectResponse|StreamedResponse|null
      */
-    public function download(string $style = 'original'): StreamedResponse|RedirectResponse|null
+    public function download(string $style = LaruploadEnum::ORIGINAL_FOLDER): StreamedResponse|RedirectResponse|null
     {
         $path = $this->prepareStylePath($style);
 
@@ -392,7 +392,7 @@ class Attachment extends UploadEntities
         switch ($this->type) {
             case LaruploadEnum::IMAGE:
                 foreach ($this->styles as $name => $style) {
-                    if (count($style['type']) and !in_array(LaruploadEnum::IMAGE, $style['type'])) {
+                    if (count($style->type) and !in_array(LaruploadEnum::IMAGE, $style->type)) {
                         continue;
                     }
 
@@ -426,7 +426,7 @@ class Attachment extends UploadEntities
     protected function handleVideoStyles($id): void
     {
         foreach ($this->styles as $name => $style) {
-            if ((count($style['type']) and !in_array(LaruploadEnum::VIDEO, $style['type']))) {
+            if ((count($style->type) and !in_array(LaruploadEnum::VIDEO, $style->type))) {
                 continue;
             }
 
@@ -549,7 +549,9 @@ class Attachment extends UploadEntities
      */
     protected function prepareStylePath(string $style): ?string
     {
-        $staticStyles = [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER, LaruploadEnum::STREAM_FOLDER];
+        $staticStyles = [
+            LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER, LaruploadEnum::STREAM_FOLDER
+        ];
 
         if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->styles))) {
             $name = $style == LaruploadEnum::COVER_FOLDER ? $this->output['cover'] : $this->output['name'];

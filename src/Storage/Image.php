@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Http\UploadedFile;
 use Imagine\Image\BoxInterface;
 use JetBrains\PhpStorm\ArrayShape;
+use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Helpers\LaraTools;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Symfony\Component\HttpFoundation\File\File;
@@ -103,11 +104,11 @@ class Image
      * Resize an image using the computed settings
      *
      * @param string $saveTo
-     * @param array $style
+     * @param Style $style
      *
      * @return bool
      */
-    public function resize(string $saveTo, array $style): bool
+    public function resize(string $saveTo, Style $style): bool
     {
         list($width, $height, $option) = $this->parseStyleDimensions($style);
 
@@ -312,36 +313,32 @@ class Image
      * Parse the given style dimensions to extract out the file processing options,
      * perform any necessary image resizing for a given style.
      *
-     * @param array $style
+     * @param Style $style
      * @return array
      */
-    protected function parseStyleDimensions(array $style): array
+    protected function parseStyleDimensions(Style $style): array
     {
-        $width = $style['width'] ?? null;
-        $height = $style['height'] ?? null;
-        $mode = $style['mode'] ?? null;
-
-        if ($mode) {
+        if ($style->mode) {
             // width given, height automatically selected to preserve aspect ratio (landscape).
-            if ($mode == LaruploadEnum::LANDSCAPE_STYLE_MODE and $width) {
-                return [$width, null, 'landscape'];
+            if ($style->mode == LaruploadEnum::LANDSCAPE_STYLE_MODE and $style->width) {
+                return [$style->width, null, 'landscape'];
             }
             // height given, width automatically selected to preserve aspect ratio (portrait).
-            else if ($mode == LaruploadEnum::PORTRAIT_STYLE_MODE and $height) {
-                return [null, $height, 'portrait'];
+            else if ($style->mode == LaruploadEnum::PORTRAIT_STYLE_MODE and $style->height) {
+                return [null, $style->height, 'portrait'];
             }
             // resize, then crop.
-            else if ($mode == LaruploadEnum::CROP_STYLE_MODE and $height and $width) {
-                return [$width, $height, 'crop'];
+            else if ($style->mode == LaruploadEnum::CROP_STYLE_MODE and $style->height and $style->width) {
+                return [$style->width, $style->height, 'crop'];
             }
             // resize by exact width/height (does not preserve aspect ratio).
-            else if ($mode == LaruploadEnum::EXACT_STYLE_MODE and $height and $width) {
-                return [$width, $height, 'exact'];
+            else if ($style->mode == LaruploadEnum::EXACT_STYLE_MODE and $style->height and $style->width) {
+                return [$style->width, $style->height, 'exact'];
             }
         }
 
         // let the script decide the best way to resize.
-        return [$width, $height, 'auto'];
+        return [$style->width, $style->height, 'auto'];
     }
 
     /**
