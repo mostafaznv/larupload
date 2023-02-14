@@ -26,8 +26,6 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - mix with download php-x-sendfile
     // TODO - add some comments to help IDEs to show attachment functions
 
-    const VERSION = '0.1.1';
-
     public function boot()
     {
         $this->loadTranslationsFrom(__DIR__ . '/../translations', 'larupload');
