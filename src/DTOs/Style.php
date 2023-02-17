@@ -87,7 +87,8 @@ class Style
                 LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE
             ];
 
-            if (count(array_intersect($this->type, $availableTypes)) != count($availableTypes)) {
+
+            if (count(array_intersect($this->type, $availableTypes)) != count($this->type)) {
                 $type = implode(', ', $this->type);
                 $availableTypes = implode(', ', $availableTypes);
 
