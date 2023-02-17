@@ -1,10 +1,11 @@
 ![larupload-banner](https://user-images.githubusercontent.com/7619687/53000850-837af180-343e-11e9-90a1-c30ff435b0b1.png)
 
+
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mostafaznv/larupload/run-tests.yml?branch=master&label=Build&style=flat-square&logo=github)](https://github.com/mostafaznv/larupload/actions)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/mostafaznv/larupload.svg?style=flat-square)](https://packagist.org/packages/mostafaznv/larupload)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mostafaznv/larupload/Run%20Tests?label=Build&style=flat-square)](https://github.com/mostafaznv/larupload/actions)
-[![Quality Score](https://img.shields.io/scrutinizer/g/mostafaznv/larupload.svg?style=flat-square)](https://scrutinizer-ci.com/g/mostafaznv/larupload)
 [![Total Downloads](https://img.shields.io/packagist/dt/mostafaznv/larupload.svg?style=flat-square)](https://packagist.org/packages/mostafaznv/larupload)
+[![Quality Score](https://img.shields.io/scrutinizer/g/mostafaznv/larupload.svg?style=flat-square)](https://scrutinizer-ci.com/g/mostafaznv/larupload)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 
 # Larupload
 **Larupload** will help you upload your files easily. in addition to uploading files, Larupload has interesting features for uploading `video`, `audio` and `image`.
