@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Concerns;
 
 use stdClass;
+use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\Attachment;
 
 trait LaruploadTransformers
@@ -11,7 +12,7 @@ trait LaruploadTransformers
      * Handle the dynamic setting of attachment objects
      *
      * @param string $key
-     * @param $value
+     * @param mixed $value
      * @return void
      */
     public function setAttribute($key, $value): void
@@ -65,23 +66,6 @@ trait LaruploadTransformers
     }
 
     /**
-     * Retrieve attachment if exists, otherwise return null
-     *
-     * @param $name
-     * @return Attachment|null
-     */
-    protected function getAttachment($name): ?Attachment
-    {
-        foreach ($this->attachments as $attachment) {
-            if ($attachment->getName() == $name) {
-                return $attachment;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Override toArray method
      *
      * @return array
@@ -98,6 +82,29 @@ trait LaruploadTransformers
         return $array;
     }
 
+    /**
+     * Retrieve attachment if exists, otherwise return null
+     *
+     * @param $name
+     * @return Attachment|null
+     */
+    private function getAttachment($name): ?Attachment
+    {
+        foreach ($this->attachments as $attachment) {
+            if ($attachment->getName() == $name) {
+                return $attachment;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Hide larupload columns from toArray function
+     *
+     * @param array $array
+     * @return array
+     */
     private function hideLaruploadColumns(array $array): array
     {
         if ($this->hideLaruploadColumns) {
