@@ -2,9 +2,6 @@
 
 namespace Mostafaznv\Larupload\Concerns;
 
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Mostafaznv\Larupload\LaruploadEnum;
-
 trait BootLarupload
 {
     protected static string $laruploadNull;
@@ -30,36 +27,6 @@ trait BootLarupload
         if (!defined('LARUPLOAD_NULL')) {
             define('LARUPLOAD_NULL', static::$laruploadNull);
         }
-
-        static::saved(function($model) {
-            $shouldSave = false;
-
-            foreach ($model->attachments as $attachment) {
-                if (!$attachment->isUploaded()) {
-                    $shouldSave = true;
-
-                    $model = $attachment->saved($model);
-                }
-            }
-
-            if ($shouldSave) {
-                $model->save();
-            }
-        });
-
-        static::deleted(function($model) {
-            if (!$model->hasGlobalScope(SoftDeletingScope::class) or $model->isForceDeleting()) {
-                foreach ($model->attachments as $attachment) {
-                    $attachment->deleted($model);
-                }
-            }
-        });
-
-        static::retrieved(function($model) {
-            foreach ($model->attachments as $attachment) {
-                $attachment->setOutput($model);
-            }
-        });
     }
 
     private function hideLaruploadColumns(array $array): array
