@@ -2,11 +2,18 @@
 
 namespace Mostafaznv\Larupload\Concerns;
 
-trait BootLarupload
+use Mostafaznv\Larupload\Storage\Attachment;
+
+trait BaseLarupload
 {
     protected static string $laruploadNull;
 
     private bool $hideLaruploadColumns;
+
+    /**
+     * @var Attachment[]
+     */
+    private array $attachments = [];
 
     protected function initializeLarupload(): void
     {
@@ -28,4 +35,11 @@ trait BootLarupload
             define('LARUPLOAD_NULL', static::$laruploadNull);
         }
     }
+
+    /**
+     * Get the entities should upload into the model
+     *
+     * @return Attachment[]
+     */
+    abstract public function attachments(): array;
 }
