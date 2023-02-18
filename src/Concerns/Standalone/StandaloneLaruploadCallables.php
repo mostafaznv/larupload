@@ -8,7 +8,6 @@ use Mostafaznv\Larupload\LaruploadEnum;
 trait StandaloneLaruploadCallables
 {
     /**
-     * @throws Exception
      * @internal
      */
     public function url(string $style = LaruploadEnum::ORIGINAL_FOLDER): ?string
@@ -17,11 +16,10 @@ trait StandaloneLaruploadCallables
             return parent::url($style);
         }
 
-        self::internalException();
+        $this->internalException();
     }
 
     /**
-     * @throws Exception
      * @internal
      */
     public function meta(string $key = null): object|int|string|null
@@ -30,11 +28,10 @@ trait StandaloneLaruploadCallables
             return parent::meta($key);
         }
 
-        self::internalException();
+        $this->internalException();
     }
 
     /**
-     * @throws Exception
      * @internal
      */
     public function urls(): object
@@ -43,11 +40,10 @@ trait StandaloneLaruploadCallables
             return parent::urls();
         }
 
-        self::internalException();
+        $this->internalException();
     }
 
     /**
-     * @throws Exception
      * @internal
      */
     public function handleFFMpegQueue(bool $isLastOne = false): void
@@ -56,7 +52,7 @@ trait StandaloneLaruploadCallables
             parent::handleFFMpegQueue($isLastOne);
         }
         else {
-            self::internalException();
+            $this->internalException();
         }
     }
 }

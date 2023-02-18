@@ -17,3 +17,4 @@ class Larupload extends Attachment
     use StandaloneLaruploadCallables;
     use StandaloneLaruploadNotCallables;
 }
+

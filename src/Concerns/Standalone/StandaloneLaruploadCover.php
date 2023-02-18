@@ -2,16 +2,11 @@
 
 namespace Mostafaznv\Larupload\Concerns\Standalone;
 
-use Exception;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\UploadedFile;
 
 trait StandaloneLaruploadCover
 {
     /**
-     * @param UploadedFile $file
-     * @return bool
-     * @throws Exception
      * @internal
      */
     public function updateCover(UploadedFile $file): bool
@@ -20,20 +15,12 @@ trait StandaloneLaruploadCover
             return parent::updateCover($file);
         }
 
-        self::internalException();
+        $this->internalException();
     }
 
-    /**
-     * Update Cover
-     *
-     * @param UploadedFile $file
-     * @return object|null
-     * @throws FileNotFoundException
-     * @throws Exception
-     */
     public function changeCover(UploadedFile $file): ?object
     {
-        if ($this->metaIsExists()) {
+        if ($this->metaExists()) {
             $this->internalFunctionIsCallable = true;
             $res = parent::updateCover($file);
 
@@ -48,16 +35,9 @@ trait StandaloneLaruploadCover
         return null;
     }
 
-    /**
-     * Delete Cover
-     *
-     * @return object|null
-     * @throws FileNotFoundException
-     * @throws Exception
-     */
     public function deleteCover(): ?object
     {
-        if ($this->metaIsExists()) {
+        if ($this->metaExists()) {
             $this->internalFunctionIsCallable = true;
             $res = parent::detachCover();
 
@@ -72,11 +52,7 @@ trait StandaloneLaruploadCover
         return null;
     }
 
-
-
     /**
-     * @return bool
-     * @throws Exception
      * @internal
      */
     public function detachCover(): bool
@@ -85,6 +61,6 @@ trait StandaloneLaruploadCover
             return parent::detachCover();
         }
 
-        self::internalException();
+        $this->internalException();
     }
 }

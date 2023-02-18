@@ -42,7 +42,7 @@ trait BaseStandaloneLarupload
         return false;
     }
 
-    protected function updateMeta(object $urls = null): void
+    private function updateMeta(object $urls = null): void
     {
         if (is_null($urls)) {
             $urls = $this->urls();
@@ -53,11 +53,11 @@ trait BaseStandaloneLarupload
     }
 
     /**
-     * Check if .meta is exists or not
+     * Check if .meta file exists
      *
      * @return bool
      */
-    protected function metaIsExists(): bool
+    private function metaExists(): bool
     {
         $metaPath = $this->getBasePath($this->id) . '/.meta';
 
