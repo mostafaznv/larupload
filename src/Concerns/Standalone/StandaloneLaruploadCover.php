@@ -22,7 +22,7 @@ trait StandaloneLaruploadCover
     {
         if ($this->metaExists()) {
             $this->internalFunctionIsCallable = true;
-            $res = parent::updateCover($file);
+            $res = $this->updateCover($file);
 
             if ($res) {
                 $this->setCover($this->id);

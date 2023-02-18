@@ -51,6 +51,11 @@ trait LaraTools
         return LaruploadEnum::FILE;
     }
 
+    protected function isImage(UploadedFile $file): bool
+    {
+        return $this->mimeToType($file->getMimeType()) == LaruploadEnum::IMAGE;
+    }
+
     /**
      * Path Helper to generate relative path string
      *
