@@ -1,6 +1,6 @@
 <?php
 
-namespace Mostafaznv\Larupload\Concerns\Storage;
+namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 
 use Illuminate\Http\Exceptions\HttpResponseException;
