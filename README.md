@@ -465,7 +465,7 @@ As you know, larupload works with 2 strategies, ORM-Based and standalone. in the
                     name: 'thumbnail',
                     width: 1000,
                     height: 750,
-                    mode: LaruploadEnum::CROP_STYLE_MODE
+                    mode: LaruploadStyleModel::CROP
                 )
             )
             ->stream(
@@ -543,7 +543,7 @@ In larupload, we’ve put a lot of effort into making the package more customize
         name: 'cover',
         width: 500,
         height: 500,
-        mode: LaruploadEnum::CROP_STYLE_MODE
+        mode: LaruploadStyleMode::CROP
     )
     ```
 
@@ -624,6 +624,7 @@ In larupload, we’ve put a lot of effort into making the package more customize
 
 ### Customization by model's attachments 
 In addition to using the config file, that is responsible for Larupload general configuration, you can customize each model by attaching attachment entities.
+
 ```php
 <?php
 
@@ -634,8 +635,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\DTOs\Style;
+use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
+use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
@@ -658,14 +661,14 @@ class Media extends Model
                 ->withMeta(true)
                 ->namingMethod(LaruploadNamingMethod::HASH_FILE)
                 ->lang('fa')
-                ->imageProcessingLibrary(LaruploadEnum::GD_IMAGE_LIBRARY)
+                ->imageProcessingLibrary(LaruploadImageLibrary::GD)
                 ->generateCover(false)
                 ->coverStyle(
                     Style::make(
                         name: 'cover',
                         width: 400,
                         height: 400,
-                        mode: LaruploadEnum::CROP_STYLE_MODE
+                        mode: LaruploadStyleMode::CROP
                     )
                 )
                 ->dominantColor(true)
@@ -675,7 +678,7 @@ class Media extends Model
                         name: 'thumbnail',
                         width: 250,
                         height: 250,
-                        mode: LaruploadEnum::AUTO_STYLE_MODE
+                        mode: LaruploadStyleMode::AUTO
                     )
                 )
                 ->style(
@@ -683,7 +686,7 @@ class Media extends Model
                         name: 'crop_mode',
                         width: 1100,
                         height: 1100,
-                        mode: LaruploadEnum::CROP_STYLE_MODE
+                        mode: LaruploadStyleMode::CROP
                     )
                 )
                 ->style(
@@ -691,7 +694,7 @@ class Media extends Model
                         name: 'portrait_mode',
                         width: 1000,
                         height: 1000,
-                        mode: LaruploadEnum::PORTRAIT_STYLE_MODE,
+                        mode: LaruploadStyleMode::PORTRAIT,
                         type: [
                             LaruploadEnum::IMAGE_STYLE_TYPE
                         ] 

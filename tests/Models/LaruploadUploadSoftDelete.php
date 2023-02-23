@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
 
@@ -25,7 +25,7 @@ class LaruploadUploadSoftDelete extends Model
                         name: 'small',
                         width: 200,
                         height: 200,
-                        mode: LaruploadEnum::CROP_STYLE_MODE
+                        mode: LaruploadStyleMode::CROP
                     )
                 )
         ];

@@ -5,7 +5,9 @@ namespace Mostafaznv\Larupload\Test;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\DTOs\Style;
+use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
+use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
 use Mostafaznv\Larupload\LaruploadEnum;
 
 class LaruploadModelTestCase extends LaruploadTestCase
@@ -157,7 +159,7 @@ class LaruploadModelTestCase extends LaruploadTestCase
 
     public function svgDominantColor()
     {
-        Config::set('larupload.image-processing-library', LaruploadEnum::IMAGICK_IMAGE_LIBRARY);
+        Config::set('larupload.image-processing-library', LaruploadImageLibrary::IMAGICK);
 
         $this->initModel();
         $model = $this->uploadSVG();
@@ -320,7 +322,7 @@ class LaruploadModelTestCase extends LaruploadTestCase
             name: 'cover',
             width: 200,
             height: 150,
-            mode: LaruploadEnum::EXACT_STYLE_MODE
+            mode: LaruploadStyleMode::EXACT
         );
 
         Config::set('larupload.cover-style', $style);

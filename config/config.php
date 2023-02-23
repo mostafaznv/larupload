@@ -113,7 +113,7 @@ return [
     |
     */
 
-    'image-processing-library' => LaruploadEnum::GD_IMAGE_LIBRARY,
+    'image-processing-library' => \Mostafaznv\Larupload\Enums\LaruploadImageLibrary::GD,
 
     /*
     |--------------------------------------------------------------------------
@@ -144,7 +144,7 @@ return [
         name: 'cover',
         width: 500,
         height: 500,
-        mode: LaruploadEnum::CROP_STYLE_MODE
+        mode: \Mostafaznv\Larupload\Enums\LaruploadStyleMode::CROP
     ),
 
     /*

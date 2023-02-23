@@ -6,6 +6,8 @@ use Exception;
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\DTOs\Style;
+use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
+use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
 use Mostafaznv\Larupload\Helpers\LaraTools;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Symfony\Component\HttpFoundation\File\File;
@@ -183,7 +185,7 @@ class FFMpeg
             $fromSecond = number_format($fromSecond, 1);
         }
 
-        if ($style->mode == LaruploadEnum::CROP_STYLE_MODE) {
+        if ($style->mode == LaruploadStyleMode::CROP) {
             if ($style->width and $style->height) {
                 $cmd = escapeshellcmd("$this->ffmpeg -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$style->width:$style->height");
             }
@@ -211,7 +213,7 @@ class FFMpeg
         $path = $this->file->getRealPath();
         $saveTo = Storage::disk($this->disk)->path($saveTo);
 
-        if ($style->mode == LaruploadEnum::CROP_STYLE_MODE) {
+        if ($style->mode === LaruploadStyleMode::CROP) {
             if ($scale) {
                 $cmd = escapeshellcmd("$this->ffmpeg -i $path -vf scale=$scale,crop=$style->width:$style->height,setsar=1");
             }
@@ -289,17 +291,17 @@ class FFMpeg
     /**
      * Calculate scale
      *
-     * @param string|null $mode
+     * @param LaruploadStyleMode|null $mode
      * @param int|null $width
      * @param int|null $height
      * @return string
      * @throws Exception
      */
-    protected function calculateScale(string $mode = null, int $width = null, int $height = null): string
+    protected function calculateScale(LaruploadStyleMode $mode = null, int $width = null, int $height = null): string
     {
         $meta = $this->getMeta();
 
-        if ($mode == LaruploadEnum::CROP_STYLE_MODE) {
+        if ($mode === LaruploadStyleMode::CROP) {
             if ($width >= $meta['width'] or $height >= $meta['height']) {
                 if ($meta['width'] >= $meta['height']) {
                     $scale = ceil(($meta['width'] * $height) / $meta['height']);
@@ -469,6 +471,6 @@ class FFMpeg
     {
         $file = new UploadedFile($path, basename($path));
 
-        return (new Image($file, $this->disk, $this->localDisk, LaruploadEnum::GD_IMAGE_LIBRARY))->getDominantColor();
+        return (new Image($file, $this->disk, $this->localDisk, LaruploadImageLibrary::GD))->getDominantColor();
     }
 }

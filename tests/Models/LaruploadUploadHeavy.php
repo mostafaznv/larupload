@@ -7,6 +7,7 @@ use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
+use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
@@ -29,7 +30,7 @@ class LaruploadUploadHeavy extends Model
                         name: 'small_size',
                         width: 200,
                         height: 200,
-                        mode: LaruploadEnum::CROP_STYLE_MODE,
+                        mode: LaruploadStyleMode::CROP,
                         type: [
                             LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE
                         ]
@@ -40,7 +41,7 @@ class LaruploadUploadHeavy extends Model
                         name: 'small',
                         width: 200,
                         height: 200,
-                        mode: LaruploadEnum::CROP_STYLE_MODE,
+                        mode: LaruploadStyleMode::CROP,
                         type: [
                             LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE
                         ]
@@ -51,21 +52,21 @@ class LaruploadUploadHeavy extends Model
                         name: 'medium',
                         width: 800,
                         height: 800,
-                        mode: LaruploadEnum::AUTO_STYLE_MODE
+                        mode: LaruploadStyleMode::AUTO
                     )
                 )
                 ->style(
                     Style::make(
                         name: 'landscape',
                         width: 400,
-                        mode: LaruploadEnum::LANDSCAPE_STYLE_MODE
+                        mode: LaruploadStyleMode::LANDSCAPE
                     )
                 )
                 ->style(
                     Style::make(
                         name: 'portrait',
                         height: 400,
-                        mode: LaruploadEnum::PORTRAIT_STYLE_MODE
+                        mode: LaruploadStyleMode::PORTRAIT
                     )
                 )
                 ->style(
@@ -73,7 +74,7 @@ class LaruploadUploadHeavy extends Model
                         name: 'exact',
                         width: 300,
                         height: 190,
-                        mode: LaruploadEnum::EXACT_STYLE_MODE
+                        mode: LaruploadStyleMode::EXACT
                     )
                 )
                 ->style(
@@ -81,7 +82,7 @@ class LaruploadUploadHeavy extends Model
                         name: 'auto',
                         width: 300,
                         height: 190,
-                        mode: LaruploadEnum::AUTO_STYLE_MODE
+                        mode: LaruploadStyleMode::AUTO
                     )
                 )
                 ->stream(
