@@ -2,8 +2,8 @@
 
 namespace Mostafaznv\Larupload\Concerns;
 
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use stdClass;
-use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\Attachment;
 
 trait LaruploadTransformers
@@ -113,7 +113,7 @@ trait LaruploadTransformers
 
                 unset($array["{$name}_file_name"]);
 
-                if ($attachment->getMode() == LaruploadEnum::HEAVY_MODE) {
+                if ($attachment->getMode() === LaruploadMode::HEAVY) {
                     unset($array["{$name}_file_size"]);
                     unset($array["{$name}_file_type"]);
                     unset($array["{$name}_file_mime_type"]);

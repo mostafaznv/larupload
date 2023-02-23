@@ -2,7 +2,7 @@
 
 namespace Mostafaznv\Larupload\Test;
 
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 class LaruploadModelHeavyTest extends LaruploadModelTestCase
 {
@@ -10,7 +10,7 @@ class LaruploadModelHeavyTest extends LaruploadModelTestCase
     {
         parent::setUp();
 
-        $this->mode = LaruploadEnum::HEAVY_MODE;
+        $this->mode = LaruploadMode::HEAVY;
 
         $this->migrate();
         $this->initModel();

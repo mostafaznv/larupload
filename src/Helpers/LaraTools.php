@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Helpers;
 
 use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\LaruploadEnum;
 
 trait LaraTools
@@ -65,7 +66,7 @@ trait LaraTools
      */
     protected function getBasePath(int $id, string $folder = null): string
     {
-        $path = $this->mode == LaruploadEnum::STANDALONE_MODE ? "$this->folder/$this->nameKebab" : "$this->folder/$id/$this->nameKebab";
+        $path = $this->mode == LaruploadMode::STANDALONE ? "$this->folder/$this->nameKebab" : "$this->folder/$id/$this->nameKebab";
         $path = trim($path, '/');
 
         if ($folder) {

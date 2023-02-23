@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload;
 use Illuminate\Database\Schema\Blueprint as BlueprintIlluminate;
 use Illuminate\Support\ServiceProvider;
 use Mostafaznv\Larupload\Database\Schema\Blueprint;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
@@ -46,7 +47,7 @@ class LaruploadServiceProvider extends ServiceProvider
 
     protected function registerMacros()
     {
-        BlueprintIlluminate::macro('upload', function(string $name, string $mode = LaruploadEnum::HEAVY_MODE) {
+        BlueprintIlluminate::macro('upload', function(string $name, LaruploadMode $mode = LaruploadMode::HEAVY) {
             Blueprint::columns($this, $name, $mode);
         });
 

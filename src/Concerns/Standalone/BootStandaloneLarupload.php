@@ -2,8 +2,8 @@
 
 namespace Mostafaznv\Larupload\Concerns\Standalone;
 
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Larupload;
-use Mostafaznv\Larupload\LaruploadEnum;
 
 trait BootStandaloneLarupload
 {
@@ -12,7 +12,7 @@ trait BootStandaloneLarupload
     protected bool $internalFunctionIsCallable = false;
 
 
-    public function __construct(string $name, string $mode)
+    public function __construct(string $name, LaruploadMode $mode)
     {
         static::$laruploadNull = crc32(time());
 
@@ -20,13 +20,13 @@ trait BootStandaloneLarupload
             define('LARUPLOAD_NULL', static::$laruploadNull);
         }
 
-        parent::__construct($name, LaruploadEnum::STANDALONE_MODE);
+        parent::__construct($name, LaruploadMode::STANDALONE);
     }
 
 
     public static function init(string $name): Larupload
     {
-        $instance = new self($name, LaruploadEnum::STANDALONE_MODE);
+        $instance = new self($name, LaruploadMode::STANDALONE);
         $instance->id = time();
 
         return $instance;

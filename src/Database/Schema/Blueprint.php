@@ -4,7 +4,7 @@ namespace Mostafaznv\Larupload\Database\Schema;
 
 use Illuminate\Database\Schema\Blueprint as BlueprintIlluminate;
 use Illuminate\Support\Facades\DB;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use PDO;
 
 class Blueprint
@@ -14,13 +14,13 @@ class Blueprint
      *
      * @param BlueprintIlluminate $table
      * @param string $name
-     * @param string $mode
+     * @param LaruploadMode $mode
      */
-    public static function columns(BlueprintIlluminate $table, string $name, string $mode = LaruploadEnum::HEAVY_MODE): void
+    public static function columns(BlueprintIlluminate $table, string $name, LaruploadMode $mode = LaruploadMode::HEAVY): void
     {
         $table->string("{$name}_file_name", 255)->nullable();
 
-        if ($mode == LaruploadEnum::HEAVY_MODE) {
+        if ($mode === LaruploadMode::HEAVY) {
             $table->unsignedInteger("{$name}_file_size")->nullable();
             $table->string("{$name}_file_type", 85)->nullable();
             $table->string("{$name}_file_mime_type", 85)->nullable();

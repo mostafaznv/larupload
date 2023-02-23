@@ -7,7 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
 use Imagine\Gd\Imagine;
 use Imagine\Image\ImageInterface;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Storage\FFMpeg;
 use Mostafaznv\Larupload\Test\Models\LaruploadUploadHeavy;
@@ -17,9 +17,9 @@ use Mostafaznv\Larupload\Test\Models\LaruploadUploadSoftDelete;
 trait LaruploadModelTestCaseTools
 {
     /**
-     * @var string
+     * @var LaruploadMode
      */
-    public string $mode;
+    public LaruploadMode $mode;
 
     /**
      * @var Model
@@ -83,7 +83,7 @@ trait LaruploadModelTestCaseTools
 
     protected function initModel(): Model
     {
-        if ($this->mode == LaruploadEnum::HEAVY_MODE) {
+        if ($this->mode === LaruploadMode::HEAVY) {
             $this->model = new LaruploadUploadHeavy;
         }
         else {

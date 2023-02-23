@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\LaruploadEnum;
 
 trait BaseAttachment
@@ -47,7 +48,7 @@ trait BaseAttachment
      */
     protected function setAttributes(Model $model): Model
     {
-        if ($this->mode == 'heavy') {
+        if ($this->mode === LaruploadMode::HEAVY) {
             foreach ($this->output as $key => $value) {
                 $model->{"{$this->name}_file_$key"} = $value;
             }

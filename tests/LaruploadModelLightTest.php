@@ -2,7 +2,7 @@
 
 namespace Mostafaznv\Larupload\Test;
 
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 class LaruploadModelLightTest extends LaruploadModelTestCase
 {
@@ -12,7 +12,7 @@ class LaruploadModelLightTest extends LaruploadModelTestCase
     {
         parent::setUp();
 
-        $this->mode = LaruploadEnum::LIGHT_MODE;
+        $this->mode = LaruploadMode::LIGHT;
 
         $this->migrate();
         $this->initModel();

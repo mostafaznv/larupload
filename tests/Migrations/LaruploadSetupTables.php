@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Test\Migrations;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\LaruploadEnum;
 
 class LaruploadSetupTables extends Migration
@@ -14,23 +15,23 @@ class LaruploadSetupTables extends Migration
      *
      * @return  void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('upload_heavy', function(Blueprint $table) {
             $table->id();
-            $table->upload('main_file', LaruploadEnum::HEAVY_MODE);
+            $table->upload('main_file', LaruploadMode::HEAVY);
             $table->timestamps();
         });
 
         Schema::create('upload_light', function(Blueprint $table) {
             $table->id();
-            $table->upload('main_file', LaruploadEnum::LIGHT_MODE);
+            $table->upload('main_file', LaruploadMode::LIGHT);
             $table->timestamps();
         });
 
         Schema::create('upload_soft_delete', function(Blueprint $table) {
             $table->id();
-            $table->upload('main_file', LaruploadEnum::HEAVY_MODE);
+            $table->upload('main_file', LaruploadMode::HEAVY);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -53,7 +54,7 @@ class LaruploadSetupTables extends Migration
      *
      * @return  void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('upload_heavy');
         Schema::dropIfExists('upload_light');

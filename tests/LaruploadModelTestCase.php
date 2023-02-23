@@ -416,7 +416,13 @@ class LaruploadModelTestCase extends LaruploadTestCase
         Config::set('larupload.hide-table-columns', true);
         $this->initModel();
 
-        $array = $this->uploadJPG()->toArray();
+        try {
+            $array = $this->uploadJPG()->toArray();
+        }
+        catch (\Exception $e) {
+            dd($e->getMessage(), $this->mode, $this->model);
+        }
+
 
         $this->assertFalse(isset($array['main_file_file_name']));
     }

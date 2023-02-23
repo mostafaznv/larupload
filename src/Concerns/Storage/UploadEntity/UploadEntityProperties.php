@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
 use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\UploadEntities;
 
 trait UploadEntityProperties
@@ -29,9 +30,8 @@ trait UploadEntityProperties
 
     /**
      * Mode of uploadable entity
-     * heavy, light
      */
-    protected string $mode;
+    protected LaruploadMode $mode;
 
     /**
      * Specify the type of the attached file.

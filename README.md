@@ -74,7 +74,7 @@ I develop in an open-source journey 🚀, I wish I lived in an environment where
     use Illuminate\Support\Facades\Schema;
     use Illuminate\Database\Schema\Blueprint;
     use Illuminate\Database\Migrations\Migration;
-    use Mostafaznv\Larupload\LaruploadEnum;
+    use Mostafaznv\Larupload\Enums\LaruploadMode;
     
     class Uploads extends Migration
     {
@@ -82,8 +82,8 @@ I develop in an open-source journey 🚀, I wish I lived in an environment where
         {
             Schema::create('uploads', function (Blueprint $table) {
                 $table->increments('id');
-                $table->upload('main_file'); // or $table->upload('file', LaruploadEnum::HEAVY_MODE);
-                $table->upload('other_file', LaruploadEnum::LIGHT_MODE); // or $table->upload('file', LaruploadEnum::HEAVY_MODE);
+                $table->upload('main_file'); // or $table->upload('file', LaruploadMode::HEAVY);
+                $table->upload('other_file', LaruploadMode::LIGHT); // or $table->upload('file', LaruploadMode::HEAVY);
                 $table->timestamps();
             });
         }
@@ -105,7 +105,7 @@ I develop in an open-source journey 🚀, I wish I lived in an environment where
     use Illuminate\Database\Eloquent\Model;
     use Mostafaznv\Larupload\Storage\Attachment;
     use Mostafaznv\Larupload\Traits\Larupload;
-    use Mostafaznv\Larupload\LaruploadEnum;
+    use Mostafaznv\Larupload\Enums\LaruploadMode;
     
     class Upload extends Model
     {
@@ -121,7 +121,7 @@ I develop in an open-source journey 🚀, I wish I lived in an environment where
         {
             return [
                 Attachment::make('main_file'),
-                Attachment::make('other_file', LaruploadEnum::LIGHT_MODE),
+                Attachment::make('other_file', LaruploadMode::LIGHT),
             ];
         }
     }
@@ -187,11 +187,11 @@ to make creating the columns required by Larupload easier, we have created an ar
 
 2. ### Create columns for light mode
     ```php
-    use Mostafaznv\Larupload\LaruploadEnum;
+    use Mostafaznv\Larupload\Enums\LaruploadMode;
     
     Schema::create('uploads', function (Blueprint $table) {
         $table->increments('id');
-        $table->upload('file', LaruploadEnum::LIGHT_MODE);
+        $table->upload('file', LaruploadMode::LIGHT);
         $table->timestamps();
     });
     ```
@@ -634,6 +634,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\DTOs\Style;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
@@ -702,7 +703,7 @@ class Media extends Model
                     Stream::make('720p', 1280, 720, '64K', '1M')
                 ),
 
-            Attachment::make('other_file', LaruploadEnum::LIGHT_MODE)
+            Attachment::make('other_file', LaruploadMode::LIGHT)
                 ->stream(
                     Stream::make('480p', 640, 480, '64K', '1M')
                 ),

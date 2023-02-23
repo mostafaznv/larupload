@@ -43,7 +43,7 @@ return [
     |
     */
 
-    'mode' => LaruploadEnum::HEAVY_MODE,
+    'mode' => \Mostafaznv\Larupload\Enums\LaruploadMode::HEAVY,
 
     /*
     |--------------------------------------------------------------------------

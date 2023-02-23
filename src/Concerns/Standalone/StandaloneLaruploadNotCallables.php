@@ -5,7 +5,7 @@ namespace Mostafaznv\Larupload\Concerns\Standalone;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\UploadEntities;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -15,7 +15,7 @@ trait StandaloneLaruploadNotCallables
      * @throws Exception
      * @internal
      */
-    public static function make(string $name, string $mode = LaruploadEnum::HEAVY_MODE): UploadEntities
+    public static function make(string $name, LaruploadMode $mode = LaruploadMode::HEAVY): UploadEntities
     {
         $self = new self();
         $self->internalException();

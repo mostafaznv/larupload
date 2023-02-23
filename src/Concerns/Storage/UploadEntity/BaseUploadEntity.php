@@ -5,12 +5,13 @@ namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\UploadEntities;
 
 trait BaseUploadEntity
 {
-    public function __construct(string $name, string $mode)
+    public function __construct(string $name, LaruploadMode $mode)
     {
         $config = config('larupload');
 
@@ -34,13 +35,13 @@ trait BaseUploadEntity
         $this->ffmpegCaptureFrame = $config['ffmpeg']['capture-frame'];
     }
 
-    public static function make(string $name, string $mode = LaruploadEnum::HEAVY_MODE): UploadEntities
+    public static function make(string $name, LaruploadMode $mode = LaruploadMode::HEAVY): UploadEntities
     {
         return new static($name, $mode);
     }
 
 
-    public function getMode(): string
+    public function getMode(): LaruploadMode
     {
         return $this->mode;
     }
@@ -49,7 +50,7 @@ trait BaseUploadEntity
     {
         $this->id = $model->id;
 
-        if ($this->mode == LaruploadEnum::HEAVY_MODE) {
+        if ($this->mode === LaruploadMode::HEAVY) {
             foreach ($this->output as $key => $value) {
                 $this->output[$key] = $model->{"{$this->name}_file_$key"};
             }

@@ -3,12 +3,13 @@
 namespace Mostafaznv\Larupload\Test;
 
 use Illuminate\Database\Schema\Blueprint;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 class LaruploadBlueprintTest extends LaruploadTestCase
 {
     public function testHeavyUploadHasAllColumns()
     {
-        $columns = $this->getMacroColumns('heavy');
+        $columns = $this->getMacroColumns(LaruploadMode::HEAVY);
 
         $this->assertCount(10, $columns);
 
@@ -75,7 +76,7 @@ class LaruploadBlueprintTest extends LaruploadTestCase
 
     public function testLightUploadHasAllColumns()
     {
-        $columns = $this->getMacroColumns('light');
+        $columns = $this->getMacroColumns(LaruploadMode::LIGHT);
 
         $this->assertCount(2, $columns);
 
@@ -91,7 +92,7 @@ class LaruploadBlueprintTest extends LaruploadTestCase
         $this->assertEquals(true, $columns[$name]['nullable']);
     }
 
-    protected function getMacroColumns(string $mode): array
+    protected function getMacroColumns(LaruploadMode $mode): array
     {
         $table = new Blueprint('uploads');
         $table->upload('file', $mode);
