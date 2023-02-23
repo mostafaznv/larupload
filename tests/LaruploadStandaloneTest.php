@@ -9,6 +9,7 @@ use Imagine\Gd\Imagine;
 use Imagine\Image\ImageInterface;
 use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\DTOs\Style;
+use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\FFMpeg;
@@ -235,7 +236,7 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testHashName()
     {
         $upload = Larupload::init('uploader')
-            ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
+            ->namingMethod(LaruploadNamingMethod::HASH_FILE)
             ->upload($this->imageJPG);
 
         $this->assertEquals($upload->meta->name, $this->imageDetails['jpg']['name']['hash']);
@@ -388,13 +389,13 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testUpdateCover()
     {
         $upload = Larupload::init('uploader')
-            ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
+            ->namingMethod(LaruploadNamingMethod::HASH_FILE)
             ->upload($this->imageJPG);
 
         $this->assertEquals($this->imageDetails['jpg']['name']['hash'], $upload->meta->cover);
 
         $upload = Larupload::init('uploader')
-            ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
+            ->namingMethod(LaruploadNamingMethod::HASH_FILE)
             ->changeCover($this->imagePNG);
 
         $this->assertEquals($this->imageDetails['jpg']['name']['hash'], $upload->meta->name);
@@ -421,7 +422,7 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testAudio()
     {
         $upload = Larupload::init('uploader')
-            ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
+            ->namingMethod(LaruploadNamingMethod::HASH_FILE)
             ->upload($this->audio);
 
         $this->assertEquals($upload->meta->name, $this->audioDetails['name']);
@@ -437,7 +438,7 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testVideoStyles()
     {
         $upload = Larupload::init('uploader')
-            ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
+            ->namingMethod(LaruploadNamingMethod::HASH_FILE)
             ->style(
                 Style::make(
                     name: 'small_size',
@@ -556,7 +557,7 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     public function testUploadVideoStream()
     {
         $upload = Larupload::init('uploader')
-            ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
+            ->namingMethod(LaruploadNamingMethod::HASH_FILE)
             ->stream(
                 Stream::make('480p', 640, 480, '64k', '300000')
             )
@@ -627,15 +628,15 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     {
         $time = time();
 
-        $upload = Larupload::init('uploader')->namingMethod(LaruploadEnum::SLUG_NAMING_METHOD)->upload($this->imageJPG);
+        $upload = Larupload::init('uploader')->namingMethod(LaruploadNamingMethod::SLUG)->upload($this->imageJPG);
         $this->assertEquals(true, Str::contains($upload->meta->name, $this->imageDetails['jpg']['name']['slug']));
 
         Config::set('larupload.lang', 'fa');
-        $upload = Larupload::init('uploader')->namingMethod(LaruploadEnum::SLUG_NAMING_METHOD)->upload($this->imageFaTitledJPG);
+        $upload = Larupload::init('uploader')->namingMethod(LaruploadNamingMethod::SLUG)->upload($this->imageFaTitledJPG);
         $this->assertEquals(true, Str::contains($upload->meta->name, $this->imageDetails['jpg-fa']['name']['slug']));
 
 
-        $upload = Larupload::init('uploader')->namingMethod(LaruploadEnum::TIME_NAMING_METHOD)->upload($this->imageJPG);
+        $upload = Larupload::init('uploader')->namingMethod(LaruploadNamingMethod::TIME)->upload($this->imageJPG);
         $this->assertTrue((int)str_replace('.jpg', '', $upload->meta->name) >= $time);
     }
 

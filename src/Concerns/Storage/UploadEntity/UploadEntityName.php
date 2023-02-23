@@ -2,9 +2,9 @@
 
 namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
-use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
+use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Helpers\Slug;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\UploadEntities;
@@ -24,7 +24,7 @@ trait UploadEntityName
     /**
      * Specify the method that Larupload should use to name uploaded files.
      */
-    protected string $namingMethod;
+    protected LaruploadNamingMethod $namingMethod;
 
     /**
      * Language of file name
@@ -37,10 +37,8 @@ trait UploadEntityName
         return $withNameStyle ? $this->nameStyle($this->name) : $this->name;
     }
 
-    public function namingMethod(string $method): UploadEntities
+    public function namingMethod(LaruploadNamingMethod $method): UploadEntities
     {
-        $this->validateNamingMethod($method);
-
         $this->namingMethod = $method;
 
         return $this;
@@ -59,11 +57,11 @@ trait UploadEntityName
         $format = $file->getClientOriginalExtension();
 
         switch ($this->namingMethod) {
-            case LaruploadEnum::HASH_FILE_NAMING_METHOD:
+            case LaruploadNamingMethod::HASH_FILE:
                 $name = hash_file('md5', $file->getRealPath());
                 break;
 
-            case LaruploadEnum::TIME_NAMING_METHOD:
+            case LaruploadNamingMethod::TIME:
                 $name = time();
                 break;
 
@@ -103,21 +101,5 @@ trait UploadEntityName
         }
 
         return $name;
-    }
-
-
-    private function validateNamingMethod(string $method): void
-    {
-        $allowedMethods = [
-            LaruploadEnum::SLUG_NAMING_METHOD,
-            LaruploadEnum::HASH_FILE_NAMING_METHOD,
-            LaruploadEnum::TIME_NAMING_METHOD
-        ];
-
-        if (!in_array($method, $allowedMethods)) {
-            $allowedMethods = implode(', ', $allowedMethods);
-
-            throw new Exception("Naming method [$method] is not valid. valid methods: [$allowedMethods]");
-        }
     }
 }

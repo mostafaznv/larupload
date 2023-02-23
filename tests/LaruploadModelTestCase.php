@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Test;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\DTOs\Style;
+use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\LaruploadEnum;
 
 class LaruploadModelTestCase extends LaruploadTestCase
@@ -345,7 +346,7 @@ class LaruploadModelTestCase extends LaruploadTestCase
         $time = time();
 
         $this->initModel();
-        $this->model->main_file->namingMethod(LaruploadEnum::SLUG_NAMING_METHOD);
+        $this->model->main_file->namingMethod(LaruploadNamingMethod::SLUG);
 
         $model = $this->uploadJPG();
         $this->assertEquals(true, Str::contains($model->main_file->meta('name'), $this->imageDetails['jpg']['name']['slug']));
@@ -355,7 +356,7 @@ class LaruploadModelTestCase extends LaruploadTestCase
 
 
         $this->initModel();
-        $this->model->main_file->namingMethod(LaruploadEnum::TIME_NAMING_METHOD);
+        $this->model->main_file->namingMethod(LaruploadNamingMethod::TIME);
 
         $model = $this->uploadFaTitledJPG();
         $this->assertTrue((int)str_replace('.jpg', '', $model->main_file->meta('name')) >= $time);

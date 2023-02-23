@@ -98,7 +98,7 @@ return [
     |
     */
 
-    'naming-method' => LaruploadEnum::SLUG_NAMING_METHOD,
+    'naming-method' => \Mostafaznv\Larupload\Enums\LaruploadNamingMethod::SLUG,
     'lang'          => '',
 
     /*

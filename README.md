@@ -459,7 +459,7 @@ As you know, larupload works with 2 strategies, ORM-Based and standalone. in the
      $cover = $request->file('cover');
    
      $upload = Larupload::init('path')
-            ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
+            ->namingMethod(LaruploadNamingMethod::HASH_FILE)
             ->style(
                 Style::make(
                     name: 'thumbnail',
@@ -635,6 +635,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
+use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
@@ -655,7 +656,7 @@ class Media extends Model
             Attachment::make('main_file')
                 ->disk('local')
                 ->withMeta(true)
-                ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
+                ->namingMethod(LaruploadNamingMethod::HASH_FILE)
                 ->lang('fa')
                 ->imageProcessingLibrary(LaruploadEnum::GD_IMAGE_LIBRARY)
                 ->generateCover(false)

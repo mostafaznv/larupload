@@ -4,10 +4,6 @@ namespace Mostafaznv\Larupload;
 
 class LaruploadEnum
 {
-    const SLUG_NAMING_METHOD      = 'slug';
-    const HASH_FILE_NAMING_METHOD = 'hash_file';
-    const TIME_NAMING_METHOD      = 'time';
-
     const GD_IMAGE_LIBRARY      = 'Imagine\Gd\Imagine';
     const IMAGICK_IMAGE_LIBRARY = 'Imagine\Imagick\Imagine';
     const GMAGICK_IMAGE_LIBRARY = 'Imagine\Gmagick\Imagine';

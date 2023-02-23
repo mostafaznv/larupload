@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
+use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
@@ -21,7 +22,7 @@ class LaruploadUploadLight extends Model
         return [
             Attachment::make('main_file', LaruploadMode::LIGHT)
                 ->disk('local')
-                ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
+                ->namingMethod(LaruploadNamingMethod::HASH_FILE)
                 ->withMeta(true)
                 ->style(
                     Style::make(
