@@ -19,9 +19,8 @@ trait CoverAttachment
 
             return true;
         }
-        else {
-            return false;
-        }
+
+        return false;
     }
 
     public function detachCover(): bool
@@ -33,9 +32,8 @@ trait CoverAttachment
 
             return true;
         }
-        else {
-            return false;
-        }
+
+        return false;
     }
 
 

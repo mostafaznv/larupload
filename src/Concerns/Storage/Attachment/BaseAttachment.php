@@ -37,7 +37,9 @@ trait BaseAttachment
 
                 $this->output['width'] = $meta['width'];
                 $this->output['height'] = $meta['height'];
-                $this->output['dominant_color'] = $this->dominantColor ? $this->image($this->file)->getDominantColor($this->file) : null;
+                $this->output['dominant_color'] = $this->dominantColor
+                    ? $this->image($this->file)->getDominantColor($this->file)
+                    : null;
 
                 break;
         }
@@ -66,9 +68,12 @@ trait BaseAttachment
      */
     protected function uploadOriginalFile(int $id): void
     {
-        $path = $this->getBasePath($id, Larupload::ORIGINAL_FOLDER);
-
-        Storage::disk($this->disk)->putFileAs($path, $this->file, $this->output['name']);
+        Storage::disk($this->disk)
+            ->putFileAs(
+                path: $this->getBasePath($id, Larupload::ORIGINAL_FOLDER),
+                file: $this->file,
+                name: $this->output['name']
+            );
     }
 
     /**

@@ -22,6 +22,7 @@ trait QueueAttachment
 
         $path = $this->getBasePath($this->id, Larupload::ORIGINAL_FOLDER);
         $path = Storage::disk($driverIsLocal ? $this->disk : $this->localDisk)->path("$path/{$this->output['name']}");
+
         $this->file = new UploadedFile($path, $this->output['name'], null, null, true);
         $this->type = $this->getFileType($this->file);
 
@@ -41,7 +42,9 @@ trait QueueAttachment
             $flag = true;
         }
         else {
-            $availableQueues = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->where('status', 0)->count();
+            $availableQueues = DB::table(Larupload::FFMPEG_QUEUE_TABLE)
+                ->where('status', 0)
+                ->count();
 
             if ($availableQueues < $maxQueueNum) {
                 $flag = true;
@@ -63,6 +66,7 @@ trait QueueAttachment
             ]);
 
             $serializedClass = null;
+
             if ($standalone) {
                 unset($this->file);
                 unset($this->cover);

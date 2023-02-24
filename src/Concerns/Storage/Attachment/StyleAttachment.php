@@ -15,7 +15,6 @@ trait StyleAttachment
      * @param int $id
      * @param string $class
      * @param bool $standalone
-     * @throws \Exception
      */
     protected function handleStyles(int $id, string $class, bool $standalone = false): void
     {
@@ -53,7 +52,6 @@ trait StyleAttachment
      * Handle styles for videos
      *
      * @param $id
-     * @throws \Exception
      */
     protected function handleVideoStyles($id): void
     {

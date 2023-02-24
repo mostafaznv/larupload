@@ -16,7 +16,10 @@ trait AttachmentActions
      */
     public function attach(mixed $file, ?UploadedFile $cover = null): bool
     {
-        if (($this->fileIsSetAndHasValue($file) or $file == LARUPLOAD_NULL) and ($this->fileIsSetAndHasValue($cover) or $cover == null)) {
+        $fileIsAttachable = ($this->fileIsSetAndHasValue($file) or $file == LARUPLOAD_NULL);
+        $coverIsAttachable = ($this->fileIsSetAndHasValue($cover) or $cover == null);
+
+        if ($fileIsAttachable and $coverIsAttachable) {
             $this->file = $file;
             $this->uploaded = false;
 

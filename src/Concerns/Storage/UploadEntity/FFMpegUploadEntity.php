@@ -3,7 +3,6 @@
 namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
 
-
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Storage\FFMpeg;
 
