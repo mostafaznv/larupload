@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Helpers;
 
 use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\LaruploadEnum;
 
@@ -12,9 +13,9 @@ trait LaraTools
      * Get file type
      *
      * @param UploadedFile $file
-     * @return string
+     * @return LaruploadFileType|null
      */
-    protected function getFileType(UploadedFile $file): string
+    protected function getFileType(UploadedFile $file): ?LaruploadFileType
     {
         if ($file->isValid()) {
             $mime = $file->getMimeType();
@@ -22,39 +23,39 @@ trait LaraTools
             return $this->mimeToType($mime);
         }
 
-        return '';
+        return null;
     }
 
     /**
      * Convert mimetype to human-readable type
      *
      * @param string|null $mime
-     * @return string
+     * @return LaruploadFileType
      */
-    protected function mimeToType(string $mime = null): string
+    protected function mimeToType(string $mime = null): LaruploadFileType
     {
         if (str_contains($mime, 'image/')) {
-            return LaruploadEnum::IMAGE;
+            return LaruploadFileType::IMAGE;
         }
         else if (str_contains($mime, 'video/')) {
-            return LaruploadEnum::VIDEO;
+            return LaruploadFileType::VIDEO;
         }
         else if (str_contains($mime, 'audio/')) {
-            return LaruploadEnum::AUDIO;
+            return LaruploadFileType::AUDIO;
         }
         else if ($mime == 'application/pdf') {
-            return LaruploadEnum::PDF;
+            return LaruploadFileType::PDF;
         }
         else if ($mime == 'application/zip' or $mime == 'application/x-rar-compressed') {
-            return LaruploadEnum::COMPRESSED;
+            return LaruploadFileType::COMPRESSED;
         }
 
-        return LaruploadEnum::FILE;
+        return LaruploadFileType::FILE;
     }
 
     protected function isImage(UploadedFile $file): bool
     {
-        return $this->mimeToType($file->getMimeType()) == LaruploadEnum::IMAGE;
+        return $this->mimeToType($file->getMimeType()) === LaruploadFileType::IMAGE;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\LaruploadEnum;
 
 trait StyleAttachment
@@ -19,9 +20,11 @@ trait StyleAttachment
     protected function handleStyles(int $id, string $class, bool $standalone = false): void
     {
         switch ($this->type) {
-            case LaruploadEnum::IMAGE:
+            case LaruploadFileType::IMAGE:
                 foreach ($this->styles as $name => $style) {
-                    if (count($style->type) and !in_array(LaruploadEnum::IMAGE, $style->type)) {
+                    $styleTypes = enum_to_names($style->type);
+
+                    if (count($style->type) and !in_array(LaruploadFileType::IMAGE->name, $styleTypes)) {
                         continue;
                     }
 
@@ -34,7 +37,7 @@ trait StyleAttachment
 
                 break;
 
-            case LaruploadEnum::VIDEO:
+            case LaruploadFileType::VIDEO:
                 if ($this->ffmpegQueue) {
                     $this->initializeFFMpegQueue($id, $class, $standalone);
                 }
@@ -55,7 +58,9 @@ trait StyleAttachment
     protected function handleVideoStyles($id): void
     {
         foreach ($this->styles as $name => $style) {
-            if ((count($style->type) and !in_array(LaruploadEnum::VIDEO, $style->type))) {
+            $types = enum_to_names($style->type);
+
+            if ((count($types) and !in_array(LaruploadFileType::VIDEO->name, $types))) {
                 continue;
             }
 
@@ -90,11 +95,16 @@ trait StyleAttachment
         ];
 
         if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->styles))) {
-            $name = $style == LaruploadEnum::COVER_FOLDER ? $this->output['cover'] : $this->output['name'];
-            $type = $this->output['type'];
+            $name = $style == LaruploadEnum::COVER_FOLDER
+                ? $this->output['cover']
+                : $this->output['name'];
+
+            $type = $this->output['type']
+                ? LaruploadFileType::from($this->output['type'])
+                : null;
 
             if ($name and $style == LaruploadEnum::STREAM_FOLDER) {
-                if ($type == LaruploadEnum::VIDEO) {
+                if ($type === LaruploadFileType::VIDEO) {
                     $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
                     $path = $this->getBasePath($this->id, $style);
 

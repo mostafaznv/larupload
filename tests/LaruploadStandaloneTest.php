@@ -12,6 +12,7 @@ use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
+use Mostafaznv\Larupload\Enums\LaruploadStyleType;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\FFMpeg;
@@ -448,7 +449,7 @@ class LaruploadStandaloneTest extends LaruploadTestCase
                     height: 200,
                     mode: LaruploadStyleMode::CROP,
                     type: [
-                        LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE
+                        LaruploadStyleType::IMAGE, LaruploadStyleType::VIDEO
                     ]
                 )
             )
@@ -459,7 +460,7 @@ class LaruploadStandaloneTest extends LaruploadTestCase
                     height: 200,
                     mode: LaruploadStyleMode::CROP,
                     type: [
-                        LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE
+                        LaruploadStyleType::IMAGE, LaruploadStyleType::VIDEO
                     ]
                 )
             )

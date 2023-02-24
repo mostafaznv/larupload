@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\LaruploadEnum;
 
@@ -15,15 +16,15 @@ trait BaseAttachment
         $this->output['name'] = $this->setFileName();
         $this->output['format'] = $this->file->getClientOriginalExtension();
         $this->output['size'] = $this->file->getSize();
-        $this->output['type'] = $this->type;
+        $this->output['type'] = $this->type->name;
         $this->output['mime_type'] = $this->file->getMimeType();
     }
 
     protected function setMediaDetails(): void
     {
         switch ($this->type) {
-            case LaruploadEnum::VIDEO:
-            case LaruploadEnum::AUDIO:
+            case LaruploadFileType::VIDEO:
+            case LaruploadFileType::AUDIO:
                 $meta = $this->ffmpeg()->getMeta();
 
                 $this->output['width'] = $meta['width'];
@@ -32,7 +33,7 @@ trait BaseAttachment
 
                 break;
 
-            case LaruploadEnum::IMAGE:
+            case LaruploadFileType::IMAGE:
                 $meta = $this->image($this->file)->getMeta();
 
                 $this->output['width'] = $meta['width'];

@@ -4,7 +4,7 @@ namespace Mostafaznv\Larupload\DTOs;
 
 use Exception;
 use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Enums\LaruploadStyleType;
 
 class Style
 {
@@ -65,17 +65,16 @@ class Style
     private function validateType(): void
     {
         if (!empty($this->type)) {
-            $availableTypes = [
-                LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE
-            ];
+            $types = enum_to_names($this->type);
+            $availableTypes = enum_to_names(LaruploadStyleType::cases());
 
 
-            if (count(array_intersect($this->type, $availableTypes)) != count($this->type)) {
-                $type = implode(', ', $this->type);
+            if (count(array_intersect($types, $availableTypes)) != count($types)) {
+                $types = implode(', ', $types);
                 $availableTypes = implode(', ', $availableTypes);
 
                 throw new Exception(
-                    "Style type [$type] is not valid. valid types: [$availableTypes]"
+                    "Style type [$types] is not valid. valid types: [$availableTypes]"
                 );
             }
         }

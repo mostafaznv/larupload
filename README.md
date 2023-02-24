@@ -639,6 +639,7 @@ use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
+use Mostafaznv\Larupload\Enums\LaruploadStyleType;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
@@ -696,7 +697,7 @@ class Media extends Model
                         height: 1000,
                         mode: LaruploadStyleMode::PORTRAIT,
                         type: [
-                            LaruploadEnum::IMAGE_STYLE_TYPE
+                            LaruploadStyleType::IMAGE
                         ] 
                     )
                 )

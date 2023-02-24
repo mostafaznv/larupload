@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\LaruploadEnum;
 
 trait CoverAttachment
@@ -14,7 +15,7 @@ trait CoverAttachment
         if ($this->output['type'] and $file->isValid()) {
             $this->uploaded = false;
             $this->cover = $file;
-            $this->type = $this->output['type'];
+            $this->type = LaruploadFileType::from($this->output['type']);
 
             return true;
         }
@@ -28,7 +29,7 @@ trait CoverAttachment
         if ($this->output['type']) {
             $this->uploaded = false;
             $this->cover = LARUPLOAD_NULL;
-            $this->type = $this->output['type'];
+            $this->type = LaruploadFileType::from($this->output['type']);
 
             return true;
         }
@@ -64,7 +65,7 @@ trait CoverAttachment
     {
         $this->output['cover'] = null;
 
-        if ($this->type != LaruploadEnum::IMAGE) {
+        if ($this->type != LaruploadFileType::IMAGE) {
             $this->output['dominant_color'] = null;
         }
     }
@@ -81,7 +82,7 @@ trait CoverAttachment
         if ($result) {
             $this->output['cover'] = $name;
 
-            if ($this->type != LaruploadEnum::IMAGE) {
+            if ($this->type != LaruploadFileType::IMAGE) {
                 $this->output['dominant_color'] = $this->dominantColor ? $this->image($this->cover)->getDominantColor() : null;
             }
         }
@@ -96,12 +97,12 @@ trait CoverAttachment
         Storage::disk($this->disk)->makeDirectory($path);
 
         $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME);
-        $format = $this->type == LaruploadEnum::IMAGE ? ($this->output['format'] == 'svg' ? 'png' : $this->output['format']) : 'jpg';
+        $format = $this->type == LaruploadFileType::IMAGE ? ($this->output['format'] == 'svg' ? 'png' : $this->output['format']) : 'jpg';
         $name = "$fileName.$format";
         $saveTo = "$path/$name";
 
         switch ($this->type) {
-            case LaruploadEnum::VIDEO:
+            case LaruploadFileType::VIDEO:
                 Storage::disk($this->disk)->makeDirectory($path);
 
                 $color = $this->ffmpeg()->capture($this->ffmpegCaptureFrame, $this->coverStyle, $saveTo, $this->dominantColor);
@@ -111,7 +112,7 @@ trait CoverAttachment
 
                 break;
 
-            case LaruploadEnum::IMAGE:
+            case LaruploadFileType::IMAGE:
                 Storage::disk($this->disk)->makeDirectory($path);
 
                 $result = $this->image($this->file)->resize($saveTo, $this->coverStyle);

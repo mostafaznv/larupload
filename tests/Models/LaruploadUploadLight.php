@@ -8,7 +8,7 @@ use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Enums\LaruploadStyleType;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
 
@@ -32,7 +32,7 @@ class LaruploadUploadLight extends Model
                         height: 200,
                         mode: LaruploadStyleMode::CROP,
                         type: [
-                            LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE
+                            LaruploadStyleType::IMAGE, LaruploadStyleType::VIDEO
                         ]
                     )
                 )
@@ -43,7 +43,7 @@ class LaruploadUploadLight extends Model
                         height: 200,
                         mode: LaruploadStyleMode::CROP,
                         type: [
-                            LaruploadEnum::IMAGE_STYLE_TYPE, LaruploadEnum::VIDEO_STYLE_TYPE
+                            LaruploadStyleType::IMAGE, LaruploadStyleType::VIDEO
                         ]
                     )
                 )

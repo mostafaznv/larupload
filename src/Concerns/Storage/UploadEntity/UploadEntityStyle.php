@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
 use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\DTOs\Style;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\UploadEntities;
 
@@ -61,9 +62,13 @@ trait UploadEntityStyle
 
         if (array_key_exists($style, $this->styles)) {
             $type = $this->output['type'];
+            $types = [
+                LaruploadFileType::VIDEO->name,
+                LaruploadFileType::IMAGE->name
+            ];
 
-            if (in_array($type, [LaruploadEnum::VIDEO, LaruploadEnum::IMAGE])) {
-                $styleTypes = $this->styles[$style]->type;
+            if (in_array($type, $types)) {
+                $styleTypes = enum_to_names($this->styles[$style]->type);
 
                 return count($styleTypes) == 0 or in_array($type, $styleTypes);
             }

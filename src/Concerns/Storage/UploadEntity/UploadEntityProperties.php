@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
 use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\UploadEntities;
 
@@ -36,7 +37,7 @@ trait UploadEntityProperties
     /**
      * Specify the type of the attached file.
      */
-    protected string $type;
+    protected LaruploadFileType $type;
 
     /**
      * Specify whether Larupload should generate a cover image for images and videos or not.

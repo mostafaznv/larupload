@@ -6,7 +6,6 @@ namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
-use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\UploadEntities;
 
 trait BaseUploadEntity
