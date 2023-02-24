@@ -6,7 +6,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Helpers\Slug;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\UploadEntities;
 
 trait UploadEntityName
@@ -94,7 +94,7 @@ trait UploadEntityName
      */
     protected function fixExceptionNames(string $name, string $style): string
     {
-        if (!in_array($style, [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER])) {
+        if (!in_array($style, [Larupload::ORIGINAL_FOLDER, Larupload::COVER_FOLDER])) {
             if (Str::endsWith($name, 'svg')) {
                 $name = str_replace('svg', 'jpg', $name);
             }

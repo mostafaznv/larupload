@@ -9,7 +9,6 @@ use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
 use Mostafaznv\Larupload\Helpers\LaraTools;
-use Mostafaznv\Larupload\LaruploadEnum;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;

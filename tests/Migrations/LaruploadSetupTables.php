@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Larupload;
 
 class LaruploadSetupTables extends Migration
 {
@@ -36,7 +36,7 @@ class LaruploadSetupTables extends Migration
             $table->softDeletes();
         });
 
-        Schema::create(LaruploadEnum::FFMPEG_QUEUE_TABLE, function(Blueprint $table) {
+        Schema::create(Larupload::FFMPEG_QUEUE_TABLE, function(Blueprint $table) {
             $table->id();
             $table->unsignedInteger('record_id');
             $table->string('record_class', 50);
@@ -59,6 +59,6 @@ class LaruploadSetupTables extends Migration
         Schema::dropIfExists('upload_heavy');
         Schema::dropIfExists('upload_light');
         Schema::dropIfExists('upload_soft_delete');
-        Schema::dropIfExists(LaruploadEnum::FFMPEG_QUEUE_TABLE);
+        Schema::dropIfExists(Larupload::FFMPEG_QUEUE_TABLE);
     }
 }

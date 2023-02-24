@@ -14,7 +14,6 @@ use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
 use Mostafaznv\Larupload\Enums\LaruploadStyleType;
 use Mostafaznv\Larupload\Larupload;
-use Mostafaznv\Larupload\LaruploadEnum;
 use Mostafaznv\Larupload\Storage\FFMpeg;
 
 class LaruploadStandaloneTest extends LaruploadTestCase

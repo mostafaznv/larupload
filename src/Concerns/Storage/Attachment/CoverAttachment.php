@@ -6,7 +6,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Larupload;
 
 trait CoverAttachment
 {
@@ -47,7 +47,7 @@ trait CoverAttachment
      */
     protected function setCover($id): void
     {
-        $path = $this->getBasePath($id, LaruploadEnum::COVER_FOLDER);
+        $path = $this->getBasePath($id, Larupload::COVER_FOLDER);
         Storage::disk($this->disk)->deleteDirectory($path);
 
         if (isset($this->cover) and $this->cover == LARUPLOAD_NULL) {

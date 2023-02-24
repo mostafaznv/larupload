@@ -8,7 +8,6 @@ use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
-use Mostafaznv\Larupload\LaruploadEnum;
 
 class LaruploadModelTestCase extends LaruploadTestCase
 {

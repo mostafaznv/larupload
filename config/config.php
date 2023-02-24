@@ -1,7 +1,6 @@
 <?php
 
 use Mostafaznv\Larupload\DTOs\Style;
-use Mostafaznv\Larupload\LaruploadEnum;
 
 return [
     /*

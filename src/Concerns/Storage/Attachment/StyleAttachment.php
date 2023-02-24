@@ -4,7 +4,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Larupload;
 
 trait StyleAttachment
 {
@@ -74,7 +74,7 @@ trait StyleAttachment
         if (count($this->streams)) {
             $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME) . '.m3u8';
 
-            $path = $this->getBasePath($id, LaruploadEnum::STREAM_FOLDER);
+            $path = $this->getBasePath($id, Larupload::STREAM_FOLDER);
             Storage::disk($this->disk)->makeDirectory($path);
 
             $this->ffmpeg()->stream($this->streams, $path, $fileName);
@@ -91,11 +91,11 @@ trait StyleAttachment
     protected function prepareStylePath(string $style): ?string
     {
         $staticStyles = [
-            LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER, LaruploadEnum::STREAM_FOLDER
+            Larupload::ORIGINAL_FOLDER, Larupload::COVER_FOLDER, Larupload::STREAM_FOLDER
         ];
 
         if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->styles))) {
-            $name = $style == LaruploadEnum::COVER_FOLDER
+            $name = $style == Larupload::COVER_FOLDER
                 ? $this->output['cover']
                 : $this->output['name'];
 
@@ -103,7 +103,7 @@ trait StyleAttachment
                 ? LaruploadFileType::from($this->output['type'])
                 : null;
 
-            if ($name and $style == LaruploadEnum::STREAM_FOLDER) {
+            if ($name and $style == Larupload::STREAM_FOLDER) {
                 if ($type === LaruploadFileType::VIDEO) {
                     $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
                     $path = $this->getBasePath($this->id, $style);

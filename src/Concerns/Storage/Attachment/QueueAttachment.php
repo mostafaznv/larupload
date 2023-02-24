@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Larupload;
 
 trait QueueAttachment
 {
@@ -20,7 +20,7 @@ trait QueueAttachment
     {
         $driverIsLocal = $this->driverIsLocal();
 
-        $path = $this->getBasePath($this->id, LaruploadEnum::ORIGINAL_FOLDER);
+        $path = $this->getBasePath($this->id, Larupload::ORIGINAL_FOLDER);
         $path = Storage::disk($driverIsLocal ? $this->disk : $this->localDisk)->path("$path/{$this->output['name']}");
         $this->file = new UploadedFile($path, $this->output['name'], null, null, true);
         $this->type = $this->getFileType($this->file);
@@ -41,7 +41,7 @@ trait QueueAttachment
             $flag = true;
         }
         else {
-            $availableQueues = DB::table(LaruploadEnum::FFMPEG_QUEUE_TABLE)->where('status', 0)->count();
+            $availableQueues = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->where('status', 0)->count();
 
             if ($availableQueues < $maxQueueNum) {
                 $flag = true;
@@ -52,11 +52,11 @@ trait QueueAttachment
         if ($flag) {
             // save a copy of original file to use it on process ffmpeg queue, then delete it
             if ($this->driverIsNotLocal()) {
-                $path = $this->getBasePath($id, LaruploadEnum::ORIGINAL_FOLDER);
+                $path = $this->getBasePath($id, Larupload::ORIGINAL_FOLDER);
                 Storage::disk($this->localDisk)->putFileAs($path, $this->file, $this->output['name']);
             }
 
-            $queueId = DB::table(LaruploadEnum::FFMPEG_QUEUE_TABLE)->insertGetId([
+            $queueId = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->insertGetId([
                 'record_id'    => $id,
                 'record_class' => $class,
                 'created_at'   => now(),

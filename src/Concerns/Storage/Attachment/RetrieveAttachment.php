@@ -3,9 +3,9 @@
 namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 
+use Mostafaznv\Larupload\Larupload;
 use stdClass;
 use Illuminate\Http\RedirectResponse;
-use Mostafaznv\Larupload\LaruploadEnum;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 trait RetrieveAttachment
@@ -38,16 +38,16 @@ trait RetrieveAttachment
      */
     public function urls(): object
     {
-        $staticStyles = [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER, LaruploadEnum::STREAM_FOLDER];
+        $staticStyles = [Larupload::ORIGINAL_FOLDER, Larupload::COVER_FOLDER, Larupload::STREAM_FOLDER];
         $allStyles = array_merge($staticStyles, array_keys($this->styles));
         $styles = new stdClass();
 
         foreach ($allStyles as $style) {
-            if ($style == LaruploadEnum::COVER_FOLDER and !$this->generateCover) {
+            if ($style == Larupload::COVER_FOLDER and !$this->generateCover) {
                 $styles->{$style} = null;
                 continue;
             }
-            else if ($style == LaruploadEnum::STREAM_FOLDER and empty($this->streams)) {
+            else if ($style == Larupload::STREAM_FOLDER and empty($this->streams)) {
                 unset($styles->{$style});
                 continue;
             }
@@ -69,7 +69,7 @@ trait RetrieveAttachment
      * @param string $style
      * @return null|string
      */
-    public function url(string $style = LaruploadEnum::ORIGINAL_FOLDER): ?string
+    public function url(string $style = Larupload::ORIGINAL_FOLDER): ?string
     {
         $path = $this->prepareStylePath($style);
 
@@ -86,7 +86,7 @@ trait RetrieveAttachment
      * @param string $style
      * @return RedirectResponse|StreamedResponse|null
      */
-    public function download(string $style = LaruploadEnum::ORIGINAL_FOLDER): StreamedResponse|RedirectResponse|null
+    public function download(string $style = Larupload::ORIGINAL_FOLDER): StreamedResponse|RedirectResponse|null
     {
         $path = $this->prepareStylePath($style);
 

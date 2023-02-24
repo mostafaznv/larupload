@@ -6,7 +6,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\UploadEntities;
 
 trait UploadEntityStyle
@@ -56,7 +56,7 @@ trait UploadEntityStyle
 
     protected function styleHasFile(string $style): bool
     {
-        if (in_array($style, [LaruploadEnum::ORIGINAL_FOLDER, LaruploadEnum::COVER_FOLDER])) {
+        if (in_array($style, [Larupload::ORIGINAL_FOLDER, Larupload::COVER_FOLDER])) {
             return true;
         }
 

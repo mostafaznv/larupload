@@ -2,12 +2,11 @@
 
 namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Larupload;
 
 trait BaseAttachment
 {
@@ -67,7 +66,7 @@ trait BaseAttachment
      */
     protected function uploadOriginalFile(int $id): void
     {
-        $path = $this->getBasePath($id, LaruploadEnum::ORIGINAL_FOLDER);
+        $path = $this->getBasePath($id, Larupload::ORIGINAL_FOLDER);
 
         Storage::disk($this->disk)->putFileAs($path, $this->file, $this->output['name']);
     }

@@ -5,7 +5,7 @@ namespace Mostafaznv\Larupload\Helpers;
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Larupload;
 
 trait LaraTools
 {
@@ -132,6 +132,6 @@ trait LaraTools
      */
     protected function diskDriverIsLocal($disk): bool
     {
-        return config("filesystems.disks.$disk.driver") == LaruploadEnum::LOCAL_DRIVER;
+        return config("filesystems.disks.$disk.driver") == Larupload::LOCAL_DRIVER;
     }
 }

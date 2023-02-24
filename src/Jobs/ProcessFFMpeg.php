@@ -12,7 +12,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
 use Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished;
 use Mostafaznv\Larupload\Larupload;
-use Mostafaznv\Larupload\LaruploadEnum;
 
 class ProcessFFMpeg implements ShouldQueue
 {
@@ -62,7 +61,7 @@ class ProcessFFMpeg implements ShouldQueue
                     if ($model->{$this->name}->meta('name')) {
                         $modelNotSaved = false;
 
-                        $availableQueues = DB::table(LaruploadEnum::FFMPEG_QUEUE_TABLE)
+                        $availableQueues = DB::table(Larupload::FFMPEG_QUEUE_TABLE)
                             ->where('record_id', $this->id)
                             ->where('record_class', $this->model)
                             ->where('status', false)
@@ -96,7 +95,7 @@ class ProcessFFMpeg implements ShouldQueue
     {
         $dateColumn = $isStarted ? 'started_at' : 'finished_at';
 
-        $result = DB::table(LaruploadEnum::FFMPEG_QUEUE_TABLE)->where('id', $this->queueId)->update([
+        $result = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->where('id', $this->queueId)->update([
             'status'    => $status,
             'message'   => $message,
             $dateColumn => now(),

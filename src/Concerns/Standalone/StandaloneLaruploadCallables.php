@@ -2,15 +2,14 @@
 
 namespace Mostafaznv\Larupload\Concerns\Standalone;
 
-use Exception;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Larupload;
 
 trait StandaloneLaruploadCallables
 {
     /**
      * @internal
      */
-    public function url(string $style = LaruploadEnum::ORIGINAL_FOLDER): ?string
+    public function url(string $style = Larupload::ORIGINAL_FOLDER): ?string
     {
         if ($this->internalFunctionIsCallable) {
             return parent::url($style);
