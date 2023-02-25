@@ -33,7 +33,7 @@ trait UploadEntityFileSystem
 
     protected function driverIsLocal(): bool
     {
-        return $this->diskDriverIsLocal($this->disk);
+        return disk_driver_is_local($this->disk);
     }
 
     protected function driverIsNotLocal(): bool

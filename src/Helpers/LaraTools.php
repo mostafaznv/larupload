@@ -123,15 +123,4 @@ trait LaraTools
 
         return [$path, $name];
     }
-
-    /**
-     * Check if given driver is local
-     *
-     * @param $disk
-     * @return bool
-     */
-    protected function diskDriverIsLocal($disk): bool
-    {
-        return config("filesystems.disks.$disk.driver") == Larupload::LOCAL_DRIVER;
-    }
 }

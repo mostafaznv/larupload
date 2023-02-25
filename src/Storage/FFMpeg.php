@@ -240,7 +240,7 @@ class FFMpeg
     {
         $playlist = "#EXTM3U\n#EXT-X-VERSION:3\n";
         $converted = [];
-        $driverIsLocal = $this->diskDriverIsLocal($this->disk);
+        $driverIsLocal = disk_driver_is_local($this->disk);
         $disk = $driverIsLocal ? $this->disk : $this->localDisk;
 
         // generate multiple video qualities from uploaded video.
@@ -347,7 +347,7 @@ class FFMpeg
     {
         $disk = $disk ?? $this->disk;
 
-        if ($this->diskDriverIsLocal($disk)) {
+        if (disk_driver_is_local($disk)) {
             $cmd = $this->cmd("$cmd $saveTo");
             $process = new Process($cmd);
             $process->setTimeout($this->timeout);
@@ -398,7 +398,7 @@ class FFMpeg
      */
     protected function streamRun(string $cmd, string $streamPath): void
     {
-        if ($this->diskDriverIsLocal($this->disk)) {
+        if (disk_driver_is_local($this->disk)) {
             $cmd = $this->cmd(str_replace(':stream-path', $streamPath, $cmd));
 
             $process = new Process($cmd);

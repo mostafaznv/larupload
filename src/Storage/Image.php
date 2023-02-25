@@ -11,16 +11,12 @@ use JetBrains\PhpStorm\ArrayShape;
 use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
-use Mostafaznv\Larupload\Helpers\LaraTools;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
 
 
 class Image
 {
-    use LaraTools;
-
-
     protected UploadedFile $file;
 
     protected InterventionImage $image;
@@ -37,7 +33,7 @@ class Image
         $this->file = $file;
         $this->disk = $disk;
         $this->localDisk = $localDisk;
-        $this->driverIsLocal = $this->diskDriverIsLocal($this->disk);
+        $this->driverIsLocal = disk_driver_is_local($this->disk);
 
         $path = $file->getRealPath();
 
