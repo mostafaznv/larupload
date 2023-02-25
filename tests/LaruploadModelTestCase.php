@@ -96,8 +96,8 @@ class LaruploadModelTestCase extends LaruploadTestCase
         $image = $this->image($model->main_file->url('medium'));
 
         $this->assertNotNull($model->main_file->url('medium'));
-        $this->assertEquals(799, $image->getSize()->getWidth());
-        $this->assertEquals(587, $image->getSize()->getHeight());
+        $this->assertEquals(800, $image->getSize()->getWidth());
+        $this->assertEquals(588, $image->getSize()->getHeight());
     }
 
     public function landscapeStyleDimensions()
@@ -106,8 +106,8 @@ class LaruploadModelTestCase extends LaruploadTestCase
         $image = $this->image($model->main_file->url('landscape'));
 
         $this->assertNotNull($model->main_file->url('landscape'));
-        $this->assertEquals(399, $image->getSize()->getWidth());
-        $this->assertEquals(293, $image->getSize()->getHeight());
+        $this->assertEquals(400, $image->getSize()->getWidth());
+        $this->assertEquals(294, $image->getSize()->getHeight());
     }
 
     public function portraitStyleDimensions()
@@ -116,8 +116,8 @@ class LaruploadModelTestCase extends LaruploadTestCase
         $image = $this->image($model->main_file->url('portrait'));
 
         $this->assertNotNull($model->main_file->url('portrait'));
-        $this->assertEquals(544, $image->getSize()->getWidth());
-        $this->assertEquals(399, $image->getSize()->getHeight());
+        $this->assertEquals(545, $image->getSize()->getWidth());
+        $this->assertEquals(400, $image->getSize()->getHeight());
     }
 
     public function exactStyleDimensions()
