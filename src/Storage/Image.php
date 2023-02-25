@@ -11,12 +11,15 @@ use JetBrains\PhpStorm\ArrayShape;
 use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
+use Mostafaznv\Larupload\Helpers\LaraTools;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
 
 
 class Image
 {
+    use LaraTools;
+
     protected UploadedFile $file;
 
     protected InterventionImage $image;
@@ -146,7 +149,7 @@ class Image
      *   the new dimensions are both equal since at this point we'll have a square
      *   image being resized to a square).
      */
-    private function resizeAuto(int $width = null, int $height = null): InterventionImage
+    private function resizeAuto(int $width = null, int $height = null): void
     {
         $originalWidth = $this->image->width();
         $originalHeight = $this->image->height();
@@ -160,30 +163,34 @@ class Image
         }
 
         if ($originalHeight < $originalWidth) {
-            return $this->resizeLandscape($width);
+            $this->resizeLandscape($width);
+            return;
         }
 
         if ($originalHeight > $originalWidth) {
-            return $this->resizePortrait($height);
+            $this->resizePortrait($height);
+            return;
         }
 
         if ($height < $width) {
-            return $this->resizeLandscape($width);
+            $this->resizeLandscape($width);
+            return;
         }
 
         if ($height > $width) {
-            return $this->resizePortrait($height);
+            $this->resizePortrait($height);
+            return;
         }
 
-        return $this->resizeExact($width, $height);
+        $this->resizeExact($width, $height);
     }
 
     /**
      * Resize an image and then center crop it
      */
-    private function resizeCrop(int $width, int $height): InterventionImage
+    private function resizeCrop(int $width, int $height): void
     {
-        return $this->image->fit($width, $height, function($constraint) {
+        $this->image->fit($width, $height, function($constraint) {
             $constraint->upsize();
         });
     }
@@ -192,9 +199,9 @@ class Image
      * Landscape (width fixed)
      * width given, height automatically selected to preserve aspect ratio
      */
-    private function resizeLandscape(int $width): InterventionImage
+    private function resizeLandscape(int $width): void
     {
-        return $this->image->widen($width, function($constraint) {
+        $this->image->widen($width, function($constraint) {
             $constraint->upsize();
         });
     }
@@ -203,9 +210,9 @@ class Image
      * Portrait (height fixed)
      * height given, width automatically selected to preserve aspect ratio
      */
-    private function resizePortrait(int $height): InterventionImage
+    private function resizePortrait(int $height): void
     {
-        return $this->image->heighten($height, function($constraint) {
+        $this->image->heighten($height, function($constraint) {
             $constraint->upsize();
         });
     }
@@ -214,9 +221,9 @@ class Image
      * Resize an image to an exact width and height.
      * does not preserve aspect ratio.
      */
-    private function resizeExact(int $width, int $height): InterventionImage
+    private function resizeExact(int $width, int $height): void
     {
-        return $this->image->resize($width, $height);
+        $this->image->resize($width, $height);
     }
 
     /**
