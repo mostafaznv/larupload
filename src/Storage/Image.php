@@ -8,9 +8,9 @@ use Illuminate\Http\UploadedFile;
 use Intervention\Image\Image as InterventionImage;
 use Intervention\Image\ImageManager;
 use JetBrains\PhpStorm\ArrayShape;
-use Mostafaznv\Larupload\DTOs\Style;
+use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
-use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
+use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
 use Mostafaznv\Larupload\Helpers\LaraTools;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
@@ -57,21 +57,21 @@ class Image
         ];
     }
 
-    public function resize(string $saveTo, Style $style): bool
+    public function resize(string $saveTo, ImageStyle $style): bool
     {
         $saveTo = Storage::disk($this->disk)->path($saveTo);
 
         if ($style->mode) {
-            if ($style->mode === LaruploadStyleMode::LANDSCAPE and $style->width) {
+            if ($style->mode === LaruploadImageStyleMode::LANDSCAPE and $style->width) {
                 $this->resizeLandscape($style->width);
             }
-            else if ($style->mode == LaruploadStyleMode::PORTRAIT and $style->height) {
+            else if ($style->mode == LaruploadImageStyleMode::PORTRAIT and $style->height) {
                 $this->resizePortrait($style->height);
             }
-            else if ($style->mode == LaruploadStyleMode::CROP and $style->height and $style->width) {
+            else if ($style->mode == LaruploadImageStyleMode::CROP and $style->height and $style->width) {
                 $this->resizeCrop($style->width, $style->height);
             }
-            else if ($style->mode == LaruploadStyleMode::EXACT and $style->height and $style->width) {
+            else if ($style->mode == LaruploadImageStyleMode::EXACT and $style->height and $style->width) {
                 $this->resizeExact($style->width, $style->height);
             }
             else {

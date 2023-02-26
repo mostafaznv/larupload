@@ -18,7 +18,7 @@ trait ImageUploadEntity
     protected LaruploadImageLibrary $imageProcessingLibrary;
 
 
-    protected function image(UploadedFile $file): Image
+    protected function img(UploadedFile $file): Image
     {
         $this->image = new Image(
             file: $file,

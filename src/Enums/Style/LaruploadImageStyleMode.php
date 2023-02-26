@@ -1,8 +1,8 @@
 <?php
 
-namespace Mostafaznv\Larupload\Enums;
+namespace Mostafaznv\Larupload\Enums\Style;
 
-enum LaruploadStyleMode
+enum LaruploadImageStyleMode
 {
     case LANDSCAPE;
     case PORTRAIT;

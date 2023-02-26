@@ -5,9 +5,11 @@ namespace Mostafaznv\Larupload\Storage;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\DTOs\Stream;
-use Mostafaznv\Larupload\DTOs\Style;
+use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
+use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
-use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
+use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
+use Mostafaznv\Larupload\Enums\Style\LaruploadVideoStyleMode;
 use Mostafaznv\Larupload\Helpers\LaraTools;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
@@ -165,13 +167,13 @@ class FFMpeg
      * Capture screenshot from video file
      *
      * @param $fromSecond
-     * @param Style $style
+     * @param ImageStyle $style
      * @param string $saveTo
      * @param bool $withDominantColor
      * @return string|null
      * @throws Exception
      */
-    public function capture($fromSecond, Style $style, string $saveTo, bool $withDominantColor): ?string
+    public function capture($fromSecond, ImageStyle $style, string $saveTo, bool $withDominantColor): ?string
     {
         $meta = $this->getMeta();
         $scale = $style->width ?: ($style->height ?: self::DEFAULT_SCALE);
@@ -184,7 +186,7 @@ class FFMpeg
             $fromSecond = number_format($fromSecond, 1);
         }
 
-        if ($style->mode == LaruploadStyleMode::CROP) {
+        if ($style->mode == LaruploadImageStyleMode::CROP) {
             if ($style->width and $style->height) {
                 $cmd = escapeshellcmd("$this->ffmpeg -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$style->width:$style->height");
             }
@@ -202,17 +204,17 @@ class FFMpeg
     /**
      * Manipulate original video file to crop/resize
      *
-     * @param Style $style
+     * @param VideoStyle $style
      * @param string $saveTo
      * @throws Exception
      */
-    public function manipulate(Style $style, string $saveTo): void
+    public function manipulate(VideoStyle $style, string $saveTo): void
     {
         $scale = $this->calculateScale($style->mode, $style->width, $style->height);
         $path = $this->file->getRealPath();
         $saveTo = Storage::disk($this->disk)->path($saveTo);
 
-        if ($style->mode === LaruploadStyleMode::CROP) {
+        if ($style->mode === LaruploadVideoStyleMode::CROP) {
             if ($scale) {
                 $cmd = escapeshellcmd("$this->ffmpeg -i $path -vf scale=$scale,crop=$style->width:$style->height,setsar=1");
             }
@@ -290,17 +292,17 @@ class FFMpeg
     /**
      * Calculate scale
      *
-     * @param LaruploadStyleMode|null $mode
+     * @param LaruploadVideoStyleMode|null $mode
      * @param int|null $width
      * @param int|null $height
      * @return string
      * @throws Exception
      */
-    protected function calculateScale(LaruploadStyleMode $mode = null, int $width = null, int $height = null): string
+    protected function calculateScale(LaruploadVideoStyleMode $mode = null, int $width = null, int $height = null): string
     {
         $meta = $this->getMeta();
 
-        if ($mode === LaruploadStyleMode::CROP) {
+        if ($mode === LaruploadVideoStyleMode::CROP) {
             if ($width >= $meta['width'] or $height >= $meta['height']) {
                 if ($meta['width'] >= $meta['height']) {
                     $scale = ceil(($meta['width'] * $height) / $meta['height']);

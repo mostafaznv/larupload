@@ -4,11 +4,10 @@ namespace Mostafaznv\Larupload\Test\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Mostafaznv\Larupload\DTOs\Stream;
-use Mostafaznv\Larupload\DTOs\Style;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
-use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
-use Mostafaznv\Larupload\Enums\LaruploadStyleType;
+use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
+use Mostafaznv\Larupload\Enums\Style\LaruploadVideoStyleMode;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
 
@@ -25,66 +24,20 @@ class LaruploadUploadHeavy extends Model
                 ->disk('local')
                 ->namingMethod(LaruploadNamingMethod::HASH_FILE)
                 ->withMeta(true)
-                ->style(
-                    Style::make(
-                        name: 'small_size',
-                        width: 200,
-                        height: 200,
-                        mode: LaruploadStyleMode::CROP,
-                        type: [
-                            LaruploadStyleType::IMAGE, LaruploadStyleType::VIDEO
-                        ]
-                    )
-                )
-                ->style(
-                    Style::make(
-                        name: 'small',
-                        width: 200,
-                        height: 200,
-                        mode: LaruploadStyleMode::CROP,
-                        type: [
-                            LaruploadStyleType::IMAGE, LaruploadStyleType::VIDEO
-                        ]
-                    )
-                )
-                ->style(
-                    Style::make(
-                        name: 'medium',
-                        width: 800,
-                        height: 800,
-                        mode: LaruploadStyleMode::AUTO
-                    )
-                )
-                ->style(
-                    Style::make(
-                        name: 'landscape',
-                        width: 400,
-                        mode: LaruploadStyleMode::LANDSCAPE
-                    )
-                )
-                ->style(
-                    Style::make(
-                        name: 'portrait',
-                        height: 400,
-                        mode: LaruploadStyleMode::PORTRAIT
-                    )
-                )
-                ->style(
-                    Style::make(
-                        name: 'exact',
-                        width: 300,
-                        height: 190,
-                        mode: LaruploadStyleMode::EXACT
-                    )
-                )
-                ->style(
-                    Style::make(
-                        name: 'auto',
-                        width: 300,
-                        height: 190,
-                        mode: LaruploadStyleMode::AUTO
-                    )
-                )
+                ->image('small_size', 200, 200, LaruploadImageStyleMode::CROP)
+                ->image('small', 200, 200, LaruploadImageStyleMode::CROP)
+                ->image('medium', 800, 800, LaruploadImageStyleMode::AUTO)
+                ->image('landscape', 400, null, LaruploadImageStyleMode::LANDSCAPE)
+                ->image('portrait', null, 400, LaruploadImageStyleMode::PORTRAIT)
+                ->image('exact', 300, 190, LaruploadImageStyleMode::EXACT)
+                ->image('auto', 300, 190, LaruploadImageStyleMode::AUTO)
+                ->video('small_size', 200, 200, LaruploadVideoStyleMode::CROP)
+                ->video('small', 200, 200, LaruploadVideoStyleMode::CROP)
+                ->video('medium', 800, 800, LaruploadVideoStyleMode::INSET)
+                ->video('landscape', 400, null, LaruploadVideoStyleMode::SCALE_HEIGHT)
+                ->video('portrait', null, 400, LaruploadVideoStyleMode::SCALE_WIDTH)
+                ->video('exact', 300, 190, LaruploadVideoStyleMode::FIT)
+                ->video('auto', 300, 190, LaruploadVideoStyleMode::INSET)
                 ->stream(
                     Stream::make(
                         name: '480p',

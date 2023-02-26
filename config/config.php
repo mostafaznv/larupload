@@ -1,7 +1,5 @@
 <?php
 
-use Mostafaznv\Larupload\DTOs\Style;
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -139,11 +137,11 @@ return [
     |
     */
 
-    'cover-style' => Style::make(
+    'cover-style' => \Mostafaznv\Larupload\DTOs\Style\ImageStyle::make(
         name: 'cover',
         width: 500,
         height: 500,
-        mode: \Mostafaznv\Larupload\Enums\LaruploadStyleMode::CROP
+        mode: \Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode::CROP
     ),
 
     /*

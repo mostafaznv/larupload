@@ -15,6 +15,7 @@ class LaruploadServiceProvider extends ServiceProvider
 
     // TODO - update m3u8 catalog
     // TODO - configurable threads
+    // TODO - ffmpeg logger
     // TODO - DTO for all data types
     // TODO - PEST
     // TODO - configurable video format
@@ -23,7 +24,8 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - check possibility of change video ffmpeg script to streaming one (none crop mode).
 
     // TODO - dpi for resized/cropped images and videos
-    // TODO - test s3
+    // TODO - test s3 and sftp
+    // TODO - fix documentation
     // TODO - mix with download php-x-sendfile
     // TODO - add some comments to help IDEs to show attachment functions
 

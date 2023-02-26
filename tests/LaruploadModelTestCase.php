@@ -4,10 +4,10 @@ namespace Mostafaznv\Larupload\Test;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
-use Mostafaznv\Larupload\DTOs\Style;
+use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
-use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
+use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
 
 class LaruploadModelTestCase extends LaruploadTestCase
 {
@@ -317,11 +317,11 @@ class LaruploadModelTestCase extends LaruploadTestCase
      */
     public function customCoverStyle()
     {
-        $style = Style::make(
+        $style = ImageStyle::make(
             name: 'cover',
             width: 200,
             height: 150,
-            mode: LaruploadStyleMode::EXACT
+            mode: LaruploadImageStyleMode::EXACT
         );
 
         Config::set('larupload.cover-style', $style);

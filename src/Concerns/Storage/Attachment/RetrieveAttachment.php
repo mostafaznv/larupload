@@ -38,9 +38,13 @@ trait RetrieveAttachment
      */
     public function urls(): object
     {
-        $staticStyles = [Larupload::ORIGINAL_FOLDER, Larupload::COVER_FOLDER, Larupload::STREAM_FOLDER];
-        $allStyles = array_merge($staticStyles, array_keys($this->styles));
         $styles = new stdClass();
+        $staticStyles = [Larupload::ORIGINAL_FOLDER, Larupload::COVER_FOLDER, Larupload::STREAM_FOLDER];
+        $allStyles = array_merge(
+            $staticStyles,
+            array_keys($this->imageStyles),
+            array_keys($this->videoStyles)
+        );
 
         foreach ($allStyles as $style) {
             if ($style == Larupload::COVER_FOLDER and !$this->generateCover) {

@@ -33,12 +33,12 @@ trait BaseAttachment
                 break;
 
             case LaruploadFileType::IMAGE:
-                $meta = $this->image($this->file)->getMeta();
+                $meta = $this->img($this->file)->getMeta();
 
                 $this->output['width'] = $meta['width'];
                 $this->output['height'] = $meta['height'];
                 $this->output['dominant_color'] = $this->dominantColor
-                    ? $this->image($this->file)->getDominantColor($this->file)
+                    ? $this->img($this->file)->getDominantColor($this->file)
                     : null;
 
                 break;

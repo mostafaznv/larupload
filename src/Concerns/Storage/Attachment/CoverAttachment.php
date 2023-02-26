@@ -75,13 +75,13 @@ trait CoverAttachment
         $name = $this->setFileName($this->cover);
         $saveTo = "$path/$name";
 
-        $result = $this->image($this->cover)->resize($saveTo, $this->coverStyle);
+        $result = $this->img($this->cover)->resize($saveTo, $this->coverStyle);
 
         if ($result) {
             $this->output['cover'] = $name;
 
             if ($this->type != LaruploadFileType::IMAGE) {
-                $this->output['dominant_color'] = $this->dominantColor ? $this->image($this->cover)->getDominantColor() : null;
+                $this->output['dominant_color'] = $this->dominantColor ? $this->img($this->cover)->getDominantColor() : null;
             }
         }
     }
@@ -113,7 +113,7 @@ trait CoverAttachment
             case LaruploadFileType::IMAGE:
                 Storage::disk($this->disk)->makeDirectory($path);
 
-                $result = $this->image($this->file)->resize($saveTo, $this->coverStyle);
+                $result = $this->img($this->file)->resize($saveTo, $this->coverStyle);
 
                 if ($result) {
                     $this->output['cover'] = $name;

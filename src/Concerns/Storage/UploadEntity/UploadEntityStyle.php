@@ -4,19 +4,29 @@ namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
 
 use Mostafaznv\Larupload\DTOs\Stream;
-use Mostafaznv\Larupload\DTOs\Style;
+use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
+use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
+use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
+use Mostafaznv\Larupload\Enums\Style\LaruploadVideoStyleMode;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\UploadEntities;
 
 trait UploadEntityStyle
 {
     /**
-     * Styles for image/video files
+     * Styles for image files
      *
-     * @var Style[]
+     * @var ImageStyle[]
      */
-    protected array $styles = [];
+    protected array $imageStyles = [];
+
+    /**
+     * Styles for video files
+     *
+     * @var VideoStyle[]
+     */
+    protected array $videoStyles = [];
 
     /**
      * Stream styles
@@ -28,14 +38,21 @@ trait UploadEntityStyle
     /**
      * Cover style
      *
-     * @var Style|null
+     * @var ImageStyle|null
      */
-    protected ?Style $coverStyle = null;
+    protected ?ImageStyle $coverStyle = null;
 
 
-    public function style(Style $style): UploadEntities
+    public function image(string $name, ?int $width = null, ?int $height = null, LaruploadImageStyleMode $mode = LaruploadImageStyleMode::AUTO): UploadEntities
     {
-        $this->styles[$style->name] = $style;
+        $this->imageStyles[$name] = ImageStyle::make($name, $width, $height, $mode);
+
+        return $this;
+    }
+
+    public function video(string $name, ?int $width = null, ?int $height = null, LaruploadVideoStyleMode $mode = LaruploadVideoStyleMode::SCALE_HEIGHT): UploadEntities
+    {
+        $this->videoStyles[$name] = VideoStyle::make($name, $width, $height, $mode);
 
         return $this;
     }
@@ -47,9 +64,9 @@ trait UploadEntityStyle
         return $this;
     }
 
-    public function coverStyle(Style $style): UploadEntities
+    public function coverStyle(string $name, ?int $width = null, ?int $height = null, LaruploadImageStyleMode $mode = LaruploadImageStyleMode::AUTO): UploadEntities
     {
-        $this->coverStyle = $style;
+        $this->coverStyle = ImageStyle::make($name, $width, $height, $mode);
 
         return $this;
     }
@@ -60,18 +77,18 @@ trait UploadEntityStyle
             return true;
         }
 
-        if (array_key_exists($style, $this->styles)) {
-            $type = $this->output['type'];
-            $types = [
-                LaruploadFileType::VIDEO->name,
-                LaruploadFileType::IMAGE->name
-            ];
+        $type = $this->output['type'];
+        $types = [
+            LaruploadFileType::VIDEO->name,
+            LaruploadFileType::IMAGE->name
+        ];
 
-            if (in_array($type, $types)) {
-                $styleTypes = enum_to_names($this->styles[$style]->type);
+        if (in_array($type, $types)) {
+            $styles = $type === LaruploadFileType::IMAGE->name
+                ? $this->imageStyles
+                : $this->videoStyles;
 
-                return count($styleTypes) == 0 or in_array($type, $styleTypes);
-            }
+            return array_key_exists($style, $styles);
         }
 
         return false;

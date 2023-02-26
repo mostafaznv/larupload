@@ -20,18 +20,12 @@ trait StyleAttachment
     {
         switch ($this->type) {
             case LaruploadFileType::IMAGE:
-                foreach ($this->styles as $name => $style) {
-                    $styleTypes = enum_to_names($style->type);
-
-                    if (count($style->type) and !in_array(LaruploadFileType::IMAGE->name, $styleTypes)) {
-                        continue;
-                    }
-
+                foreach ($this->imageStyles as $name => $style) {
                     $path = $this->getBasePath($id, $name);
                     $saveTo = $path . '/' . $this->fixExceptionNames($this->output['name'], $name);
 
                     Storage::disk($this->disk)->makeDirectory($path);
-                    $this->image($this->file)->resize($saveTo, $style);
+                    $this->img($this->file)->resize($saveTo, $style);
                 }
 
                 break;
@@ -55,13 +49,7 @@ trait StyleAttachment
      */
     protected function handleVideoStyles($id): void
     {
-        foreach ($this->styles as $name => $style) {
-            $types = enum_to_names($style->type);
-
-            if ((count($types) and !in_array(LaruploadFileType::VIDEO->name, $types))) {
-                continue;
-            }
-
+        foreach ($this->videoStyles as $name => $style) {
             $path = $this->getBasePath($id, $name);
             Storage::disk($this->disk)->makeDirectory($path);
             $saveTo = "$path/{$this->output['name']}";
@@ -89,10 +77,12 @@ trait StyleAttachment
     protected function prepareStylePath(string $style): ?string
     {
         $staticStyles = [
-            Larupload::ORIGINAL_FOLDER, Larupload::COVER_FOLDER, Larupload::STREAM_FOLDER
+            Larupload::ORIGINAL_FOLDER,
+            Larupload::COVER_FOLDER,
+            Larupload::STREAM_FOLDER
         ];
 
-        if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->styles))) {
+        if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->imageStyles) or array_key_exists($style, $this->videoStyles))) {
             $name = $style == Larupload::COVER_FOLDER
                 ? $this->output['cover']
                 : $this->output['name'];
