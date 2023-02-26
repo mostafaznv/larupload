@@ -3,7 +3,7 @@
 namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
 
-use Mostafaznv\Larupload\DTOs\Stream;
+use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
@@ -31,7 +31,7 @@ trait UploadEntityStyle
     /**
      * Stream styles
      *
-     * @var Stream[]
+     * @var StreamStyle[]
      */
     protected array $streams = [];
 
@@ -57,9 +57,9 @@ trait UploadEntityStyle
         return $this;
     }
 
-    public function stream(Stream $stream): UploadEntities
+    public function stream(string $name, int $width, int $height, int|string $audioBitrate, int|string $videoBitrate): UploadEntities
     {
-        $this->streams[$stream->name] = $stream;
+        $this->streams[$name] = StreamStyle::make($name, $width, $height, $audioBitrate, $videoBitrate);
 
         return $this;
     }

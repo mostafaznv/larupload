@@ -462,12 +462,8 @@ As you know, larupload works with 2 strategies, ORM-Based and standalone. in the
             ->namingMethod(LaruploadNamingMethod::HASH_FILE)
             ->image('thumbnail', 1000, 750, LaruploadImageStyleMode::CROP)
             ->video('thumbnail', 1000, 750, LaruploadVideoStyleMode::CROP)         
-            ->stream(
-                Stream::make('480p', 640, 480, '64K', '1M')
-            )
-            ->stream(
-                Stream::make('720p', 1280, 720, '64K', '1M')
-            )
+            ->stream('480p', 640, 480, '64K', '1M')
+            ->stream('720p', 1280, 720, '64K', '1M')
             ->upload($file, $cover);
     ```
 
@@ -627,7 +623,6 @@ namespace App\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
@@ -666,17 +661,11 @@ class Media extends Model
                 ->video('thumbnail', 250, 250, LaruploadVideoStyleMode::INSET)
                 ->video('crop_mode', 1100, 1100, LaruploadVideoStyleMode::CROP)
                 ->video('portrait_mode', 1000, 1000, LaruploadVideoStyleMode::SCALE_WIDTH)
-                ->stream(
-                    Stream::make('480p', 640, 480, '64K', '1M')
-                )
-                ->stream(
-                    Stream::make('720p', 1280, 720, '64K', '1M')
-                ),
+                ->stream('480p', 640, 480, '64K', '1M')
+                ->stream('720p', 1280, 720, '64K', '1M'),
 
             Attachment::make('other_file', LaruploadMode::LIGHT)
-                ->stream(
-                    Stream::make('480p', 640, 480, '64K', '1M')
-                ),
+                ->stream('480p', 640, 480, '64K', '1M'),
         ];
     }
 }

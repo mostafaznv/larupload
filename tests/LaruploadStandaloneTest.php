@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Imagine\Gd\Imagine;
 use Imagine\Image\ImageInterface;
-use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
@@ -501,12 +500,8 @@ class LaruploadStandaloneTest extends LaruploadTestCase
     {
         $upload = Larupload::init('uploader')
             ->namingMethod(LaruploadNamingMethod::HASH_FILE)
-            ->stream(
-                Stream::make('480p', 640, 480, '64k', '300000')
-            )
-            ->stream(
-                Stream::make('720p', 1280, 720, '64K', '1M')
-            )
+            ->stream('480p', 640, 480, '64k', '300000')
+            ->stream('720p', 1280, 720, '64K', '1M')
             ->upload($this->video);
 
 

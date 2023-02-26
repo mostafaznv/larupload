@@ -1,11 +1,10 @@
 <?php
 
-namespace Mostafaznv\Larupload\DTOs;
+namespace Mostafaznv\Larupload\DTOs\Style;
 
 use Exception;
-use Mostafaznv\Larupload\Helpers\Validator;
 
-class Stream
+class StreamStyle
 {
     public function __construct(
         public readonly string     $name,

@@ -4,8 +4,8 @@ namespace Mostafaznv\Larupload\Storage;
 
 use Exception;
 use Illuminate\Http\UploadedFile;
-use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
+use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
@@ -232,7 +232,7 @@ class FFMpeg
     /**
      * Stream - Generate HLS video from source file
      *
-     * @param Stream[] $styles
+     * @param StreamStyle[] $styles
      * @param string $basePath
      * @param string $fileName
      * @return bool

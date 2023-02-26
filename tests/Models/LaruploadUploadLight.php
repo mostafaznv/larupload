@@ -3,7 +3,6 @@
 namespace Mostafaznv\Larupload\Test\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Mostafaznv\Larupload\DTOs\Stream;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
@@ -38,24 +37,8 @@ class LaruploadUploadLight extends Model
                 ->video('portrait', null, 400, LaruploadVideoStyleMode::SCALE_WIDTH)
                 ->video('exact', 300, 190, LaruploadVideoStyleMode::FIT)
                 ->video('auto', 300, 190, LaruploadVideoStyleMode::INSET)
-                ->stream(
-                    Stream::make(
-                        name: '480p',
-                        width: 640,
-                        height: 480,
-                        audioBitrate: '64K',
-                        videoBitrate: 300000
-                    )
-                )
-                ->stream(
-                    Stream::make(
-                        name: '720p',
-                        width: 1280,
-                        height: 720,
-                        audioBitrate: '64K',
-                        videoBitrate: '1M'
-                    )
-                )
+                ->stream('480p', 640, 480, '64K', 300000)
+                ->stream('720p', 1280, 720, '64K', '1M')
         ];
     }
 }
