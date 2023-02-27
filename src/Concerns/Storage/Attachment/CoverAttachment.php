@@ -106,7 +106,7 @@ trait CoverAttachment
                 $color = $this->ffmpeg()->capture($this->ffmpegCaptureFrame, $this->coverStyle, $saveTo, $this->dominantColor);
 
                 $this->output['cover'] = $name;
-                $this->output['dominant_color'] = $this->dominantColor ? $color : null;
+                $this->output['dominant_color'] = $color;
 
                 break;
 
