@@ -10,7 +10,7 @@ use Intervention\Image\ImageManager;
 use JetBrains\PhpStorm\ArrayShape;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
-use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
+use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Helpers\LaraTools;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
@@ -62,16 +62,16 @@ class Image
         $saveTo = Storage::disk($this->disk)->path($saveTo);
 
         if ($style->mode) {
-            if ($style->mode === LaruploadImageStyleMode::LANDSCAPE and $style->width) {
+            if ($style->mode === LaruploadMediaStyle::SCALE_HEIGHT and $style->width) {
                 $this->resizeLandscape($style->width);
             }
-            else if ($style->mode == LaruploadImageStyleMode::PORTRAIT and $style->height) {
+            else if ($style->mode == LaruploadMediaStyle::SCALE_WIDTH and $style->height) {
                 $this->resizePortrait($style->height);
             }
-            else if ($style->mode == LaruploadImageStyleMode::CROP and $style->height and $style->width) {
+            else if ($style->mode == LaruploadMediaStyle::CROP and $style->height and $style->width) {
                 $this->resizeCrop($style->width, $style->height);
             }
-            else if ($style->mode == LaruploadImageStyleMode::EXACT and $style->height and $style->width) {
+            else if ($style->mode == LaruploadMediaStyle::FIT and $style->height and $style->width) {
                 $this->resizeExact($style->width, $style->height);
             }
             else {

@@ -3,51 +3,51 @@
 namespace Mostafaznv\Larupload\DTOs\Style;
 
 use Exception;
-use Mostafaznv\Larupload\Enums\Style\LaruploadVideoStyleMode;
+use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 
 class VideoStyle extends Style
 {
-    public readonly LaruploadVideoStyleMode $mode;
+    public readonly LaruploadMediaStyle $mode;
 
-    public function __construct(string $name, ?int $width = null, ?int $height = null, LaruploadVideoStyleMode $mode = LaruploadVideoStyleMode::SCALE_HEIGHT,)
+    public function __construct(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, bool $padding = false)
     {
-        parent::__construct($name, $width, $height);
+        parent::__construct($name, $width, $height, $padding);
 
         $this->mode = $mode;
 
         $this->validateDimension();
     }
 
-    public static function make(string $name, ?int $width = null, ?int $height = null, LaruploadVideoStyleMode $mode = LaruploadVideoStyleMode::SCALE_HEIGHT): self
+    public static function make(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, bool $padding = false): self
     {
-        return new self($name, $width, $height, $mode);
+        return new self($name, $width, $height, $mode, $padding);
     }
 
 
     private function validateDimension(): void
     {
-        if ($this->mode === LaruploadVideoStyleMode::SCALE_HEIGHT) {
+        if ($this->mode === LaruploadMediaStyle::SCALE_HEIGHT) {
             if ($this->width === null or $this->width === 0) {
                 throw new Exception(
                     'Width is required when you are in SCALE_HEIGHT mode'
                 );
             }
         }
-        else if ($this->mode === LaruploadVideoStyleMode::SCALE_WIDTH) {
+        else if ($this->mode === LaruploadMediaStyle::SCALE_WIDTH) {
             if ($this->height === null or $this->height === 0) {
                 throw new Exception(
                     'Height is required when you are in SCALE_WIDTH mode'
                 );
             }
         }
-        else if (in_array($this->mode, [LaruploadVideoStyleMode::CROP, LaruploadVideoStyleMode::FIT])) {
+        else if (in_array($this->mode, [LaruploadMediaStyle::CROP, LaruploadMediaStyle::FIT])) {
             if (!$this->width or !$this->height) {
                 throw new Exception(
                     'Width and Height are required when you are in CROP/FIT mode'
                 );
             }
         }
-        else if ($this->mode === LaruploadVideoStyleMode::INSET) {
+        else if ($this->mode === LaruploadMediaStyle::AUTO) {
             if (!$this->width and !$this->height) {
                 throw new Exception(
                     'Width or height are required when you are in exact mode'

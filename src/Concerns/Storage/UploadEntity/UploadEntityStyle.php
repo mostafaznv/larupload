@@ -7,8 +7,7 @@ use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
-use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
-use Mostafaznv\Larupload\Enums\Style\LaruploadVideoStyleMode;
+use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\UploadEntities;
 
@@ -43,14 +42,14 @@ trait UploadEntityStyle
     protected ?ImageStyle $coverStyle = null;
 
 
-    public function image(string $name, ?int $width = null, ?int $height = null, LaruploadImageStyleMode $mode = LaruploadImageStyleMode::AUTO): UploadEntities
+    public function image(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::AUTO): UploadEntities
     {
         $this->imageStyles[$name] = ImageStyle::make($name, $width, $height, $mode);
 
         return $this;
     }
 
-    public function video(string $name, ?int $width = null, ?int $height = null, LaruploadVideoStyleMode $mode = LaruploadVideoStyleMode::SCALE_HEIGHT): UploadEntities
+    public function video(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT): UploadEntities
     {
         $this->videoStyles[$name] = VideoStyle::make($name, $width, $height, $mode);
 
@@ -64,7 +63,7 @@ trait UploadEntityStyle
         return $this;
     }
 
-    public function coverStyle(string $name, ?int $width = null, ?int $height = null, LaruploadImageStyleMode $mode = LaruploadImageStyleMode::AUTO): UploadEntities
+    public function coverStyle(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::AUTO): UploadEntities
     {
         $this->coverStyle = ImageStyle::make($name, $width, $height, $mode);
 

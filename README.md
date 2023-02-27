@@ -460,8 +460,8 @@ As you know, larupload works with 2 strategies, ORM-Based and standalone. in the
    
      $upload = Larupload::init('path')
             ->namingMethod(LaruploadNamingMethod::HASH_FILE)
-            ->image('thumbnail', 1000, 750, LaruploadImageStyleMode::CROP)
-            ->video('thumbnail', 1000, 750, LaruploadVideoStyleMode::CROP)         
+            ->image('thumbnail', 1000, 750, LaruploadMediaStyle::CROP)
+            ->video('thumbnail', 1000, 750, LaruploadMediaStyle::CROP)         
             ->stream('480p', 640, 480, '64K', '1M')
             ->stream('720p', 1280, 720, '64K', '1M')
             ->upload($file, $cover);
@@ -533,7 +533,7 @@ In larupload, we’ve put a lot of effort into making the package more customize
         name: 'cover',
         width: 500,
         height: 500,
-        mode: LaruploadImageStyleMode::CROP
+        mode: LaruploadMediaStyle::CROP
     )
     ```
 
@@ -623,9 +623,8 @@ namespace App\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
-use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
+use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
@@ -654,13 +653,13 @@ class Media extends Model
                 ->generateCover(false)
                 ->dominantColor(true)
                 ->preserveFiles(true)
-                ->coverStyle('cover', 400, 400, LaruploadImageStyleMode::CROP)
-                ->image('thumbnail', 250, 250, LaruploadImageStyleMode::AUTO)
-                ->image('crop_mode', 1100, 1100, LaruploadImageStyleMode::CROP)
-                ->image('portrait_mode', 1000, 1000, LaruploadImageStyleMode::PORTRAIT)
-                ->video('thumbnail', 250, 250, LaruploadVideoStyleMode::INSET)
-                ->video('crop_mode', 1100, 1100, LaruploadVideoStyleMode::CROP)
-                ->video('portrait_mode', 1000, 1000, LaruploadVideoStyleMode::SCALE_WIDTH)
+                ->coverStyle('cover', 400, 400, LaruploadMediaStyle::CROP)
+                ->image('thumbnail', 250, 250, LaruploadMediaStyle::AUTO)
+                ->image('crop_mode', 1100, 1100, LaruploadMediaStyle::CROP)
+                ->image('portrait_mode', 1000, 1000, LaruploadMediaStyle::SCALE_WIDTH)
+                ->video('thumbnail', 250, 250, LaruploadMediaStyle::AUTO)
+                ->video('crop_mode', 1100, 1100, LaruploadMediaStyle::CROP)
+                ->video('portrait_mode', 1000, 1000, LaruploadMediaStyle::SCALE_WIDTH)
                 ->stream('480p', 640, 480, '64K', '1M')
                 ->stream('720p', 1280, 720, '64K', '1M'),
 
@@ -735,21 +734,22 @@ to use this functions, you should pass `Style` or `Stream` objects to these func
 
 #### Image Style
 
-| index | name   | type                     | required | default | description                                                                                                                                   |
-|-------|--------|--------------------------|----------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | name   | string                   | true     | -       | name of style.  examples: thumbnail, small, ...                                                                                               |
-| 2     | width  | ?int                     | false    | null    | height of the photo or video.                                                                                                                 |
-| 3     | height | ?int                     | false    | null    | width of the photo or video                                                                                                                   |
-| 4     | mode   | LaruploadImageStyleMode  | false    | AUTO    | larupload decides how to deal with the uploaded image. acceptable values for this field are: `LANDSCAPE`, `PORTRAIT`, `CROP`, `EXACT`, `AUTO` |
+| index | name   | type                 | required | default | description                                                                                                                                       |
+|-------|--------|----------------------|----------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1     | name   | string               | true     | -       | name of style.  examples: thumbnail, small, ...                                                                                                   |
+| 2     | width  | ?int                 | false    | null    | height of the photo or video.                                                                                                                     |
+| 3     | height | ?int                 | false    | null    | width of the photo or video                                                                                                                       |
+| 4     | mode   | LaruploadMediaStyle  | false    | AUTO    | larupload decides how to deal with the uploaded image. acceptable values for this field are: `FIT`, `AUTO`, `SCALE_WIDTH`, `SCALE_HEIGHT`, `CROP` |
 
 #### Video Style
 
-| index | name   | type                    | required | default       | description                                                                                                                                        |
-|-------|--------|-------------------------|----------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | name   | string                  | true     | -             | name of style.  examples: thumbnail, small, ...                                                                                                    |
-| 2     | width  | ?int                    | false    | null          | height of the photo or video.                                                                                                                      |
-| 3     | height | ?int                    | false    | null          | width of the photo or video                                                                                                                        |
-| 4     | mode   | LaruploadVideoStyleMode | false    | SCALE_HEIGHT  | larupload decides how to deal with the uploaded video. acceptable values for this field are: `FIT`, `INSET`, `SCALE_WIDTH`, `SCALE_HEIGHT`, `CROP` |
+| index | name    | type                | required | default      | description                                                                                                                                       |
+|-------|---------|---------------------|----------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1     | name    | string              | true     | -            | name of style.  examples: thumbnail, small, ...                                                                                                   |
+| 2     | width   | ?int                | false    | null         | height of the photo or video.                                                                                                                     |
+| 3     | height  | ?int                | false    | null         | width of the photo or video                                                                                                                       |
+| 4     | mode    | LaruploadMediaStyle | false    | SCALE_HEIGHT | larupload decides how to deal with the uploaded video. acceptable values for this field are: `FIT`, `AUTO`, `SCALE_WIDTH`, `SCALE_HEIGHT`, `CROP` |
+| 4     | padding | bool                | false    | false        | If true, the video will be padded with black color to fit the given dimension                                                                     |
 
 #### Stream
 if you want to generate m3u8 files from video sources, you should use `stream`. for now larupload supports hls videos only on stream style.

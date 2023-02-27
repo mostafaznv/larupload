@@ -8,8 +8,7 @@ use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
-use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
-use Mostafaznv\Larupload\Enums\Style\LaruploadVideoStyleMode;
+use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Helpers\LaraTools;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
@@ -186,7 +185,7 @@ class FFMpeg
             $fromSecond = number_format($fromSecond, 1);
         }
 
-        if ($style->mode == LaruploadImageStyleMode::CROP) {
+        if ($style->mode == LaruploadMediaStyle::CROP) {
             if ($style->width and $style->height) {
                 $cmd = escapeshellcmd("$this->ffmpeg -ss $fromSecond -i $path -vframes 1 -filter scale=$scaleType,crop=$style->width:$style->height");
             }
@@ -214,7 +213,7 @@ class FFMpeg
         $path = $this->file->getRealPath();
         $saveTo = Storage::disk($this->disk)->path($saveTo);
 
-        if ($style->mode === LaruploadVideoStyleMode::CROP) {
+        if ($style->mode === LaruploadMediaStyle::CROP) {
             if ($scale) {
                 $cmd = escapeshellcmd("$this->ffmpeg -i $path -vf scale=$scale,crop=$style->width:$style->height,setsar=1");
             }
@@ -292,17 +291,17 @@ class FFMpeg
     /**
      * Calculate scale
      *
-     * @param LaruploadVideoStyleMode|null $mode
+     * @param LaruploadMediaStyle|null $mode
      * @param int|null $width
      * @param int|null $height
      * @return string
      * @throws Exception
      */
-    protected function calculateScale(LaruploadVideoStyleMode $mode = null, int $width = null, int $height = null): string
+    protected function calculateScale(LaruploadMediaStyle $mode = null, int $width = null, int $height = null): string
     {
         $meta = $this->getMeta();
 
-        if ($mode === LaruploadVideoStyleMode::CROP) {
+        if ($mode === LaruploadMediaStyle::CROP) {
             if ($width >= $meta['width'] or $height >= $meta['height']) {
                 if ($meta['width'] >= $meta['height']) {
                     $scale = ceil(($meta['width'] * $height) / $meta['height']);

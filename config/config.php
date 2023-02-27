@@ -141,7 +141,7 @@ return [
         name: 'cover',
         width: 500,
         height: 500,
-        mode: \Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode::CROP
+        mode: \Mostafaznv\Larupload\Enums\LaruploadMediaStyle::CROP
     ),
 
     /*

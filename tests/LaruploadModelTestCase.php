@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
+use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
-use Mostafaznv\Larupload\Enums\Style\LaruploadImageStyleMode;
 
 class LaruploadModelTestCase extends LaruploadTestCase
 {
@@ -321,7 +321,7 @@ class LaruploadModelTestCase extends LaruploadTestCase
             name: 'cover',
             width: 200,
             height: 150,
-            mode: LaruploadImageStyleMode::EXACT
+            mode: LaruploadMediaStyle::FIT
         );
 
         Config::set('larupload.cover-style', $style);

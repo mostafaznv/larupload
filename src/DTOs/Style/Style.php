@@ -9,7 +9,8 @@ abstract class Style
     public function __construct(
         public readonly string $name,
         public readonly ?int   $width = null,
-        public readonly ?int   $height = null
+        public readonly ?int   $height = null,
+        public readonly bool   $padding = false
     ) {
         $this->validate();
     }
