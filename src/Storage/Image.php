@@ -26,16 +26,13 @@ class Image
 
     protected string $disk;
 
-    protected string $localDisk;
-
     protected bool $driverIsLocal;
 
 
-    public function __construct(UploadedFile $file, string $disk, string $localDisk, LaruploadImageLibrary $library)
+    public function __construct(UploadedFile $file, string $disk, LaruploadImageLibrary $library)
     {
         $this->file = $file;
         $this->disk = $disk;
-        $this->localDisk = $localDisk;
         $this->driverIsLocal = disk_driver_is_local($this->disk);
 
         $path = $file->getRealPath();
@@ -87,9 +84,9 @@ class Image
             $this->image->save($saveTo);
         }
         else {
-            list($path, $name) = $this->splitPath($saveTo);
+            list($path, $name) = split_larupload_path($saveTo);
 
-            $tempDir = $this->tempDir();
+            $tempDir = larupload_temp_dir();
             $tempName = time() . '-' . $name;
             $temp = "$tempDir/$tempName";
 

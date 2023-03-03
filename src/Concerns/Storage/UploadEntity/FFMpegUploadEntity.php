@@ -4,7 +4,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
 
 use Illuminate\Http\UploadedFile;
-use Mostafaznv\Larupload\Storage\FFMpeg;
+use Mostafaznv\Larupload\Storage\FFMpeg\FFMpeg;
 
 trait FFMpegUploadEntity
 {
@@ -32,7 +32,7 @@ trait FFMpegUploadEntity
     protected function ffmpeg(UploadedFile $file = null): FFMpeg
     {
         if (!isset($this->ffmpeg) or $file) {
-            $this->ffmpeg = new FFMpeg($this->file, $this->disk, $this->localDisk);
+            $this->ffmpeg = new FFMpeg($this->file, $this->disk);
         }
 
         return $this->ffmpeg;

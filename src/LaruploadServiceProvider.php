@@ -15,6 +15,7 @@ class LaruploadServiceProvider extends ServiceProvider
 
     // TODO - update m3u8 catalog
     // TODO - configurable threads
+    // TODO - configurable video format for video-style (X264, Webm and ...)
     // TODO - ffmpeg logger
     // TODO - DTO for all data types
     // TODO - PEST

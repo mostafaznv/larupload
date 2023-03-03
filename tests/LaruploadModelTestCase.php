@@ -218,50 +218,50 @@ class LaruploadModelTestCase extends LaruploadTestCase
         // cover
         $meta = $this->video($model->main_file->url('cover'));
         $this->assertNotNull($model->main_file->url('cover'));
-        $this->assertEquals(500, $meta['width']);
-        $this->assertEquals(500, $meta['height']);
+        $this->assertEquals(500, $meta->width);
+        $this->assertEquals(500, $meta->height);
 
         // small
         $meta = $this->video($model->main_file->url('small'));
         $this->assertNotNull($model->main_file->url('small'));
-        $this->assertEquals(200, $meta['width']);
-        $this->assertEquals(200, $meta['height']);
-        $this->assertEquals(5, $meta['duration']);
+        $this->assertEquals(200, $meta->width);
+        $this->assertEquals(200, $meta->height);
+        $this->assertEquals(5, $meta->duration);
 
         // medium
         $meta = $this->video($model->main_file->url('medium'));
         $this->assertNotNull($model->main_file->url('medium'));
-        $this->assertEquals(800, $meta['width']);
-        $this->assertEquals(458, $meta['height']);
-        $this->assertEquals(5, $meta['duration']);
+        $this->assertEquals(800, $meta->width);
+        $this->assertEquals(450, $meta->height);
+        $this->assertEquals(5, $meta->duration);
 
         // landscape
         $meta = $this->video($model->main_file->url('landscape'));
         $this->assertNotNull($model->main_file->url('landscape'));
-        $this->assertEquals(400, $meta['width']);
-        $this->assertEquals(228, $meta['height']);
-        $this->assertEquals(5, $meta['duration']);
+        $this->assertEquals(400, $meta->width);
+        $this->assertEquals(226, $meta->height);
+        $this->assertEquals(5, $meta->duration);
 
         // portrait
         $meta = $this->video($model->main_file->url('portrait'));
         $this->assertNotNull($model->main_file->url('portrait'));
-        $this->assertEquals(700, $meta['width']);
-        $this->assertEquals(400, $meta['height']);
-        $this->assertEquals(5, $meta['duration']);
+        $this->assertEquals(712, $meta->width);
+        $this->assertEquals(400, $meta->height);
+        $this->assertEquals(5, $meta->duration);
 
         // exact
         $meta = $this->video($model->main_file->url('exact'));
         $this->assertNotNull($model->main_file->url('exact'));
-        $this->assertEquals(300, $meta['width']);
-        $this->assertEquals(172, $meta['height']);
-        $this->assertEquals(5, $meta['duration']);
+        $this->assertEquals(300, $meta->width);
+        $this->assertEquals(190, $meta->height);
+        $this->assertEquals(5, $meta->duration);
 
         // auto
         $meta = $this->video($model->main_file->url('auto'));
         $this->assertNotNull($model->main_file->url('auto'));
-        $this->assertEquals(300, $meta['width']);
-        $this->assertEquals(172, $meta['height']);
-        $this->assertEquals(5, $meta['duration']);
+        $this->assertEquals(300, $meta->width);
+        $this->assertEquals(168, $meta->height);
+        $this->assertEquals(5, $meta->duration);
     }
 
 
@@ -275,15 +275,14 @@ class LaruploadModelTestCase extends LaruploadTestCase
         $path = public_path(str_replace(url('/'), '', $model->main_file->url('stream')));
         $dir = pathinfo($path, PATHINFO_DIRNAME);
 
-        $m3u8 = 'chunk-list.m3u8';
-        $ts = 'file-sequence-0.ts';
+        $ts = '0.ts';
         $folders = ['480p', '720p'];
 
         $this->assertEquals(true, file_exists($path));
 
         foreach ($folders as $folder) {
-            $this->assertEquals(true, file_exists($dir . '/' . $folder . '/' . $m3u8));
-            $this->assertEquals(true, file_exists($dir . '/' . $folder . '/' . $ts));
+            $this->assertEquals(true, file_exists($dir . '/' . $folder . '/' . "$folder-list.m3u8"));
+            $this->assertEquals(true, file_exists($dir . '/' . $folder . '/' . "$folder-0.ts"));
         }
     }
 

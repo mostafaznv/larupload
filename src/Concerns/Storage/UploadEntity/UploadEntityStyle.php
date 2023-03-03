@@ -56,9 +56,9 @@ trait UploadEntityStyle
         return $this;
     }
 
-    public function stream(string $name, int $width, int $height, int|string $audioBitrate, int|string $videoBitrate): UploadEntities
+    public function stream(string $name, int $width, int $height, int $audioKiloBitrate, int $videoKiloBitrate, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, bool $padding = false): UploadEntities
     {
-        $this->streams[$name] = StreamStyle::make($name, $width, $height, $audioBitrate, $videoBitrate);
+        $this->streams[$name] = StreamStyle::make($name, $width, $height, $audioKiloBitrate, $videoKiloBitrate, $mode, $padding);
 
         return $this;
     }

@@ -23,7 +23,6 @@ trait ImageUploadEntity
         $this->image = new Image(
             file: $file,
             disk: $this->disk,
-            localDisk: $this->localDisk,
             library: $this->imageProcessingLibrary
         );
 

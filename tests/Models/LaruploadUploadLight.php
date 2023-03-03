@@ -36,8 +36,8 @@ class LaruploadUploadLight extends Model
                 ->video('portrait', null, 400, LaruploadMediaStyle::SCALE_WIDTH)
                 ->video('exact', 300, 190, LaruploadMediaStyle::FIT)
                 ->video('auto', 300, 190, LaruploadMediaStyle::AUTO)
-                ->stream('480p', 640, 480, '64K', 300000)
-                ->stream('720p', 1280, 720, '64K', '1M')
+                ->stream('480p', 640, 480, 64, 3000)
+                ->stream('720p', 1280, 720, 64, 1000)
         ];
     }
 }

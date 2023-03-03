@@ -7,9 +7,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
 use Imagine\Gd\Imagine;
 use Imagine\Image\ImageInterface;
+use Mostafaznv\Larupload\DTOs\FFMpeg\FFMpegMeta;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Storage\Attachment;
-use Mostafaznv\Larupload\Storage\FFMpeg;
+use Mostafaznv\Larupload\Storage\FFMpeg\FFMpeg;
 use Mostafaznv\Larupload\Test\Models\LaruploadUploadHeavy;
 use Mostafaznv\Larupload\Test\Models\LaruploadUploadLight;
 use Mostafaznv\Larupload\Test\Models\LaruploadUploadSoftDelete;
@@ -255,12 +256,12 @@ trait LaruploadModelTestCaseTools
         return $image->open($path);
     }
 
-    protected function video(string $url): array
+    protected function video(string $url): FFMpegMeta
     {
         $path = public_path(str_replace(url('/'), '', $url));
         $file = new UploadedFile($path, pathinfo($path, PATHINFO_FILENAME), null, null, true);
 
-        $ffmpeg = new FFMpeg($file, Config::get('larupload.disk'), Config::get('larupload.local-disk'));
+        $ffmpeg = new FFMpeg($file, Config::get('larupload.disk'));
         return $ffmpeg->getMeta();
     }
 

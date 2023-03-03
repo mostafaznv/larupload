@@ -754,13 +754,14 @@ to use this functions, you should pass `Style` or `Stream` objects to these func
 #### Stream
 if you want to generate m3u8 files from video sources, you should use `stream`. for now larupload supports hls videos only on stream style.
 
-| index | name         | type       | required | default | description                                                                   |
-|-------|--------------|------------|----------|---------|-------------------------------------------------------------------------------|
-| 1     | name         | string     | true     | -       | label for stream quality. highly recommended to use string labels like `720p` |
-| 2     | width        | int        | true     | -       |                                                                               |
-| 3     | height       | int        | true     | -       |                                                                               |
-| 4     | audioBitrate | string/int | true     | -       | you can pass bitrate as an integer or pass it with strings like 64k or ...    |
-| 5     | videoBitrate | string/int | true     | -       | you can pass bitrate as an integer or pass it with strings like 64k or ...    |
+| index | name             | type   | required | default | description                                                                   |
+|-------|------------------|--------|----------|---------|-------------------------------------------------------------------------------|
+| 1     | name             | string | true     | -       | label for stream quality. highly recommended to use string labels like `720p` |
+| 2     | width            | int    | true     | -       |                                                                               |
+| 3     | height           | int    | true     | -       |                                                                               |
+| 4     | audioKiloBitrate | int    | true     | -       |                                                                               |
+| 5     | videoKiloBitrate | int    | true     | -       |                                                                               |
+| 5     | padding          | bool   | false    | false   | If true, the video will be padded with black color to fit the given dimension |
 
 ## Changelog
 Refer to the [Changelog](CHANGELOG.md) for a full history of the project.

@@ -88,38 +88,4 @@ trait LaraTools
     {
         return $file and ($file instanceof UploadedFile);
     }
-
-    /**
-     * Get temp directory
-     *
-     * @return string
-     */
-    protected function tempDir(): string
-    {
-        if (ini_get('upload_tmp_dir')) {
-            $path = ini_get('upload_tmp_dir');
-        }
-        else if (getenv('temp')) {
-            $path = getenv('temp');
-        }
-        else {
-            $path = sys_get_temp_dir();
-        }
-
-        return rtrim($path, '/');
-    }
-
-    /**
-     * Extract name from path
-     *
-     * @param string $dir
-     * @return array
-     */
-    protected function splitPath(string $dir): array
-    {
-        $path = dirname($dir);
-        $name = pathinfo($dir, PATHINFO_BASENAME);
-
-        return [$path, $name];
-    }
 }

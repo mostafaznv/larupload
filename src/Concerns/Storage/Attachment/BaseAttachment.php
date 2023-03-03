@@ -26,9 +26,9 @@ trait BaseAttachment
             case LaruploadFileType::AUDIO:
                 $meta = $this->ffmpeg()->getMeta();
 
-                $this->output['width'] = $meta['width'];
-                $this->output['height'] = $meta['height'];
-                $this->output['duration'] = $meta['duration'];
+                $this->output['width'] = $meta->width;
+                $this->output['height'] = $meta->height;
+                $this->output['duration'] = $meta->duration;
 
                 break;
 
