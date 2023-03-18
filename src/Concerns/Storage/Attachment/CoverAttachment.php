@@ -7,7 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\GenerateCoverFromFileAction;
 use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
-use Mostafaznv\Larupload\Actions\SetFileNameAction;
+use Mostafaznv\Larupload\Actions\UploadCoverAction;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
 
@@ -55,7 +55,16 @@ trait CoverAttachment
             $this->deleteCover();
         }
         else if ($this->fileIsSetAndHasValue($this->cover) and GuessLaruploadFileTypeAction::make($this->cover)->isImage()) {
-            $this->uploadCover($path);
+            $this->output = UploadCoverAction::make(
+                cover: $this->cover,
+                disk: $this->disk,
+                namingMethod: $this->namingMethod,
+                lang: $this->lang,
+                style: $this->coverStyle,
+                withDominantColor: $this->dominantColor,
+                imageProcessingLibrary: $this->imageProcessingLibrary,
+                output: $this->output
+            )($path);
         }
         else if ($this->generateCover) {
             $this->output = GenerateCoverFromFileAction::make(
@@ -75,24 +84,6 @@ trait CoverAttachment
 
         if ($this->type != LaruploadFileType::IMAGE) {
             $this->output['dominant_color'] = null;
-        }
-    }
-
-    private function uploadCover(string $path): void
-    {
-        Storage::disk($this->disk)->makeDirectory($path);
-
-        $name = SetFileNameAction::make($this->cover, $this->namingMethod, $this->lang)->generate();
-        $saveTo = "$path/$name";
-
-        $result = $this->img($this->cover)->resize($saveTo, $this->coverStyle);
-
-        if ($result) {
-            $this->output['cover'] = $name;
-
-            if ($this->type != LaruploadFileType::IMAGE) {
-                $this->output['dominant_color'] = $this->dominantColor ? $this->img($this->cover)->getDominantColor() : null;
-            }
         }
     }
 }
