@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
 use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\UploadEntities;
 
@@ -27,6 +28,13 @@ trait UploadEntityProperties
      * This property will be initiated only on retrieving model.
      */
     protected int $id;
+
+    /**
+     * Type of file in Larupload ecosystem
+     *
+     * @var LaruploadFileType|null
+     */
+    protected ?LaruploadFileType $type;
 
     /**
      * Mode of uploadable entity

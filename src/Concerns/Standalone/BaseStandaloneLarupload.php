@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Concerns\Standalone;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
 
 trait BaseStandaloneLarupload
 {
@@ -13,7 +14,7 @@ trait BaseStandaloneLarupload
         $this->internalFunctionIsCallable = true;
 
         $this->file = $file;
-        $this->type = $this->getFileType($file);
+        $this->type = GuessLaruploadFileTypeAction::make($file)();
         $this->cover = $cover;
 
         $this->clean($this->id);

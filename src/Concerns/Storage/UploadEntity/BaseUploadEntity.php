@@ -31,7 +31,6 @@ trait BaseUploadEntity
         $this->preserveFiles = $config['preserve-files'];
         $this->ffmpegQueue = $config['ffmpeg']['queue'];
         $this->ffmpegMaxQueueNum = $config['ffmpeg']['max-queue-num'];
-        $this->ffmpegCaptureFrame = $config['ffmpeg']['capture-frame'];
     }
 
     public static function make(string $name, LaruploadMode $mode = LaruploadMode::HEAVY): UploadEntities

@@ -5,6 +5,8 @@ namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\Actions\GenerateCoverFromFileAction;
+use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
 use Mostafaznv\Larupload\Actions\SetFileNameAction;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
@@ -52,11 +54,18 @@ trait CoverAttachment
         if (isset($this->cover) and $this->cover == LARUPLOAD_NULL) {
             $this->deleteCover();
         }
-        else if ($this->fileIsSetAndHasValue($this->cover) and $this->isImage($this->cover)) {
+        else if ($this->fileIsSetAndHasValue($this->cover) and GuessLaruploadFileTypeAction::make($this->cover)->isImage()) {
             $this->uploadCover($path);
         }
-        else {
-            $this->generateCoverFromOriginalFile($path);
+        else if ($this->generateCover) {
+            $this->output = GenerateCoverFromFileAction::make(
+                file: $this->file,
+                disk: $this->disk,
+                style: $this->coverStyle,
+                withDominantColor: $this->dominantColor,
+                imageProcessingLibrary: $this->imageProcessingLibrary,
+                output: $this->output
+            )($path);
         }
     }
 
@@ -84,43 +93,6 @@ trait CoverAttachment
             if ($this->type != LaruploadFileType::IMAGE) {
                 $this->output['dominant_color'] = $this->dominantColor ? $this->img($this->cover)->getDominantColor() : null;
             }
-        }
-    }
-
-    private function generateCoverFromOriginalFile(string $path): void
-    {
-        if (!$this->generateCover) {
-            return;
-        }
-
-        Storage::disk($this->disk)->makeDirectory($path);
-
-        $fileName = pathinfo($this->output['name'], PATHINFO_FILENAME);
-        $format = $this->type == LaruploadFileType::IMAGE ? ($this->output['format'] == 'svg' ? 'png' : $this->output['format']) : 'jpg';
-        $name = "$fileName.$format";
-        $saveTo = "$path/$name";
-
-        switch ($this->type) {
-            case LaruploadFileType::VIDEO:
-                Storage::disk($this->disk)->makeDirectory($path);
-
-                $color = $this->ffmpeg()->capture($this->ffmpegCaptureFrame, $this->coverStyle, $saveTo, $this->dominantColor);
-
-                $this->output['cover'] = $name;
-                $this->output['dominant_color'] = $color;
-
-                break;
-
-            case LaruploadFileType::IMAGE:
-                Storage::disk($this->disk)->makeDirectory($path);
-
-                $result = $this->img($this->file)->resize($saveTo, $this->coverStyle);
-
-                if ($result) {
-                    $this->output['cover'] = $name;
-                }
-
-                break;
         }
     }
 }

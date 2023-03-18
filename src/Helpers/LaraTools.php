@@ -3,60 +3,10 @@
 namespace Mostafaznv\Larupload\Helpers;
 
 use Illuminate\Http\UploadedFile;
-use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 trait LaraTools
 {
-    /**
-     * Get file type
-     *
-     * @param UploadedFile $file
-     * @return LaruploadFileType|null
-     */
-    protected function getFileType(UploadedFile $file): ?LaruploadFileType
-    {
-        if ($file->isValid()) {
-            $mime = $file->getMimeType();
-
-            return $this->mimeToType($mime);
-        }
-
-        return null;
-    }
-
-    /**
-     * Convert mimetype to human-readable type
-     *
-     * @param string|null $mime
-     * @return LaruploadFileType
-     */
-    protected function mimeToType(string $mime = null): LaruploadFileType
-    {
-        if (str_contains($mime, 'image/')) {
-            return LaruploadFileType::IMAGE;
-        }
-        else if (str_contains($mime, 'video/')) {
-            return LaruploadFileType::VIDEO;
-        }
-        else if (str_contains($mime, 'audio/')) {
-            return LaruploadFileType::AUDIO;
-        }
-        else if ($mime == 'application/pdf') {
-            return LaruploadFileType::PDF;
-        }
-        else if ($mime == 'application/zip' or $mime == 'application/x-rar-compressed') {
-            return LaruploadFileType::COMPRESSED;
-        }
-
-        return LaruploadFileType::FILE;
-    }
-
-    protected function isImage(UploadedFile $file): bool
-    {
-        return $this->mimeToType($file->getMimeType()) === LaruploadFileType::IMAGE;
-    }
-
     /**
      * Path Helper to generate relative path string
      *

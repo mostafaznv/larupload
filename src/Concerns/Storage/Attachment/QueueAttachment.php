@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
 use Mostafaznv\Larupload\Larupload;
 
@@ -24,7 +25,7 @@ trait QueueAttachment
         $path = Storage::disk($driverIsLocal ? $this->disk : $this->localDisk)->path("$path/{$this->output['name']}");
 
         $this->file = new UploadedFile($path, $this->output['name'], null, null, true);
-        $this->type = $this->getFileType($this->file);
+        $this->type = GuessLaruploadFileTypeAction::make($this->file)();
 
         $this->handleVideoStyles($this->id);
 

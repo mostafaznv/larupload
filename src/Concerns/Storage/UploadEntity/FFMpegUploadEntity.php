@@ -23,11 +23,6 @@ trait FFMpegUploadEntity
      */
     protected int $ffmpegMaxQueueNum;
 
-    /**
-     * Specify the time in seconds to capture a frame from the video.
-     */
-    protected mixed $ffmpegCaptureFrame;
-
 
     protected function ffmpeg(UploadedFile $file = null): FFMpeg
     {

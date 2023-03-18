@@ -37,9 +37,9 @@ trait UploadEntityStyle
     /**
      * Cover style
      *
-     * @var ImageStyle|null
+     * @var ImageStyle
      */
-    protected ?ImageStyle $coverStyle = null;
+    protected ImageStyle $coverStyle;
 
 
     public function image(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::AUTO): UploadEntities
