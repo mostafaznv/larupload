@@ -14,7 +14,7 @@ trait BaseStandaloneLarupload
         $this->internalFunctionIsCallable = true;
 
         $this->file = $file;
-        $this->type = GuessLaruploadFileTypeAction::make($file)();
+        $this->type = GuessLaruploadFileTypeAction::make($file)->calc();
         $this->cover = $cover;
 
         $this->clean($this->id);
