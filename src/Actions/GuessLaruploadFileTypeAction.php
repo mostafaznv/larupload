@@ -15,7 +15,7 @@ class GuessLaruploadFileTypeAction
     }
 
 
-    public function __invoke(): ?LaruploadFileType
+    public function calc(): ?LaruploadFileType
     {
         if ($this->file->isValid()) {
             $mime = $this->file->getMimeType();

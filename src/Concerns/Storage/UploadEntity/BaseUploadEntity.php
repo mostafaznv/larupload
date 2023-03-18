@@ -83,4 +83,25 @@ trait BaseUploadEntity
 
         return $output;
     }
+
+    /**
+     * Path Helper to generate relative path string
+     *
+     * @param int $id
+     * @param string|null $folder
+     * @return string
+     */
+    protected function getBasePath(int $id, string $folder = null): string
+    {
+        $path = $this->mode == LaruploadMode::STANDALONE ? "$this->folder/$this->nameKebab" : "$this->folder/$id/$this->nameKebab";
+        $path = trim($path, '/');
+
+        if ($folder) {
+            $folder = strtolower(str_replace('_', '-', trim($folder)));
+
+            return "$path/$folder";
+        }
+
+        return $path;
+    }
 }

@@ -145,3 +145,16 @@ if (!function_exists('larupload_finalize_save')) {
         }
     }
 }
+
+if (!function_exists('file_has_value')) {
+    /**
+     * Check file is set and has value
+     *
+     * @param mixed $file
+     * @return bool
+     */
+    function file_has_value(mixed $file): bool
+    {
+        return $file and ($file instanceof \Illuminate\Http\UploadedFile);
+    }
+}

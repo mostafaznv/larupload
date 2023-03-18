@@ -11,15 +11,12 @@ use JetBrains\PhpStorm\ArrayShape;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
-use Mostafaznv\Larupload\Helpers\LaraTools;
 use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
 
 
 class Image
 {
-    use LaraTools;
-
     protected UploadedFile $file;
 
     protected InterventionImage $image;

@@ -11,7 +11,6 @@ use Mostafaznv\Larupload\Concerns\Storage\UploadEntity\UploadEntityName;
 use Mostafaznv\Larupload\Concerns\Storage\UploadEntity\UploadEntityProperties;
 use Mostafaznv\Larupload\Concerns\Storage\UploadEntity\UploadEntityResponse;
 use Mostafaznv\Larupload\Concerns\Storage\UploadEntity\UploadEntityStyle;
-use Mostafaznv\Larupload\Helpers\LaraTools;
 
 class UploadEntities
 {
@@ -23,5 +22,4 @@ class UploadEntities
     use ImageUploadEntity;
     use FFMpegUploadEntity;
     use UploadEntityResponse;
-    use LaraTools;
 }

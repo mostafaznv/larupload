@@ -25,7 +25,7 @@ trait QueueAttachment
         $path = Storage::disk($driverIsLocal ? $this->disk : $this->localDisk)->path("$path/{$this->output['name']}");
 
         $this->file = new UploadedFile($path, $this->output['name'], null, null, true);
-        $this->type = GuessLaruploadFileTypeAction::make($this->file)();
+        $this->type = GuessLaruploadFileTypeAction::make($this->file)->calc();
 
         $this->handleVideoStyles($this->id);
 

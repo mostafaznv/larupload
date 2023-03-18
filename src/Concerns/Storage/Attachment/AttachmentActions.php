@@ -17,8 +17,8 @@ trait AttachmentActions
      */
     public function attach(mixed $file, ?UploadedFile $cover = null): bool
     {
-        $fileIsAttachable = ($this->fileIsSetAndHasValue($file) or $file == LARUPLOAD_NULL);
-        $coverIsAttachable = ($this->fileIsSetAndHasValue($cover) or $cover == null);
+        $fileIsAttachable = (file_has_value($file) or $file == LARUPLOAD_NULL);
+        $coverIsAttachable = (file_has_value($cover) or $cover == null);
 
         if ($fileIsAttachable and $coverIsAttachable) {
             $this->file = $file;
@@ -26,7 +26,7 @@ trait AttachmentActions
 
             if ($file != LARUPLOAD_NULL) {
                 $this->cover = $cover;
-                $this->type = GuessLaruploadFileTypeAction::make($file)();
+                $this->type = GuessLaruploadFileTypeAction::make($file)->calc();
             }
 
             return true;

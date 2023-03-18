@@ -17,13 +17,10 @@ use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
-use Mostafaznv\Larupload\Helpers\LaraTools;
 use Mostafaznv\Larupload\Storage\Image;
 
 class FFMpeg
 {
-    use LaraTools;
-
     private UploadedFile $file;
 
     private string $disk;
