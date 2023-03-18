@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\Actions\SetFileNameAction;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
 
@@ -72,7 +73,7 @@ trait CoverAttachment
     {
         Storage::disk($this->disk)->makeDirectory($path);
 
-        $name = $this->setFileName($this->cover);
+        $name = SetFileNameAction::make($this->cover, $this->namingMethod, $this->lang)->generate();
         $saveTo = "$path/$name";
 
         $result = $this->img($this->cover)->resize($saveTo, $this->coverStyle);

@@ -51,33 +51,6 @@ trait UploadEntityName
         return $this;
     }
 
-    protected function setFileName(UploadedFile $file = null): string
-    {
-        $file = $file ?? $this->file;
-        $format = $file->getClientOriginalExtension();
-
-        switch ($this->namingMethod) {
-            case LaruploadNamingMethod::HASH_FILE:
-                $name = hash_file('md5', $file->getRealPath());
-                break;
-
-            case LaruploadNamingMethod::TIME:
-                $name = time();
-                break;
-
-            default:
-                $name = $file->getClientOriginalName();
-                $name = pathinfo($name, PATHINFO_FILENAME);
-                $num = rand(0, 9999);
-
-                $slug = Slug::make($this->lang)->generate($name);
-                $name = "$slug-$num";
-                break;
-        }
-
-        return "$name.$format";
-    }
-
     /**
      * Check whether we should convert the name to camel-case style.
      */

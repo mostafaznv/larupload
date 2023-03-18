@@ -4,6 +4,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\Actions\SetFileNameAction;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Larupload;
@@ -12,7 +13,9 @@ trait BaseAttachment
 {
     protected function setBasicDetails(): void
     {
-        $this->output['name'] = $this->setFileName();
+        $fileName = SetFileNameAction::make($this->file, $this->namingMethod, $this->lang)->generate();
+
+        $this->output['name'] = $fileName;
         $this->output['format'] = $this->file->getClientOriginalExtension();
         $this->output['size'] = $this->file->getSize();
         $this->output['type'] = $this->type->name;
