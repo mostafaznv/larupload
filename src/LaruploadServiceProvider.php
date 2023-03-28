@@ -13,20 +13,13 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - calculate width/height and dominant color for webp images
     // TODO - upload with create() function
 
-    // TODO - update m3u8 catalog
     // TODO - configurable threads
     // TODO - configurable video format for video-style (X264, Webm and ...)
     // TODO - ffmpeg logger
     // TODO - DTO for all data types
-    // TODO - PEST
     // TODO - configurable video format
-    // TODO - import php-ffmpeg package into the project [NOTICE: wait for a stable version]
-    // TODO - add an ability to custom ffmpeg scripts (video and stream)
-    // TODO - check possibility of change video ffmpeg script to streaming one (none crop mode).
 
     // TODO - dpi for resized/cropped images and videos
-    // TODO - test s3 and sftp
-    // TODO - fix documentation
     // TODO - mix with download php-x-sendfile
     // TODO - add some comments to help IDEs to show attachment functions
 

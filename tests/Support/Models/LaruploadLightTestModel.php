@@ -1,6 +1,6 @@
 <?php
 
-namespace Mostafaznv\Larupload\Test\Models;
+namespace Mostafaznv\Larupload\Test\Support\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
@@ -9,16 +9,16 @@ use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
 
-class LaruploadUploadHeavy extends Model
+class LaruploadLightTestModel extends Model
 {
     use Larupload;
 
-    protected $table = 'upload_heavy';
+    protected $table = 'upload_light';
 
     public function attachments(): array
     {
         return [
-            Attachment::make('main_file', LaruploadMode::HEAVY)
+            Attachment::make('main_file', LaruploadMode::LIGHT)
                 ->disk('local')
                 ->namingMethod(LaruploadNamingMethod::HASH_FILE)
                 ->withMeta(true)

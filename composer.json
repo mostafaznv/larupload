@@ -47,7 +47,9 @@
     },
     "require-dev": {
         "orchestra/testbench": "^7.4|^8.0",
-        "phpunit/phpunit": "^9.5|^10.0"
+        "pestphp/pest": "^2.2",
+        "pestphp/pest-plugin-laravel": "^2.0",
+        "spatie/pest-plugin-test-time": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -60,6 +62,16 @@
     "autoload-dev": {
         "psr-4": {
             "Mostafaznv\\Larupload\\Test\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test:ci": "vendor/bin/pest --coverage --coverage-text --coverage-clover=coverage.xml"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
         }
     },
     "extra": {

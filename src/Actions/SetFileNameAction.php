@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Actions;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Helpers\Slug;
 
@@ -26,7 +27,7 @@ class SetFileNameAction
 
         $name = match ($this->namingMethod) {
             LaruploadNamingMethod::HASH_FILE => $this->generateHashFile(),
-            LaruploadNamingMethod::TIME      => time(),
+            LaruploadNamingMethod::TIME      => Carbon::now()->unix(),
             default                          => $this->generateSlugFromFile(),
         };
 

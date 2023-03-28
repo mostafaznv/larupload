@@ -1,0 +1,82 @@
+<?php
+
+namespace Mostafaznv\Larupload\Test\Support;
+
+class LaruploadTestConsts
+{
+    public const HEX_REGEX = '/^#[0-9A-F]{6}$/i';
+
+    public const IMAGE_DETAILS = [
+        'cover' => [
+            'width'  => 500,
+            'height' => 500,
+        ],
+
+        'jpg' => [
+            'size'      => 35700,
+            'width'     => 1077,
+            'height'    => 791,
+            'mime_type' => 'image/jpeg',
+            'color'     => '#f4c00a',
+            'name'      => [
+                'original' => 'image.jpg',
+                'hash'     => '9e55cf595703eaa109025073caed65a4.jpg',
+                'slug'     => 'image',
+            ]
+        ],
+
+        'jpg-fa' => [
+            'size'      => 35700,
+            'width'     => 1077,
+            'height'    => 791,
+            'mime_type' => 'image/jpeg',
+            'color'     => '#f4c00a',
+            'name'      => [
+                'hash' => '9e55cf595703eaa109025073caed65a4.jpg',
+                'slug' => 'تیم-بارسلونا',
+            ]
+        ],
+
+        'png' => [
+            'size'      => 44613,
+            'width'     => 1077,
+            'height'    => 791,
+            'mime_type' => 'image/png',
+            'color'     => '#212e4b',
+            'name'      => [
+                'hash' => 'ac0c1777d6e82e59f45cf4b155079af4.png',
+            ]
+        ],
+
+        'svg' => [
+            'size'      => 11819,
+            'width'     => 1077,
+            'height'    => 791,
+            'mime_type' => 'image/svg',
+            'color'     => '#212d4b',
+            'name'      => [
+                'hash' => '341a0d4d58d60c0595586725e8737d8c.svg',
+            ]
+        ],
+    ];
+
+    public const AUDIO_DETAILS = [
+        'name'      => 'cd3eb553923c076068f8a7057fcd7113.mp3',
+        'size'      => 470173,
+        'mime_type' => 'audio/mpeg',
+        'duration'  => 67,
+    ];
+
+    public const VIDEO_DETAILS = [
+        'name'      => 'a3ac7ddabb263c2d00b73e8177d15c8d.mp4',
+        'size'      => 383631,
+        'mime_type' => 'video/mp4',
+        'width'     => 560,
+        'height'    => 320,
+        'duration'  => 5,
+        'color'     => '#754625',
+        'format'    => 'mp4',
+        'cover'     => 'a3ac7ddabb263c2d00b73e8177d15c8d.jpg'
+
+    ];
+}

@@ -1,6 +1,6 @@
 <?php
 
-namespace Mostafaznv\Larupload\Test\Models;
+namespace Mostafaznv\Larupload\Test\Support\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,7 +9,7 @@ use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
 
-class LaruploadUploadSoftDelete extends Model
+class LaruploadSoftDeleteTestModel extends Model
 {
     use Larupload, SoftDeletes;
 
