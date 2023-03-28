@@ -11,6 +11,7 @@ jobs:
         os: [ubuntu-latest]
         php: [8.1, 8.2]
         laravel: [9.*, 10.*]
+        coverage: [none]
         dependency-version: [prefer-stable]
         include:
           - laravel: 10.*
@@ -43,9 +44,10 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, sqlite3, pdo_sqlite, bcmath, fileinfo, gd, imagick
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, sqlite3, pdo_sqlite, bcmath, fileinfo, gd, imagick, xdebug
           tools: composer:v2
-          coverage: none
+          ini-values: xdebug.mode="coverage"
+          coverage: xdebug
 
       - name: Fix Imagick Policy
         run: sudo sed -i 's/none/read|write/g' /etc/ImageMagick-6/policy.xml
