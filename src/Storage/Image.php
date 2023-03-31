@@ -117,9 +117,10 @@ class Image
             }
 
             if ($path) {
-                $color = ColorThief::getColor($path);
+                $color = ColorThief::getColor(sourceImage: $path, quality: 10, outputFormat: 'hex');
+
                 if ($color) {
-                    return $this->rgbToHex($color);
+                    return $color;
                 }
             }
         }
@@ -218,37 +219,5 @@ class Image
     private function resizeExact(int $width, int $height): void
     {
         $this->image->resize($width, $height);
-    }
-
-    /**
-     * Convert rgb to hex string (#001100).
-     */
-    private function rgbToHex($rgb, string $prefix = '#'): string
-    {
-        return $prefix . str_pad(dechex($this->toInt($rgb)), 6, '0', STR_PAD_LEFT);
-    }
-
-    /**
-     * Convert rgb array to rgb string
-     */
-    private function toRgbString($rgb, string $prefix = 'rgb'): ?string
-    {
-        if (is_array($rgb) and isset($rgb[0]) and isset($rgb[1]) and isset($rgb[2])) {
-            return "$prefix($rgb[0],$rgb[1],$rgb[2])";
-        }
-
-        return null;
-    }
-
-    /**
-     * Convert rgb array to int
-     */
-    private function toInt($rgb): ?int
-    {
-        if (is_array($rgb) and isset($rgb[0]) and isset($rgb[1]) and isset($rgb[2])) {
-            return ($rgb[0] << 16) | ($rgb[1] << 8) | $rgb[2];
-        }
-
-        return null;
     }
 }
