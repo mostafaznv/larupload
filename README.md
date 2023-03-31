@@ -588,6 +588,16 @@ In larupload, we’ve put a lot of effort into making the package more customize
     ],
     ```
     
+- #### FFMPEG Log Channel
+    Set log channel for ffmpeg process
+
+    Example:
+    ```php
+    'ffmpeg' => [
+        'log-channel' => env('LOG_CHANNEL', 'stack'),
+    ],
+    ```
+    
 - #### FFMPEG Timeout
     Set timeout to control ffmpeg max execution time.
     

@@ -12,12 +12,14 @@ use FFMpeg\Format\Video\X264;
 use FFMpeg\Media\Audio;
 use FFMpeg\Media\Video;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Mostafaznv\Larupload\DTOs\FFMpeg\FFMpegMeta;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Storage\Image;
+use Psr\Log\LoggerInterface;
 
 class FFMpeg
 {
@@ -54,7 +56,7 @@ class FFMpeg
             'ffprobe.binaries' => $config['ffprobe-binaries'],
             'timeout'          => $config['timeout'],
             'ffmpeg.threads'   => $config['threads'] ?? 12,
-        ]);
+        ], $this->logChannel());
 
         $this->media = $ffmpeg->open($file->getRealPath());
     }
@@ -209,6 +211,17 @@ class FFMpeg
         }
 
         return $ffmpeg;
+    }
+
+    private function logChannel(): ?LoggerInterface
+    {
+        $channel = config('larupload.ffmpeg.log-channel');
+
+        if ($channel === false) {
+            return null;
+        }
+
+        return Log::channel($channel ?: config('logging.default'));
     }
 
     private function dimension(VideoStyle|ImageStyle|StreamStyle $style): Dimension
