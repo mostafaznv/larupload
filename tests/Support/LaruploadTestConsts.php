@@ -55,7 +55,7 @@ class LaruploadTestConsts
             'mime_type' => 'image/webp',
             'color'     => '#242e48',
             'name'      => [
-                'hash' => '1489c881d5033d47aaa7462ec12a6432.png',
+                'hash' => '1489c881d5033d47aaa7462ec12a6432.webp',
             ]
         ],
 
@@ -63,7 +63,7 @@ class LaruploadTestConsts
             'size'      => 11819,
             'width'     => 1077,
             'height'    => 791,
-            'mime_type' => 'image/svg',
+            'mime_type' => 'image/svg+xml',
             'color'     => '#212d4b',
             'name'      => [
                 'hash' => '341a0d4d58d60c0595586725e8737d8c.svg',

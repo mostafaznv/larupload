@@ -50,6 +50,33 @@ it('will calculate dimension of different styles correctly', function(LaruploadH
         ->and($auto->getSize()->getHeight())->toBe(220);
 })->with('models');
 
+it('will calculate dimension of different styles correctly [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model = save($model, webp());
+
+    $cover = urlToImage($model->main_file->url('cover'));
+    $small = urlToImage($model->main_file->url('small'));
+    $medium = urlToImage($model->main_file->url('medium'));
+    $landscape = urlToImage($model->main_file->url('landscape'));
+    $portrait = urlToImage($model->main_file->url('portrait'));
+    $exact = urlToImage($model->main_file->url('exact'));
+    $auto = urlToImage($model->main_file->url('auto'));
+
+    expect($cover->getSize()->getWidth())->toBe(500)
+        ->and($cover->getSize()->getHeight())->toBe(500)
+        ->and($small->getSize()->getWidth())->toBe(200)
+        ->and($small->getSize()->getHeight())->toBe(200)
+        ->and($medium->getSize()->getWidth())->toBe(800)
+        ->and($medium->getSize()->getHeight())->toBe(588)
+        ->and($landscape->getSize()->getWidth())->toBe(400)
+        ->and($landscape->getSize()->getHeight())->toBe(294)
+        ->and($portrait->getSize()->getWidth())->toBe(545)
+        ->and($portrait->getSize()->getHeight())->toBe(400)
+        ->and($exact->getSize()->getWidth())->toBe(300)
+        ->and($exact->getSize()->getHeight())->toBe(190)
+        ->and($auto->getSize()->getWidth())->toBe(300)
+        ->and($auto->getSize()->getHeight())->toBe(220);
+})->with('models');
+
 it('will calculate image width correctly in standalone mode', function() {
     $upload = Larupload::init('uploader')->upload(jpg());
 
