@@ -564,6 +564,9 @@ In larupload, we’ve put a lot of effort into making the package more customize
     ],
     ```
     
+- #### FFMPEG Threads
+  Specify the number of threads that FFMpeg should use
+    
 - #### FFMPEG Capture Frame
     Set Capture frame in second
     

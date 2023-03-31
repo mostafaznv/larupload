@@ -53,7 +53,7 @@ class FFMpeg
             'ffmpeg.binaries'  => $config['ffmpeg-binaries'],
             'ffprobe.binaries' => $config['ffprobe-binaries'],
             'timeout'          => $config['timeout'],
-            'ffmpeg.threads'   => 12, // todo: make it configurable
+            'ffmpeg.threads'   => $config['threads'] ?? 12,
         ]);
 
         $this->media = $ffmpeg->open($file->getRealPath());
