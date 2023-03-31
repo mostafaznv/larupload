@@ -15,6 +15,10 @@ class LaruploadLightTestModel extends Model
 
     protected $table = 'upload_light';
 
+    protected $fillable = [
+        'main_file'
+    ];
+
     public function attachments(): array
     {
         return [

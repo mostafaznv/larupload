@@ -251,3 +251,30 @@ it('will upload video in standalone mode', function() use ($metaKeys) {
         ->toHaveProperty('duration', $details['duration']);
 
 });
+
+it('will upload using create method of model', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($metaKeys) {
+    $model = $model::class;
+    $model = $model::create([
+        'main_file' => jpg(),
+    ]);
+
+    $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
+
+    expect($model->main_file->url())
+        ->toBeString()
+        ->toBeTruthy()
+        ->toBeExists()
+        ->and($model->main_file->meta())
+        ->toBeObject()
+        ->toHaveKeys($metaKeys)
+        ->toHaveProperty('name', $details['name']['hash'])
+        ->toHaveProperty('size', $details['size'])
+        ->toHaveProperty('type', LaruploadFileType::IMAGE->name)
+        ->toHaveProperty('mime_type', $details['mime_type'])
+        ->toHaveProperty('format', 'jpg')
+        ->toHaveProperty('width', $details['width'])
+        ->toHaveProperty('height', $details['height'])
+        ->toHaveProperty('dominant_color', $details['color'])
+        ->toHaveProperty('duration', null);
+
+})->with('models');

@@ -15,6 +15,10 @@ class LaruploadHeavyTestModel extends Model
 
     protected $table = 'upload_heavy';
 
+    protected $fillable = [
+        'main_file'
+    ];
+
     public function attachments(): array
     {
         return [

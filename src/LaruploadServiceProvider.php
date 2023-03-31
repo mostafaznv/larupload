@@ -10,7 +10,6 @@ use Mostafaznv\Larupload\Enums\LaruploadMode;
 class LaruploadServiceProvider extends ServiceProvider
 {
     // TODO - use hashids/hashids instead of actual model id in file path (path/model/id/file ==> path/model/hashid/file)
-    // TODO - upload with create() function
 
     // TODO - configurable threads
     // TODO - configurable video format for video-style (X264, Webm and ...)
