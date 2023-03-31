@@ -48,6 +48,17 @@ class LaruploadTestConsts
             ]
         ],
 
+        'webp' => [
+            'size'      => 19518,
+            'width'     => 1077,
+            'height'    => 791,
+            'mime_type' => 'image/webp',
+            'color'     => '#242e48',
+            'name'      => [
+                'hash' => '1489c881d5033d47aaa7462ec12a6432.png',
+            ]
+        ],
+
         'svg' => [
             'size'      => 11819,
             'width'     => 1077,

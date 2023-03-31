@@ -22,6 +22,14 @@ it('will calculate dominant color correctly [png]', function(LaruploadHeavyTestM
 
 })->with('models');
 
+it('will calculate dominant color correctly [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model = save($model, webp());
+
+    expect($model->main_file->meta('dominant_color'))
+        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['webp']['color']);
+
+})->with('models');
+
 it('will calculate dominant color correctly [svg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $this->app['config']->set('larupload.image-processing-library', LaruploadImageLibrary::IMAGICK);
 

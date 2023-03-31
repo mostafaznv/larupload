@@ -16,12 +16,11 @@ class LaruploadServiceProvider extends ServiceProvider
     // TODO - configurable threads
     // TODO - configurable video format for video-style (X264, Webm and ...)
     // TODO - ffmpeg logger
-    // TODO - DTO for all data types
     // TODO - configurable video format
 
     // TODO - dpi for resized/cropped images and videos
-    // TODO - mix with download php-x-sendfile
     // TODO - add some comments to help IDEs to show attachment functions
+    // TODO - 100% test coverage
 
     public function boot()
     {

@@ -121,6 +121,11 @@ function png(): UploadedFile
     return new UploadedFile(realpath(__DIR__ . '/Support/Data/image.png'), 'image.png', 'image/png', null, true);
 }
 
+function webp(): UploadedFile
+{
+    return new UploadedFile(realpath(__DIR__ . '/Support/Data/image.webp'), 'image.webp', 'image/webp', null, true);
+}
+
 function svg(): UploadedFile
 {
     return new UploadedFile(realpath(__DIR__ . '/Support/Data/image.svg'), 'image.svg', 'image/svg+xml', null, true);
