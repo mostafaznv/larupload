@@ -72,7 +72,7 @@ function urlToVideo(string $url): FFMpegMeta
     $disk = config('larupload.disk');
 
     $file = new UploadedFile($path, $fileName, null, null, true);
-    $ffmpeg = new FFMpeg($file, $disk);
+    $ffmpeg = new FFMpeg($file, $disk, 10);
 
     return $ffmpeg->getMeta();
 }

@@ -544,6 +544,9 @@ In larupload, we’ve put a lot of effort into making the package more customize
     With this feature, you can extract the dominant color of the image or video.
     > Note that if you disable cover generating, the color extraction of the video will be automatically disabled.
 
+  - #### Dominant Color Quality
+    You can set quality to adjust the calculation accuracy of the dominant color. 1 is the highest quality settings, 10 is the default. But be aware that there is a trade-off between quality and speed/memory consumption! If the quality settings are too high (close to 1) relative to the image size (pixel counts), it may **exceed the memory limit** set in the PHP configuration (and computation will be slow).
+
 - #### Keep old files
     By enabling this feature, `prevent` old files from `deleting` while `updating` the database record.
 
@@ -655,6 +658,7 @@ class Media extends Model
                 ->imageProcessingLibrary(LaruploadImageLibrary::GD)
                 ->generateCover(false)
                 ->dominantColor(true)
+                ->dominantColorQuality(5)
                 ->preserveFiles(true)
                 ->coverStyle('cover', 400, 400, LaruploadMediaStyle::CROP)
                 ->image('thumbnail', 250, 250, LaruploadMediaStyle::AUTO)

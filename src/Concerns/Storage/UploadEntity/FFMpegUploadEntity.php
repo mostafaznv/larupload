@@ -27,7 +27,7 @@ trait FFMpegUploadEntity
     protected function ffmpeg(UploadedFile $file = null): FFMpeg
     {
         if (!isset($this->ffmpeg) or $file) {
-            $this->ffmpeg = new FFMpeg($this->file, $this->disk);
+            $this->ffmpeg = new FFMpeg($this->file, $this->disk, $this->dominantColorQuality);
         }
 
         return $this->ffmpeg;

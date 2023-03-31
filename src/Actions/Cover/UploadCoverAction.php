@@ -50,7 +50,8 @@ class UploadCoverAction
         return new Image(
             file: $this->cover,
             disk: $this->data->disk,
-            library: $this->data->imageProcessingLibrary
+            library: $this->data->imageProcessingLibrary,
+            dominantColorQuality: $this->data->dominantColorQuality
         );
     }
 }

@@ -17,12 +17,13 @@ class CoverActionData
         public readonly ?LaruploadFileType    $type,
         public readonly bool                  $generateCover,
         public readonly bool                  $withDominantColor,
+        public readonly int                   $dominantColorQuality,
         public readonly LaruploadImageLibrary $imageProcessingLibrary,
         public array                          $output
     ) {}
 
-    public static function make(string $disk, LaruploadNamingMethod $namingMethod, string $lang, ImageStyle $style, ?LaruploadFileType $type, bool $generateCover, bool $withDominantColor, LaruploadImageLibrary $imageProcessingLibrary, array $output): static
+    public static function make(string $disk, LaruploadNamingMethod $namingMethod, string $lang, ImageStyle $style, ?LaruploadFileType $type, bool $generateCover, bool $withDominantColor, int $dominantColorQuality, LaruploadImageLibrary $imageProcessingLibrary, array $output): static
     {
-        return new static($disk, $namingMethod, $lang, $style, $type, $generateCover, $withDominantColor, $imageProcessingLibrary, $output);
+        return new static($disk, $namingMethod, $lang, $style, $type, $generateCover, $withDominantColor, $dominantColorQuality, $imageProcessingLibrary, $output);
     }
 }

@@ -66,3 +66,14 @@ it('will calculate dominant color correctly [svg] in standalone mode', function(
         ->toMatch(LaruploadTestConsts::HEX_REGEX);
 
 });
+
+it('will calculate dominant color with high quality', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    config()->set('larupload.dominant-color-quality', 1);
+
+    $model = $model::class;
+    $model = save(new $model, webp());
+
+    expect($model->main_file->meta('dominant_color'))
+        ->toBe('#f6c009');
+
+})->with('models');

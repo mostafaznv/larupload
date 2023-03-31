@@ -55,6 +55,7 @@ trait CoverAttachment
             type: $this->type,
             generateCover: $this->generateCover,
             withDominantColor: $this->dominantColor,
+            dominantColorQuality: $this->dominantColorQuality,
             imageProcessingLibrary: $this->imageProcessingLibrary,
             output: $this->output
         );

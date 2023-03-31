@@ -82,7 +82,7 @@ class GenerateCoverFromFileAction
     {
         $this->ffmpegCaptureFrame = config('larupload.ffmpeg.capture-frame');
 
-        return new FFMpeg($this->file, $this->data->disk);
+        return new FFMpeg($this->file, $this->data->disk, $this->data->dominantColorQuality);
     }
 
     private function img(): Image
@@ -90,7 +90,8 @@ class GenerateCoverFromFileAction
         return new Image(
             file: $this->file,
             disk: $this->data->disk,
-            library: $this->data->imageProcessingLibrary
+            library: $this->data->imageProcessingLibrary,
+            dominantColorQuality: $this->data->dominantColorQuality
         );
     }
 }

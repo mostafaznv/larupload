@@ -27,6 +27,7 @@ trait BaseUploadEntity
         $this->generateCover = $config['generate-cover'];
         $this->coverStyle = $config['cover-style'];
         $this->dominantColor = $config['dominant-color'];
+        $this->dominantColorQuality = $config['dominant-color-quality'];
         $this->keepOldFiles = $config['keep-old-files'];
         $this->preserveFiles = $config['preserve-files'];
         $this->ffmpegQueue = $config['ffmpeg']['queue'];

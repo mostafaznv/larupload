@@ -54,6 +54,13 @@ trait UploadEntityProperties
     protected bool $dominantColor;
 
     /**
+     * Dominant color quality
+     *
+     * @var int
+     */
+    protected int $dominantColorQuality = 10;
+
+    /**
      * Specify whether Larupload should Keep old files or not
      */
     protected bool $keepOldFiles;
@@ -97,6 +104,13 @@ trait UploadEntityProperties
     public function dominantColor(bool $status): UploadEntities
     {
         $this->dominantColor = $status;
+
+        return $this;
+    }
+
+    public function dominantColorQuality(int $quality): UploadEntities
+    {
+        $this->dominantColorQuality = $quality;
 
         return $this;
     }

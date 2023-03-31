@@ -23,7 +23,8 @@ trait ImageUploadEntity
         $this->image = new Image(
             file: $file,
             disk: $this->disk,
-            library: $this->imageProcessingLibrary
+            library: $this->imageProcessingLibrary,
+            dominantColorQuality: $this->dominantColorQuality
         );
 
         return $this->image;

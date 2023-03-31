@@ -17,20 +17,23 @@ use Illuminate\Support\Facades\Storage;
 
 class Image
 {
-    protected UploadedFile $file;
+    protected readonly UploadedFile $file;
 
-    protected InterventionImage $image;
+    protected readonly InterventionImage $image;
 
-    protected string $disk;
+    protected readonly string $disk;
 
-    protected bool $driverIsLocal;
+    protected readonly bool $driverIsLocal;
+
+    protected readonly int $dominantColorQuality;
 
 
-    public function __construct(UploadedFile $file, string $disk, LaruploadImageLibrary $library)
+    public function __construct(UploadedFile $file, string $disk, LaruploadImageLibrary $library, int $dominantColorQuality = 10)
     {
         $this->file = $file;
         $this->disk = $disk;
         $this->driverIsLocal = disk_driver_is_local($this->disk);
+        $this->dominantColorQuality = $dominantColorQuality;
 
         $path = $file->getRealPath();
 
@@ -117,7 +120,11 @@ class Image
             }
 
             if ($path) {
-                $color = ColorThief::getColor(sourceImage: $path, quality: 10, outputFormat: 'hex');
+                $color = ColorThief::getColor(
+                    sourceImage: $path,
+                    quality: $this->dominantColorQuality,
+                    outputFormat: 'hex'
+                );
 
                 if ($color) {
                     return $color;

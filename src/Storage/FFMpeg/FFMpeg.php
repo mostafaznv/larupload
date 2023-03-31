@@ -21,9 +21,11 @@ use Mostafaznv\Larupload\Storage\Image;
 
 class FFMpeg
 {
-    private UploadedFile $file;
+    private readonly UploadedFile $file;
 
-    private string $disk;
+    private readonly string $disk;
+
+    private readonly int $dominantColorQuality;
 
     private FFMpegMeta $meta;
 
@@ -39,10 +41,11 @@ class FFMpeg
     private const DEFAULT_SCALE = 850;
 
 
-    public function __construct(UploadedFile $file, string $disk)
+    public function __construct(UploadedFile $file, string $disk, int $dominantColorQuality)
     {
         $this->file = $file;
         $this->disk = $disk;
+        $this->dominantColorQuality = $dominantColorQuality;
 
         $config = config('larupload.ffmpeg');
 
@@ -199,7 +202,7 @@ class FFMpeg
 
     public function clone(bool $withMeta = false): FFMpeg
     {
-        $ffmpeg = new self($this->file, $this->disk);
+        $ffmpeg = new self($this->file, $this->disk, $this->dominantColorQuality);
 
         if ($withMeta) {
             $ffmpeg->setMeta($this->getMeta());
@@ -219,7 +222,7 @@ class FFMpeg
     private function dominantColor($path): ?string
     {
         $file = new UploadedFile($path, basename($path));
-        $image = new Image($file, $this->disk, LaruploadImageLibrary::GD);
+        $image = new Image($file, $this->disk, LaruploadImageLibrary::GD, $this->dominantColorQuality);
 
         return $image->getDominantColor();
     }
