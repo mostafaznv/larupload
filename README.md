@@ -27,6 +27,7 @@ I develop in an open-source journey 🚀, I wish I lived in an environment where
 - Ability to resize/crop photos and videos
 - Ability to create multiple sizes of the videos and images
 - Ability to create HTTP Live Streaming (HLS) from video sources
+- Built-in support for optimizing images
 - Extract the width and height of the image
 - Extract width, height and duration of the video
 - Extract the duration of the audio
@@ -551,7 +552,10 @@ In larupload, we’ve put a lot of effort into making the package more customize
     By enabling this feature, `prevent` old files from `deleting` while `updating` the database record.
 
 - #### Preserve files flag
-    Enabling this feature, `prevent` old files from `being deleted` when the database record is `deleted`. 
+    Enabling this feature, `prevent` old files from `being deleted` when the database record is `deleted`.
+
+- #### Optimize Image
+    Enabling this feature, you can `optimize` the uploaded image using [spatie/image-optimizer](https://github.com/spatie/image-optimizer)
 
 - #### FFMPEG
     If you keep this section empty, larupload will try to find the FFMPEG path using system environment, but you can manually specify the FFMPEG path this way.
@@ -674,6 +678,7 @@ class Media extends Model
                 ->dominantColor(true)
                 ->dominantColorQuality(5)
                 ->preserveFiles(true)
+                ->optimizeImage(true)
                 ->coverStyle('cover', 400, 400, LaruploadMediaStyle::CROP)
                 ->image('thumbnail', 250, 250, LaruploadMediaStyle::AUTO)
                 ->image('crop_mode', 1100, 1100, LaruploadMediaStyle::CROP)

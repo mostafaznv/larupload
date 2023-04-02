@@ -6,6 +6,7 @@ namespace Mostafaznv\Larupload\Concerns\Standalone;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
+use Mostafaznv\Larupload\Actions\OptimizeImageAction;
 
 trait BaseStandaloneLarupload
 {
@@ -13,7 +14,7 @@ trait BaseStandaloneLarupload
     {
         $this->internalFunctionIsCallable = true;
 
-        $this->file = $file;
+        $this->file = $this->optimizeImage ? OptimizeImageAction::make($file)->process() : $file;
         $this->type = GuessLaruploadFileTypeAction::make($file)->calc();
         $this->cover = $cover;
 

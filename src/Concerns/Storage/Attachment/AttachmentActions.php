@@ -5,6 +5,8 @@ namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
+use Mostafaznv\Larupload\Actions\OptimizeImageAction;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 
 trait AttachmentActions
 {
@@ -27,6 +29,10 @@ trait AttachmentActions
             if ($file != LARUPLOAD_NULL) {
                 $this->cover = $cover;
                 $this->type = GuessLaruploadFileTypeAction::make($file)->calc();
+
+                if ($this->type === LaruploadFileType::IMAGE && $this->optimizeImage) {
+                    $this->file = OptimizeImageAction::make($file)->process();
+                }
             }
 
             return true;

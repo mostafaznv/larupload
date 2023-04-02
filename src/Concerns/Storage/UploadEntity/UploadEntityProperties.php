@@ -71,6 +71,11 @@ trait UploadEntityProperties
     protected bool $preserveFiles;
 
     /**
+     * Specify whether Larupload should optimize image or not
+     */
+    protected bool $optimizeImage;
+
+    /**
      * Uploaded flag to prevent infinite loop
      */
     protected bool $uploaded = false;
@@ -123,6 +128,13 @@ trait UploadEntityProperties
     public function preserveFiles(bool $status): UploadEntities
     {
         $this->preserveFiles = $status;
+
+        return $this;
+    }
+
+    public function optimizeImage(bool $status): UploadEntities
+    {
+        $this->optimizeImage = $status;
 
         return $this;
     }

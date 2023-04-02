@@ -30,6 +30,7 @@ trait BaseUploadEntity
         $this->dominantColorQuality = $config['dominant-color-quality'];
         $this->keepOldFiles = $config['keep-old-files'];
         $this->preserveFiles = $config['preserve-files'];
+        $this->optimizeImage = $config['optimize-image']['enable'] ?? false;
         $this->ffmpegQueue = $config['ffmpeg']['queue'];
         $this->ffmpegMaxQueueNum = $config['ffmpeg']['max-queue-num'];
     }

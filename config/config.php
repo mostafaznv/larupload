@@ -288,4 +288,75 @@ return [
 
         'log-channel' => env('LOG_CHANNEL', 'stack'),
     ],
+
+    'optimize-image' => [
+        /*
+        |--------------------------------------------------------------------------
+        | Image Optimizer
+        |--------------------------------------------------------------------------
+        |
+        | You can optimize your uploaded images with this option.
+        |
+        | This package uses spatie/image-optimizer to optimize images.
+        | See: https://github.com/spatie/image-optimizer
+        |
+        */
+
+        'enable' => false,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Image Optimizers
+        |--------------------------------------------------------------------------
+        |
+        | When calling `optimize` the package will automatically determine which optimizers
+        | should run for the given image.
+        |
+        */
+
+        'optimizers' => [
+            \Spatie\ImageOptimizer\Optimizers\Jpegoptim::class => [
+                '-m85',
+                '--strip-all',
+                '--all-progressive',
+            ],
+
+            \Spatie\ImageOptimizer\Optimizers\Pngquant::class => [
+                '--force',
+            ],
+
+            \Spatie\ImageOptimizer\Optimizers\Optipng::class => [
+                '-i0',
+                '-o2',
+                '-quiet',
+            ],
+
+            \Spatie\ImageOptimizer\Optimizers\Svgo::class => [
+                '--disable=cleanupIDs',
+            ],
+
+            \Spatie\ImageOptimizer\Optimizers\Gifsicle::class => [
+                '-b',
+                '-O3',
+            ],
+
+            \Spatie\ImageOptimizer\Optimizers\Cwebp::class => [
+                '-m 6',
+                '-pass 10',
+                '-mt',
+                '-q 90',
+            ],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Image Optimizer Timeout
+        |--------------------------------------------------------------------------
+        |
+        | The maximum time in seconds each optimizer is allowed to run separately.
+        |
+        */
+
+        'timeout' => 60,
+    ]
 ];
