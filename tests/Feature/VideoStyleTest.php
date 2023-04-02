@@ -1,5 +1,6 @@
 <?php
 
+use FFMpeg\Format\Video\X264;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Larupload;
@@ -217,8 +218,22 @@ it('will generate video styles in standalone mode correctly', function() {
 it('will generate stream in standalone mode correctly', function() {
     $upload = Larupload::init('uploader')
         ->namingMethod(LaruploadNamingMethod::HASH_FILE)
-        ->stream('480p', 640, 480, 64, 3000)
-        ->stream('720p', 1280, 720, 64, 1000)
+        ->stream(
+            name: '480p',
+            width: 640,
+            height: 480,
+            format: (new X264)
+                ->setKiloBitrate(3000)
+                ->setAudioKiloBitrate(64)
+        )
+        ->stream(
+            name: '720p',
+            width: 1280,
+            height:  720,
+            format: (new X264)
+                ->setKiloBitrate(1000)
+                ->setAudioKiloBitrate(64)
+        )
         ->upload(mp4());
 
     $baseUrl = url('/');

@@ -640,6 +640,7 @@ In addition to using the config file, that is responsible for Larupload general 
 namespace App\Models;
 
 use Exception;
+use FFMpeg\Format\Video\X264;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
@@ -680,11 +681,43 @@ class Media extends Model
                 ->video('thumbnail', 250, 250, LaruploadMediaStyle::AUTO)
                 ->video('crop_mode', 1100, 1100, LaruploadMediaStyle::CROP)
                 ->video('portrait_mode', 1000, 1000, LaruploadMediaStyle::SCALE_WIDTH)
-                ->stream('480p', 640, 480, '64K', '1M')
-                ->stream('720p', 1280, 720, '64K', '1M'),
+                ->video(
+                    name: 'auto',
+                    width: 300,
+                    height: 190,
+                    mode: LaruploadMediaStyle::AUTO,
+                    format: (new X264)
+                        ->setKiloBitrate(1000)
+                        ->setAudioKiloBitrate(64)
+                )
+                ->stream(
+                    name: '480p',
+                    width: 640,
+                    height: 480,
+                    format: (new X264)
+                        ->setKiloBitrate(3000)
+                        ->setAudioKiloBitrate(64)
+                )
+                ->stream(
+                    name: '720p',
+                    width: 1280,
+                    height:  720,
+                    format: (new X264)
+                        ->setKiloBitrate(1000)
+                        ->setAudioKiloBitrate(64)
+                )
 
             Attachment::make('other_file', LaruploadMode::LIGHT)
-                ->stream('480p', 640, 480, '64K', '1M'),
+                ->stream(
+                    name: '480p',
+                    width: 640,
+                    height: 480,
+                    format: (new X264)
+                        ->setKiloBitrate(3000)
+                        ->setAudioKiloBitrate(64)
+                        ->setAudioChannels(1)
+                        ->setAudioCodec('libmp3lame')
+                ),
         ];
     }
 }
@@ -763,25 +796,25 @@ to use this functions, you should pass `Style` or `Stream` objects to these func
 
 #### Video Style
 
-| index | name    | type                | required | default      | description                                                                                                                                       |
-|-------|---------|---------------------|----------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | name    | string              | true     | -            | name of style.  examples: thumbnail, small, ...                                                                                                   |
-| 2     | width   | ?int                | false    | null         | height of the photo or video.                                                                                                                     |
-| 3     | height  | ?int                | false    | null         | width of the photo or video                                                                                                                       |
-| 4     | mode    | LaruploadMediaStyle | false    | SCALE_HEIGHT | larupload decides how to deal with the uploaded video. acceptable values for this field are: `FIT`, `AUTO`, `SCALE_WIDTH`, `SCALE_HEIGHT`, `CROP` |
-| 4     | padding | bool                | false    | false        | If true, the video will be padded with black color to fit the given dimension                                                                     |
+| index | name     | type                | required | default      | description                                                                                                                                       |
+|-------|----------|---------------------|----------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1     | name     | string              | true     | -            | name of style.  examples: thumbnail, small, ...                                                                                                   |
+| 2     | width    | ?int                | false    | null         | height of the photo or video.                                                                                                                     |
+| 3     | height   | ?int                | false    | null         | width of the photo or video                                                                                                                       |
+| 4     | mode     | LaruploadMediaStyle | false    | SCALE_HEIGHT | larupload decides how to deal with the uploaded video. acceptable values for this field are: `FIT`, `AUTO`, `SCALE_WIDTH`, `SCALE_HEIGHT`, `CROP` |
+| 5     | format   | X264                | false    | new X264     | Default format is X264. You can set additional options (video/audio kilo bitrate and more) for this format                                        |
+| 6     | padding  | bool                | false    | false        | If true, the video will be padded with black color to fit the given dimension                                                                     |
 
 #### Stream
 if you want to generate m3u8 files from video sources, you should use `stream`. for now larupload supports hls videos only on stream style.
 
-| index | name             | type   | required | default | description                                                                   |
-|-------|------------------|--------|----------|---------|-------------------------------------------------------------------------------|
-| 1     | name             | string | true     | -       | label for stream quality. highly recommended to use string labels like `720p` |
-| 2     | width            | int    | true     | -       |                                                                               |
-| 3     | height           | int    | true     | -       |                                                                               |
-| 4     | audioKiloBitrate | int    | true     | -       |                                                                               |
-| 5     | videoKiloBitrate | int    | true     | -       |                                                                               |
-| 5     | padding          | bool   | false    | false   | If true, the video will be padded with black color to fit the given dimension |
+| index | name             | type   | required | default | description                                                                                                |
+|-------|------------------|--------|----------|---------|------------------------------------------------------------------------------------------------------------|
+| 1     | name             | string | true     | -       | label for stream quality. highly recommended to use string labels like `720p`                              |
+| 2     | width            | int    | true     | -       |                                                                                                            |
+| 3     | height           | int    | true     | -       |                                                                                                            |
+| 4     | format           | X264   | true     | -       | Default format is X264. You can set additional options (video/audio kilo bitrate and more) for this format |
+| 5     | padding          | bool   | false    | false   | If true, the video will be padded with black color to fit the given dimension                              |
 
 ## Changelog
 Refer to the [Changelog](CHANGELOG.md) for a full history of the project.

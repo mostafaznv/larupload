@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Test\Support\Models;
 
+use FFMpeg\Format\Video\X264;
 use Illuminate\Database\Eloquent\Model;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
@@ -39,9 +40,31 @@ class LaruploadHeavyTestModel extends Model
                 ->video('landscape', 400, null, LaruploadMediaStyle::SCALE_HEIGHT)
                 ->video('portrait', null, 400, LaruploadMediaStyle::SCALE_WIDTH)
                 ->video('exact', 300, 190, LaruploadMediaStyle::FIT)
-                ->video('auto', 300, 190, LaruploadMediaStyle::AUTO)
-                ->stream('480p', 640, 480, 64, 3000)
-                ->stream('720p', 1280, 720, 64, 1000)
+                ->video(
+                    name: 'auto',
+                    width: 300,
+                    height: 190,
+                    mode: LaruploadMediaStyle::AUTO,
+                    format: (new X264)
+                        ->setKiloBitrate(1000)
+                        ->setAudioKiloBitrate(64)
+                )
+                ->stream(
+                    name: '480p',
+                    width: 640,
+                    height: 480,
+                    format: (new X264)
+                        ->setKiloBitrate(3000)
+                        ->setAudioKiloBitrate(64)
+                )
+                ->stream(
+                    name: '720p',
+                    width: 1280,
+                    height: 720,
+                    format: (new X264)
+                        ->setKiloBitrate(1000)
+                        ->setAudioKiloBitrate(64)
+                )
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\DTOs\Style;
 
 use Exception;
+use FFMpeg\Format\Video\X264;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 
 class StreamStyle
@@ -11,8 +12,7 @@ class StreamStyle
         public readonly string              $name,
         public readonly int                 $width,
         public readonly int                 $height,
-        public readonly int                 $audioKiloBitrate,
-        public readonly int                 $videoKiloBitrate,
+        public readonly X264                $format,
         public readonly LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT,
         public readonly bool                $padding = false
     ) {
@@ -23,12 +23,11 @@ class StreamStyle
         string              $name,
         int                 $width,
         int                 $height,
-        int                 $audioKiloBitrate,
-        int                 $videoKiloBitrate,
+        X264                $format,
         LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT,
         bool                $padding = false
     ): self {
-        return new self($name, $width, $height, $audioKiloBitrate, $videoKiloBitrate, $mode, $padding);
+        return new self($name, $width, $height, $format, $mode, $padding);
     }
 
 

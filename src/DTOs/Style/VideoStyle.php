@@ -3,24 +3,27 @@
 namespace Mostafaznv\Larupload\DTOs\Style;
 
 use Exception;
+use FFMpeg\Format\Video\X264;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 
 class VideoStyle extends Style
 {
     public readonly LaruploadMediaStyle $mode;
+    public readonly X264 $format;
 
-    public function __construct(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, bool $padding = false)
+    public function __construct(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, X264 $format = new X264, bool $padding = false)
     {
         parent::__construct($name, $width, $height, $padding);
 
         $this->mode = $mode;
+        $this->format = $format;
 
         $this->validateDimension();
     }
 
-    public static function make(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, bool $padding = false): self
+    public static function make(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, X264 $format = new X264, bool $padding = false): self
     {
-        return new self($name, $width, $height, $mode, $padding);
+        return new self($name, $width, $height, $mode, $format, $padding);
     }
 
 

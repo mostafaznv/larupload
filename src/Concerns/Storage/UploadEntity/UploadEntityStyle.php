@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
 
+use FFMpeg\Format\Video\X264;
 use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
@@ -49,16 +50,16 @@ trait UploadEntityStyle
         return $this;
     }
 
-    public function video(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT): UploadEntities
+    public function video(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, X264 $format = new X264, bool $padding = false): UploadEntities
     {
-        $this->videoStyles[$name] = VideoStyle::make($name, $width, $height, $mode);
+        $this->videoStyles[$name] = VideoStyle::make($name, $width, $height, $mode, $format, $padding);
 
         return $this;
     }
 
-    public function stream(string $name, int $width, int $height, int $audioKiloBitrate, int $videoKiloBitrate, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, bool $padding = false): UploadEntities
+    public function stream(string $name, int $width, int $height, X264 $format, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, bool $padding = false): UploadEntities
     {
-        $this->streams[$name] = StreamStyle::make($name, $width, $height, $audioKiloBitrate, $videoKiloBitrate, $mode, $padding);
+        $this->streams[$name] = StreamStyle::make($name, $width, $height, $format, $mode, $padding);
 
         return $this;
     }

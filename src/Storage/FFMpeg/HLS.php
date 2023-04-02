@@ -70,10 +70,7 @@ class HLS
 
     private function format(StreamStyle $style, string $path): X264
     {
-        $format = new X264;
-
-        $format->setKiloBitrate($style->videoKiloBitrate);
-        $format->setAudioKiloBitrate($style->audioKiloBitrate);
+        $format = $style->format;
         $format->setAdditionalParameters([
             '-sc_threshold', '0',
             '-g', '60',

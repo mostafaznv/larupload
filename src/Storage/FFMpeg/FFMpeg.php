@@ -127,7 +127,7 @@ class FFMpeg
             ? $this->resize($style)
             : $this->crop($style);
 
-        $this->media->save(new X264(), $saveTo['local']);
+        $this->media->save($style->format, $saveTo['local']);
         larupload_finalize_save($this->disk, $saveTo);
     }
 
