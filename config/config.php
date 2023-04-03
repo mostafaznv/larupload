@@ -40,7 +40,7 @@ return [
     |
     */
 
-    'mode' => \Mostafaznv\Larupload\Enums\LaruploadMode::HEAVY,
+    'mode' => Mostafaznv\Larupload\Enums\LaruploadMode::HEAVY,
 
     /*
     |--------------------------------------------------------------------------
@@ -95,7 +95,7 @@ return [
     |
     */
 
-    'naming-method' => \Mostafaznv\Larupload\Enums\LaruploadNamingMethod::SLUG,
+    'naming-method' => Mostafaznv\Larupload\Enums\LaruploadNamingMethod::SLUG,
     'lang'          => '',
 
     /*
@@ -110,7 +110,7 @@ return [
     |
     */
 
-    'image-processing-library' => \Mostafaznv\Larupload\Enums\LaruploadImageLibrary::GD,
+    'image-processing-library' => Mostafaznv\Larupload\Enums\LaruploadImageLibrary::GD,
 
     /*
     |--------------------------------------------------------------------------
@@ -137,7 +137,7 @@ return [
     |
     */
 
-    'cover-style' => \Mostafaznv\Larupload\DTOs\Style\ImageStyle::make(
+    'cover-style' => Mostafaznv\Larupload\DTOs\Style\ImageStyle::make(
         name: 'cover',
         width: 500,
         height: 500,
