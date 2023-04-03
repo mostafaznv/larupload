@@ -13,7 +13,15 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadSoftDeleteTestModel;
 use Mostafaznv\Larupload\Test\TestCase;
 
-uses(TestCase::class)->in(__DIR__);
+uses(TestCase::class)
+    ->afterEach(function() {
+        $tempBasePath = larupload_temp_dir() . '/test-files';
+
+        if (is_dir($tempBasePath)) {
+            array_map('unlink', glob("$tempBasePath/*.*"));
+        }
+    })
+    ->in(__DIR__);
 
 /*
 |--------------------------------------------------------------------------
@@ -105,30 +113,41 @@ function macroColumns(LaruploadMode $mode): array
     return $columns;
 }
 
+function copyFile(string $path, string $name, string $mimeType): UploadedFile
+{
+    $tempBasePath = larupload_temp_dir() . '/test-files';
+    $tempFile = $tempBasePath . '/' . basename($path);
+
+    @mkdir($tempBasePath);
+    copy($path, $tempFile);
+
+    return new UploadedFile($tempFile, $name, $mimeType, null, true);
+}
+
 function jpg(bool $withFarsiTitle = false): UploadedFile
 {
     $path = realpath(__DIR__ . '/Support/Data');
 
     if ($withFarsiTitle) {
-        return new UploadedFile("$path/farsi-name.jpeg", 'تیم بارسلونا.jpeg', 'image/jpeg', null, true);
+        return copyFile("$path/farsi-name.jpeg", 'تیم بارسلونا.jpeg', 'image/jpeg');
     }
 
-    return new UploadedFile("$path/image.jpg", 'image.jpg', 'image/jpeg', null, true);
+    return copyFile("$path/image.jpg", 'image.jpg', 'image/jpeg');
 }
 
 function png(): UploadedFile
 {
-    return new UploadedFile(realpath(__DIR__ . '/Support/Data/image.png'), 'image.png', 'image/png', null, true);
+    return copyFile(realpath(__DIR__ . '/Support/Data/image.png'), 'image.png', 'image/png');
 }
 
 function webp(): UploadedFile
 {
-    return new UploadedFile(realpath(__DIR__ . '/Support/Data/image.webp'), 'image.webp', 'image/webp', null, true);
+    return copyFile(realpath(__DIR__ . '/Support/Data/image.webp'), 'image.webp', 'image/webp');
 }
 
 function svg(): UploadedFile
 {
-    return new UploadedFile(realpath(__DIR__ . '/Support/Data/image.svg'), 'image.svg', 'image/svg+xml', null, true);
+    return copyFile(realpath(__DIR__ . '/Support/Data/image.svg'), 'image.svg', 'image/svg+xml');
 }
 
 function mp4(): UploadedFile
