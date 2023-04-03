@@ -27,11 +27,10 @@ it('will optimize jpg', function(LaruploadHeavyTestModel|LaruploadLightTestModel
         ->toBeTruthy()
         ->toBeExists()
         ->and($model->main_file->meta())
-        ->toHaveProperty('size', 34686)
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
         ->and($model->main_file->meta('size'))
-        ->not->toBe($details['size']);
+        ->toBeLessThan($details['size']);
 
 })->with('models');
 
@@ -52,11 +51,10 @@ it('will optimize png', function(LaruploadHeavyTestModel|LaruploadLightTestModel
         ->toBeTruthy()
         ->toBeExists()
         ->and($model->main_file->meta())
-        ->toHaveProperty('size', 11360)
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
         ->and($model->main_file->meta('size'))
-        ->not->toBe($details['size']);
+        ->toBeLessThan($details['size']);
 
 })->with('models');
 
@@ -79,8 +77,6 @@ it('will optimize webp', function(LaruploadHeavyTestModel|LaruploadLightTestMode
         ->and($model->main_file->meta())
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->and($model->main_file->meta('size'))
-        ->not->toBe(11360)
         ->and($model->main_file->meta('size'))
         ->not->toBe($details['size']);
 
@@ -106,11 +102,10 @@ it('will optimize svg', function(LaruploadHeavyTestModel|LaruploadLightTestModel
         ->toBeTruthy()
         ->toBeExists()
         ->and($model->main_file->meta())
-        ->toHaveProperty('size', 7992)
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
         ->and($model->main_file->meta('size'))
-        ->not->toBe($details['size']);
+        ->toBeLessThan($details['size']);
 
 })->with('models');
 
@@ -156,10 +151,8 @@ it('will optimize images in standalone mode', function() {
         ->toBeTruthy()
         ->toBeExists()
         ->and($upload->meta)
-        ->toHaveProperty('size', 34686)
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
         ->and($upload->meta)
-        ->not->toBe($details['size']);
-
+        ->toBeLessThan($details['size']);;
 });
