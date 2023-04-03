@@ -556,7 +556,7 @@ In larupload, we’ve put a lot of effort into making the package more customize
 
 - #### Optimize Image
     Enabling this feature, you can `optimize` the uploaded image using [spatie/image-optimizer](https://github.com/spatie/image-optimizer)
-    > Note: To install optimizer binaries, please read its [documentation](https://github.com/spatie/image-optimizer)
+    > Note: To install optimizer binaries, please read its [documentation](https://github.com/spatie/image-optimizer#optimization-tools)
 
 - #### FFMPEG
     If you keep this section empty, larupload will try to find the FFMPEG path using system environment, but you can manually specify the FFMPEG path this way.
