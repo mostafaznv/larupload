@@ -138,6 +138,7 @@ it('will optimize images in standalone mode', function() {
         ->image('thumbnail', 1000, 750)
         ->upload(jpg());
 
+
     expect($upload->original)
         ->toBeString()
         ->toBeTruthy()
@@ -153,6 +154,6 @@ it('will optimize images in standalone mode', function() {
         ->and($upload->meta)
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->and($upload->meta)
-        ->toBeLessThan($details['size']);;
+        ->and($upload->meta->size)
+        ->toBeLessThan($details['size']);
 });
