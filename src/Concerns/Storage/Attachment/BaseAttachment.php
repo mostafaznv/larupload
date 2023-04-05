@@ -16,6 +16,7 @@ trait BaseAttachment
         $fileName = SetFileNameAction::make($this->file, $this->namingMethod, $this->lang)->generate();
 
         $this->output['name'] = $fileName;
+        $this->output['id'] = $this->id;
         $this->output['format'] = $this->file->getClientOriginalExtension();
         $this->output['size'] = $this->file->getSize();
         $this->output['type'] = $this->type->name;
@@ -69,7 +70,7 @@ trait BaseAttachment
     /**
      * Upload original file
      */
-    protected function uploadOriginalFile(int $id): void
+    protected function uploadOriginalFile(string $id): void
     {
         Storage::disk($this->disk)
             ->putFileAs(

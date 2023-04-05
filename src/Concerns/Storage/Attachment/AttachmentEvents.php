@@ -5,34 +5,35 @@ namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\Actions\GenerateFileIdAction;
 
 trait AttachmentEvents
 {
     public function saved(Model $model): Model
     {
-        $this->id = $model->id;
+        $this->id = GenerateFileIdAction::make($model, $this->secureIdsMethod, $this->mode, $this->name)->run();
         $this->uploaded = true;
 
         if (isset($this->file)) {
             if ($this->file == LARUPLOAD_NULL) {
-                $this->clean($model->id);
+                $this->clean($this->id);
             }
             else {
                 if (!$this->keepOldFiles) {
-                    $this->clean($model->id);
+                    $this->clean($this->id);
                 }
 
                 $this->setBasicDetails();
                 $this->setMediaDetails();
-                $this->uploadOriginalFile($model->id);
-                $this->setCover($model->id);
-                $this->handleStyles($model->id, $model->getMorphClass());
+                $this->uploadOriginalFile($this->id);
+                $this->setCover($this->id);
+                $this->handleStyles($this->id, $model->getMorphClass());
             }
 
             $model = $this->setAttributes($model);
         }
         else if (isset($this->cover)) {
-            $this->setCover($model->id);
+            $this->setCover($this->id);
 
             $model = $this->setAttributes($model);
         }
@@ -43,7 +44,7 @@ trait AttachmentEvents
     public function deleted(Model $model): void
     {
         if (!$this->preserveFiles) {
-            Storage::disk($this->disk)->deleteDirectory("$this->folder/$model->id");
+            Storage::disk($this->disk)->deleteDirectory("$this->folder/$this->id");
         }
     }
 }

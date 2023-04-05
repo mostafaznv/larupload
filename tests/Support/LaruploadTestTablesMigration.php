@@ -12,7 +12,7 @@ class LaruploadTestTablesMigration extends Migration
 {
     public function __construct(private readonly Application $app) {}
 
-    public function migrate()
+    public function migrate(): void
     {
         $this->heavy();
         $this->light();

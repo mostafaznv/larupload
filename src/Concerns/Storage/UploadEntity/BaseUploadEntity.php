@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Mostafaznv\Larupload\Actions\GenerateFileIdAction;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\UploadEntities;
 
@@ -19,6 +20,7 @@ trait BaseUploadEntity
         $this->mode = $mode;
         $this->disk = $config['disk'];
         $this->localDisk = $config['local-disk'];
+        $this->secureIdsMethod = $config['secure-ids'];
         $this->withMeta = $config['with-meta'];
         $this->camelCaseResponse = $config['camel-case-response'];
         $this->namingMethod = $config['naming-method'];
@@ -48,7 +50,7 @@ trait BaseUploadEntity
 
     public function setOutput(Model $model): void
     {
-        $this->id = $model->id;
+        $this->id = GenerateFileIdAction::make($model, $this->secureIdsMethod, $this->mode, $this->name)->run();
 
         if ($this->mode === LaruploadMode::HEAVY) {
             foreach ($this->output as $key => $value) {
@@ -89,11 +91,11 @@ trait BaseUploadEntity
     /**
      * Path Helper to generate relative path string
      *
-     * @param int $id
+     * @param string $id
      * @param string|null $folder
      * @return string
      */
-    protected function getBasePath(int $id, string $folder = null): string
+    protected function getBasePath(string $id, string $folder = null): string
     {
         $path = $this->mode == LaruploadMode::STANDALONE ? "$this->folder/$this->nameKebab" : "$this->folder/$id/$this->nameKebab";
         $path = trim($path, '/');

@@ -8,13 +8,21 @@ it('will create all columns in heavy mode', function() {
 
     expect($columns)
         ->toBeArray()
-        ->toHaveCount(10)
+        ->toHaveCount(11)
         ->and($columns)
         ->toHaveKey('file_file_name')
         ->and($columns['file_file_name'])
         ->toBeArray()
         ->toHaveKey('type', 'string')
         ->toHaveKey('length', 255)
+        ->toHaveKey('nullable', true)
+        //
+        ->and($columns)
+        ->toHaveKey('file_file_id')
+        ->and($columns['file_file_id'])
+        ->toBeArray()
+        ->toHaveKey('type', 'string')
+        ->toHaveKey('length', 36)
         ->toHaveKey('nullable', true)
         //
         ->and($columns)

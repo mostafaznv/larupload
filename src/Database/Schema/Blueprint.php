@@ -21,6 +21,7 @@ class Blueprint
         $table->string("{$name}_file_name", 255)->nullable();
 
         if ($mode === LaruploadMode::HEAVY) {
+            $table->string("{$name}_file_id", 36)->nullable();
             $table->unsignedInteger("{$name}_file_size")->nullable();
             $table->string("{$name}_file_type", 85)->nullable();
             $table->string("{$name}_file_mime_type", 85)->nullable();
@@ -60,7 +61,9 @@ class Blueprint
         ];
 
         $coverColumns = [
-            "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type", "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration", "{$name}_file_format", "{$name}_file_cover"
+            "{$name}_file_id", "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type",
+            "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration",
+            "{$name}_file_format", "{$name}_file_cover"
         ];
 
         return array_merge($columns, $coverColumns);

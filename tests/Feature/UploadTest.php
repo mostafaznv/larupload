@@ -8,12 +8,8 @@ use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 
-$metaKeys = [
-    'name', 'size', 'type', 'mime_type', 'width', 'height', 'duration', 'dominant_color', 'format', 'cover'
-];
 
-
-it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($metaKeys) {
+it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
 
@@ -23,7 +19,7 @@ it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|Laru
         ->toBeExists()
         ->and($model->main_file->meta())
         ->toBeObject()
-        ->toHaveKeys($metaKeys)
+        ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
         ->toHaveProperty('size', $details['size'])
         ->toHaveProperty('type', LaruploadFileType::IMAGE->name)
@@ -36,7 +32,7 @@ it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|Laru
 
 })->with('models');
 
-it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($metaKeys) {
+it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, webp());
     $details = LaruploadTestConsts::IMAGE_DETAILS['webp'];
 
@@ -46,7 +42,7 @@ it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|Lar
         ->toBeExists()
         ->and($model->main_file->meta())
         ->toBeObject()
-        ->toHaveKeys($metaKeys)
+        ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
         ->toHaveProperty('size', $details['size'])
         ->toHaveProperty('type', LaruploadFileType::IMAGE->name)
@@ -59,7 +55,7 @@ it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|Lar
 
 })->with('models');
 
-it('will upload image successfully [png]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($metaKeys) {
+it('will upload image successfully [png]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, png());
     $details = LaruploadTestConsts::IMAGE_DETAILS['png'];
 
@@ -69,7 +65,7 @@ it('will upload image successfully [png]', function(LaruploadHeavyTestModel|Laru
         ->toBeExists()
         ->and($model->main_file->meta())
         ->toBeObject()
-        ->toHaveKeys($metaKeys)
+        ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
         ->toHaveProperty('size', $details['size'])
         ->toHaveProperty('type', LaruploadFileType::IMAGE->name)
@@ -82,7 +78,7 @@ it('will upload image successfully [png]', function(LaruploadHeavyTestModel|Laru
 
 })->with('models');
 
-it('will upload image successfully [svg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($metaKeys) {
+it('will upload image successfully [svg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $this->app['config']->set('larupload.image-processing-library', LaruploadImageLibrary::IMAGICK);
 
     $model = $model::class;
@@ -95,7 +91,7 @@ it('will upload image successfully [svg]', function(LaruploadHeavyTestModel|Laru
         ->toBeExists()
         ->and($model->main_file->meta())
         ->toBeObject()
-        ->toHaveKeys($metaKeys)
+        ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
         ->toHaveProperty('size', $details['size'])
         ->toHaveProperty('type', LaruploadFileType::IMAGE->name)
@@ -107,7 +103,7 @@ it('will upload image successfully [svg]', function(LaruploadHeavyTestModel|Laru
 
 })->with('models');
 
-it('will upload audio successfully', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($metaKeys) {
+it('will upload audio successfully', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, mp3());
     $details = LaruploadTestConsts::AUDIO_DETAILS;
 
@@ -117,7 +113,7 @@ it('will upload audio successfully', function(LaruploadHeavyTestModel|LaruploadL
         ->toBeExists()
         ->and($model->main_file->meta())
         ->toBeObject()
-        ->toHaveKeys($metaKeys)
+        ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name'])
         ->toHaveProperty('size', $details['size'])
         ->toHaveProperty('type', LaruploadFileType::AUDIO->name)
@@ -127,7 +123,7 @@ it('will upload audio successfully', function(LaruploadHeavyTestModel|LaruploadL
 
 })->with('models');
 
-it('will upload video successfully', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($metaKeys) {
+it('will upload video successfully', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, mp4());
     $details = LaruploadTestConsts::VIDEO_DETAILS;
 
@@ -137,7 +133,7 @@ it('will upload video successfully', function(LaruploadHeavyTestModel|LaruploadL
         ->toBeExists()
         ->and($model->main_file->meta())
         ->toBeObject()
-        ->toHaveKeys($metaKeys)
+        ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name'])
         ->toHaveProperty('size', $details['size'])
         ->toHaveProperty('type', LaruploadFileType::VIDEO->name)
@@ -150,7 +146,7 @@ it('will upload video successfully', function(LaruploadHeavyTestModel|LaruploadL
 
 })->with('models');
 
-it('will upload with attach function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($metaKeys) {
+it('will upload with attach function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = $model::class;
 
     $model = new $model;
@@ -165,7 +161,7 @@ it('will upload with attach function', function(LaruploadHeavyTestModel|Laruploa
         ->toBeExists()
         ->and($model->main_file->meta())
         ->toBeObject()
-        ->toHaveKeys($metaKeys)
+        ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
         ->toHaveProperty('size', $details['size'])
         ->toHaveProperty('type', LaruploadFileType::IMAGE->name)
@@ -178,7 +174,7 @@ it('will upload with attach function', function(LaruploadHeavyTestModel|Laruploa
 
 })->with('models');
 
-it('will upload image in standalone mode', function() use ($metaKeys) {
+it('will upload image in standalone mode', function() {
     $upload = Larupload::init('uploader')->upload(jpg());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
@@ -189,7 +185,7 @@ it('will upload image in standalone mode', function() use ($metaKeys) {
         ->toBeExists()
         ->and($upload->meta)
         ->toBeObject()
-        ->toHaveKeys($metaKeys)
+        ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name')
         ->toHaveProperty('size', $details['size'])
         ->toHaveProperty('type', LaruploadFileType::IMAGE->name)
@@ -203,7 +199,7 @@ it('will upload image in standalone mode', function() use ($metaKeys) {
         ->toContain($details['name']['slug']);
 });
 
-it('will upload audio in standalone mode', function() use ($metaKeys) {
+it('will upload audio in standalone mode', function() {
     $upload = Larupload::init('uploader')
         ->namingMethod(LaruploadNamingMethod::HASH_FILE)
         ->upload(mp3());
@@ -216,7 +212,7 @@ it('will upload audio in standalone mode', function() use ($metaKeys) {
         ->toBeExists()
         ->and($upload->meta)
         ->toBeObject()
-        ->toHaveKeys($metaKeys)
+        ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name'])
         ->toHaveProperty('size', $details['size'])
         ->toHaveProperty('type', LaruploadFileType::AUDIO->name)
@@ -226,7 +222,7 @@ it('will upload audio in standalone mode', function() use ($metaKeys) {
 
 });
 
-it('will upload video in standalone mode', function() use ($metaKeys) {
+it('will upload video in standalone mode', function() {
     $upload = Larupload::init('uploader')
         ->namingMethod(LaruploadNamingMethod::HASH_FILE)
         ->upload(mp4());
@@ -239,7 +235,7 @@ it('will upload video in standalone mode', function() use ($metaKeys) {
         ->toBeExists()
         ->and($upload->meta)
         ->toBeObject()
-        ->toHaveKeys($metaKeys)
+        ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name'])
         ->toHaveProperty('size', $details['size'])
         ->toHaveProperty('type', LaruploadFileType::VIDEO->name)
@@ -252,7 +248,7 @@ it('will upload video in standalone mode', function() use ($metaKeys) {
 
 });
 
-it('will upload using create method of model', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($metaKeys) {
+it('will upload using create method of model', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = $model::class;
     $model = $model::create([
         'main_file' => jpg(),
@@ -266,7 +262,7 @@ it('will upload using create method of model', function(LaruploadHeavyTestModel|
         ->toBeExists()
         ->and($model->main_file->meta())
         ->toBeObject()
-        ->toHaveKeys($metaKeys)
+        ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
         ->toHaveProperty('size', $details['size'])
         ->toHaveProperty('type', LaruploadFileType::IMAGE->name)

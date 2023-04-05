@@ -12,11 +12,11 @@ trait StyleAttachment
      * Handle styles
      * resize, crop and generate styles from original file
      *
-     * @param int $id
+     * @param string $id
      * @param string $class
      * @param bool $standalone
      */
-    protected function handleStyles(int $id, string $class, bool $standalone = false): void
+    protected function handleStyles(string $id, string $class, bool $standalone = false): void
     {
         switch ($this->type) {
             case LaruploadFileType::IMAGE:

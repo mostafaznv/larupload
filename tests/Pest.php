@@ -14,6 +14,12 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadSoftDeleteTestModel;
 use Mostafaznv\Larupload\Test\TestCase;
 
 uses(TestCase::class)
+    ->beforeEach(function() {
+        $this->metaKeys = [
+            'name', 'id', 'size', 'type', 'mime_type', 'width', 'height',
+            'duration', 'dominant_color', 'format', 'cover'
+        ];
+    })
     ->afterEach(function() {
         $tempBasePath = larupload_temp_dir() . '/test-files';
 

@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
+use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\UploadEntities;
 
 trait UploadEntityProperties
@@ -24,10 +25,10 @@ trait UploadEntityProperties
     protected mixed $cover;
 
     /**
-     * Model ID
+     * Model ID / Secure ID
      * This property will be initiated only on retrieving model.
      */
-    protected int $id;
+    protected string $id;
 
     /**
      * Type of file in Larupload ecosystem
@@ -76,6 +77,11 @@ trait UploadEntityProperties
     protected bool $optimizeImage;
 
     /**
+     * Specify SecurityIDs Method
+     */
+    protected LaruploadSecureIdsMethod $secureIdsMethod;
+
+    /**
      * Uploaded flag to prevent infinite loop
      */
     protected bool $uploaded = false;
@@ -87,6 +93,7 @@ trait UploadEntityProperties
      */
     protected array $output = [
         'name'           => null,
+        'id'             => null,
         'size'           => null,
         'type'           => null,
         'mime_type'      => null,
@@ -135,6 +142,13 @@ trait UploadEntityProperties
     public function optimizeImage(bool $status): UploadEntities
     {
         $this->optimizeImage = $status;
+
+        return $this;
+    }
+
+    public function secureIdsMethod(LaruploadSecureIdsMethod $method): UploadEntities
+    {
+        $this->secureIdsMethod = $method;
 
         return $this;
     }

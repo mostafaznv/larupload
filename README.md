@@ -501,6 +501,15 @@ In larupload, we’ve put a lot of effort into making the package more customize
     - Light mode stores additional information as `json_encode` in a column named meta. 
         > Note that the selection of each of these modes should fit the type of table created.
 
+- #### SecureIds
+  This option allows you to hide the real ID of model records by using a different ID format in the file upload path. This can be useful for security or privacy reasons, as it prevents the real IDs from being easily discoverable.
+  <br><br>
+  The following ID formats are supported:
+  - ULID
+  - UUID
+  - HASHID (to use this method, you must install the hashids/hashids package)
+  - NONE (use real IDs)
+
 - #### With Meta
   With set this value true, meta details will return whenever you retrieve urlsWith set this value true, meta details will return whenever you retrieve urls
 
@@ -653,6 +662,7 @@ use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
+use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
 
@@ -679,6 +689,7 @@ class Media extends Model
                 ->dominantColor(true)
                 ->dominantColorQuality(5)
                 ->preserveFiles(true)
+                ->secureIdsMethod(LaruploadSecureIdsMethod::ULID)
                 ->optimizeImage(true)
                 ->coverStyle('cover', 400, 400, LaruploadMediaStyle::CROP)
                 ->image('thumbnail', 250, 250, LaruploadMediaStyle::AUTO)
