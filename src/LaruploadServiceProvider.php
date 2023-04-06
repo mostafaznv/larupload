@@ -10,7 +10,6 @@ use Mostafaznv\Larupload\Enums\LaruploadMode;
 class LaruploadServiceProvider extends ServiceProvider
 {
     // TODO - remove meta data from file
-    // TODO - use hashids/hashids instead of actual model id in file path (path/model/id/file ==> path/model/hashid/file)
     // TODO - add index to database columns
     // TODO - add some comments to help IDEs to show attachment functions
     // TODO - 100% test coverage
