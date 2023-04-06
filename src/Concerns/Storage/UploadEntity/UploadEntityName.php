@@ -58,21 +58,4 @@ trait UploadEntityName
     {
         return $this->camelCaseResponse ? Str::camel($name) : $name;
     }
-
-    /**
-     * In some special cases we should use other file names instead of the original one.
-     *
-     * Example: when user uploads a svg image, we should change the converted format to jpg!
-     * so we have to manipulate file name
-     */
-    protected function fixExceptionNames(string $name, string $style): string
-    {
-        if (!in_array($style, [Larupload::ORIGINAL_FOLDER, Larupload::COVER_FOLDER])) {
-            if (Str::endsWith($name, 'svg')) {
-                $name = str_replace('svg', 'jpg', $name);
-            }
-        }
-
-        return $name;
-    }
 }
