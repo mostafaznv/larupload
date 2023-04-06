@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
+use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\UploadEntities;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -32,7 +33,7 @@ trait StandaloneLaruploadNotCallables
     /**
      * @internal
      */
-    public function deleted(Model $model): void
+    public function deleted(): void
     {
         $this->internalException();
     }
@@ -49,6 +50,11 @@ trait StandaloneLaruploadNotCallables
      * @internal
      */
     public function setOutput(Model $model): void
+    {
+        $this->internalException();
+    }
+
+    public function secureIdsMethod(LaruploadSecureIdsMethod $method): self
     {
         $this->internalException();
     }

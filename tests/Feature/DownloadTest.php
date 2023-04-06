@@ -1,5 +1,6 @@
 <?php
 
+use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -40,5 +41,18 @@ it('will return null for styles that do not exist', function(LaruploadHeavyTestM
 
     expect($model->main_file->download('not-exists'))
         ->toBeNull();
+
+})->with('models');
+
+it('will download original file when secure-ids is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
+
+    $model = $model::class;
+    $model = save(new $model, jpg());
+
+    expect($model->main_file->download())
+        ->toBeInstanceOf(StreamedResponse::class)
+        ->getStatusCode()
+        ->toBe(200);
 
 })->with('models');

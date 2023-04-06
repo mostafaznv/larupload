@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Str;
+use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
@@ -12,6 +14,30 @@ it('will delete all files after deleting model', function(LaruploadHeavyTestMode
 
     foreach ($paths as $path) {
         expect(file_exists($path))->toBeTrue();
+    }
+
+    $model->delete();
+
+    foreach ($paths as $path) {
+        expect(file_exists($path))->toBeFalse();
+    }
+
+})->with('models');
+
+it('will delete all files after deleting model when secure-ids is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
+
+    $model = $model::class;
+    $model = save(new $model, jpg());
+
+    $paths = urlsToPath($model->main_file);
+    $id = $model->main_file->meta('id');
+
+    expect(Str::isUlid($id))->toBeTrue();
+
+    foreach ($paths as $path) {
+        expect($path)->toContain($id)
+            ->and(file_exists($path))->toBeTrue();
     }
 
     $model->delete();

@@ -1,6 +1,7 @@
 <?php
 
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
+use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
@@ -157,3 +158,30 @@ it('will optimize images in standalone mode', function() {
         ->and($upload->meta->size)
         ->toBeLessThan($details['size']);
 });
+
+it('will optimize images when secure-ids is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
+
+    $model = $model::class;
+    $model = save(new $model, jpg());
+    $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
+
+    expect($model->main_file->url())
+        ->toBeString()
+        ->toBeTruthy()
+        ->toBeExists()
+        ->and($model->main_file->url('cover'))
+        ->toBeString()
+        ->toBeTruthy()
+        ->toBeExists()
+        ->and($model->main_file->url('landscape'))
+        ->toBeString()
+        ->toBeTruthy()
+        ->toBeExists()
+        ->and($model->main_file->meta())
+        ->toHaveProperty('width', $details['width'])
+        ->toHaveProperty('height', $details['height'])
+        ->and($model->main_file->meta('size'))
+        ->toBeLessThan($details['size']);
+
+})->with('models');

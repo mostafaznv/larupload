@@ -9,11 +9,7 @@ $properties = [
     'original', 'cover', 'stream', 'small_size', 'small', 'medium', 'landscape', 'portrait', 'exact', 'auto', 'meta'
 ];
 
-$meta = [
-    'name', 'size', 'type', 'mime_type', 'width', 'height', 'duration', 'dominant_color', 'format', 'cover'
-];
-
-it('will return larupload object in toArray function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties, $meta) {
+it('will return larupload object in toArray function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
     $model = save($model, jpg());
     $array = $model->toArray();
 
@@ -24,11 +20,11 @@ it('will return larupload object in toArray function', function(LaruploadHeavyTe
         ->toHaveProperties($properties)
         ->and($array['main_file']->meta)
         ->toBeObject()
-        ->toHaveProperties($meta);
+        ->toHaveProperties($this->metaKeys);
 
 })->with('models');
 
-it('will return larupload object in toJson function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties, $meta) {
+it('will return larupload object in toJson function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
     $model = save($model, jpg());
     $json = json_decode($model->toJson());
 
@@ -40,7 +36,7 @@ it('will return larupload object in toJson function', function(LaruploadHeavyTes
         ->toHaveProperties($properties)
         ->and($json->main_file->meta)
         ->toBeObject()
-        ->toHaveProperties($meta);
+        ->toHaveProperties($this->metaKeys);
 
 })->with('models');
 

@@ -3,6 +3,7 @@
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
+use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
@@ -69,6 +70,27 @@ it('will update cover in standalone mode', function() {
 
 });
 
+it('will update cover when secure-ids is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
+
+    $model = $model::class;
+    $model = save(new $model, jpg());
+
+    expect($model->main_file->url('cover'))
+        ->toBeExists()
+        ->and($model->main_file->meta('cover'))
+        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash']);
+
+    $model->main_file->updateCover(png());
+    $model->save();
+
+    expect($model->main_file->url('cover'))
+        ->toBeExists()
+        ->and($model->main_file->meta('cover'))
+        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['png']['name']['hash']);
+
+})->with('models');
+
 it('will delete cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
@@ -107,6 +129,33 @@ it('will delete cover in standalone mode', function() {
         ->toBeNull();
 
 });
+
+it('will delete cover when secure-ids is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
+
+    $model = $model::class;
+    $model = save(new $model, jpg());
+
+    $oldCover = $model->main_file->url('cover');
+
+    expect($oldCover)
+        ->toBeTruthy()
+        ->toBeString()
+        ->toBeExists()
+        ->and($model->main_file->meta('cover'))
+        ->toBeTruthy();
+
+    $model->main_file->detachCover();
+    $model->save();
+
+    expect($oldCover)
+        ->toNotExists()
+        ->and($model->main_file->url('cover'))
+        ->toBeNull()
+        ->and($model->main_file->meta('cover'))
+        ->toBeNull();
+
+})->with('models');
 
 it('can customize cover style', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     config()->set('larupload.cover-style', ImageStyle::make(

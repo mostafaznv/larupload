@@ -45,6 +45,16 @@ expect()->extend('toBeExists', function () {
         : throw new Exception('File not exists');
 });
 
+expect()->extend('toNotExists', function () {
+    $baseUrl = config('app.url');
+    $url = str_replace($baseUrl, '', $this->value);
+    $path = public_path($url);
+
+    return file_exists($path)
+        ? throw new Exception('File exists')
+        : true;
+});
+
 /*
 |--------------------------------------------------------------------------
 | Helpers

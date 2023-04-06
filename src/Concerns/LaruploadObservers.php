@@ -30,7 +30,7 @@ trait LaruploadObservers
         static::deleted(function($model) {
             if (!$model->hasGlobalScope(SoftDeletingScope::class) or $model->isForceDeleting()) {
                 foreach ($model->attachments as $attachment) {
-                    $attachment->deleted($model);
+                    $attachment->deleted();
                 }
             }
         });

@@ -6,6 +6,8 @@ use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
+use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
+use Illuminate\Support\Str;
 
 it('will generate video styles correctly', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, mp4());
@@ -253,3 +255,39 @@ it('will generate stream in standalone mode correctly', function() {
     }
 
 });
+
+it('will generate video styles correctly when secure-ids is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
+
+    $model = $model::class;
+    $model = save(new $model, mp4());
+
+    $id = $model->main_file->meta('id');
+    $cover = urlToVideo($model->main_file->url('cover'));
+    $landscape = urlToVideo($model->main_file->url('landscape'));
+
+    expect(Str::isUlid($id))->toBeTrue()
+        //
+        ->and($model->main_file->url('cover'))
+        ->toBeTruthy()
+        ->toBeString()
+        ->toBeExists()
+        ->and($cover->width)
+        ->toBe(500)
+        ->and($cover->height)
+        ->toBe(500)
+        ->and($cover->duration)
+        ->toBe(0)
+        //
+        ->and($model->main_file->url('landscape'))
+        ->toBeTruthy()
+        ->toBeString()
+        ->toBeExists()
+        ->and($landscape->width)
+        ->toBe(400)
+        ->and($landscape->height)
+        ->toBe(226)
+        ->and($landscape->duration)
+        ->toBe(5);
+
+})->with('models');

@@ -41,7 +41,7 @@ trait AttachmentEvents
         return $model;
     }
 
-    public function deleted(Model $model): void
+    public function deleted(): void
     {
         if (!$this->preserveFiles) {
             Storage::disk($this->disk)->deleteDirectory("$this->folder/$this->id");

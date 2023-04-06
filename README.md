@@ -509,6 +509,7 @@ In larupload, we’ve put a lot of effort into making the package more customize
   - UUID
   - HASHID (to use this method, you must install the hashids/hashids package)
   - NONE (use real IDs)
+  > Note: SecureIds is disabled in standalone mode
 
 - #### With Meta
   With set this value true, meta details will return whenever you retrieve urlsWith set this value true, meta details will return whenever you retrieve urls
