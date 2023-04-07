@@ -6,7 +6,7 @@ use Imagine\Gd\Imagine;
 use Imagine\Image\ImageInterface;
 use Mostafaznv\Larupload\DTOs\FFMpeg\FFMpegMeta;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
-use Mostafaznv\Larupload\Storage\Attachment;
+use Mostafaznv\Larupload\Storage\Proxy\AttachmentProxy;
 use Mostafaznv\Larupload\Storage\FFMpeg\FFMpeg;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
@@ -64,7 +64,7 @@ expect()->extend('toNotExists', function () {
 function save(LaruploadHeavyTestModel|LaruploadLightTestModel|LaruploadSoftDeleteTestModel $model, UploadedFile $file, ?UploadedFile $cover = null): LaruploadHeavyTestModel|LaruploadLightTestModel|LaruploadSoftDeleteTestModel
 {
     if ($cover) {
-        $model->main_file->attach($file, $cover);
+        $model->attachment('main_file')->attach($file, $cover);
     }
     else {
         $model->main_file = $file;
@@ -101,7 +101,7 @@ function urlToVideo(string $url): FFMpegMeta
     return $ffmpeg->getMeta();
 }
 
-function urlsToPath(Attachment $attachment): array
+function urlsToPath(AttachmentProxy $attachment): array
 {
     $paths = [];
     $baseUrl = url('/');

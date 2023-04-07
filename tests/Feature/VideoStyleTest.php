@@ -12,15 +12,16 @@ use Illuminate\Support\Str;
 it('will generate video styles correctly', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, mp4());
 
-    $cover = urlToVideo($model->main_file->url('cover'));
-    $small = urlToVideo($model->main_file->url('small'));
-    $medium = urlToVideo($model->main_file->url('medium'));
-    $landscape = urlToVideo($model->main_file->url('landscape'));
-    $portrait = urlToVideo($model->main_file->url('portrait'));
-    $exact = urlToVideo($model->main_file->url('exact'));
-    $auto = urlToVideo($model->main_file->url('auto'));
+    $attachment = $model->attachment('main_file');
+    $cover = urlToVideo($attachment->url('cover'));
+    $small = urlToVideo($attachment->url('small'));
+    $medium = urlToVideo($attachment->url('medium'));
+    $landscape = urlToVideo($attachment->url('landscape'));
+    $portrait = urlToVideo($attachment->url('portrait'));
+    $exact = urlToVideo($attachment->url('exact'));
+    $auto = urlToVideo($attachment->url('auto'));
 
-    expect($model->main_file->url('cover'))
+    expect($attachment->url('cover'))
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()
@@ -31,7 +32,7 @@ it('will generate video styles correctly', function(LaruploadHeavyTestModel|Laru
         ->and($cover->duration)
         ->toBe(0)
         //
-        ->and($model->main_file->url('small'))
+        ->and($attachment->url('small'))
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()
@@ -42,7 +43,7 @@ it('will generate video styles correctly', function(LaruploadHeavyTestModel|Laru
         ->and($small->duration)
         ->toBe(5)
         //
-        ->and($model->main_file->url('medium'))
+        ->and($attachment->url('medium'))
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()
@@ -53,7 +54,7 @@ it('will generate video styles correctly', function(LaruploadHeavyTestModel|Laru
         ->and($medium->duration)
         ->toBe(5)
         //
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()
@@ -64,7 +65,7 @@ it('will generate video styles correctly', function(LaruploadHeavyTestModel|Laru
         ->and($landscape->duration)
         ->toBe(5)
         //
-        ->and($model->main_file->url('portrait'))
+        ->and($attachment->url('portrait'))
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()
@@ -75,7 +76,7 @@ it('will generate video styles correctly', function(LaruploadHeavyTestModel|Laru
         ->and($portrait->duration)
         ->toBe(5)
         //
-        ->and($model->main_file->url('exact'))
+        ->and($attachment->url('exact'))
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()
@@ -86,7 +87,7 @@ it('will generate video styles correctly', function(LaruploadHeavyTestModel|Laru
         ->and($exact->duration)
         ->toBe(5)
         //
-        ->and($model->main_file->url('auto'))
+        ->and($attachment->url('auto'))
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()
@@ -103,7 +104,7 @@ it('will generate stream correctly', function(LaruploadHeavyTestModel|LaruploadL
     $model = save($model, mp4());
 
     $baseUrl = url('/');
-    $url = str_replace($baseUrl, '', $model->main_file->url('stream'));
+    $url = str_replace($baseUrl, '', $model->attachment('main_file')->url('stream'));
     $path = public_path($url);
     $dir = pathinfo($path, PATHINFO_DIRNAME);
 
@@ -262,13 +263,14 @@ it('will generate video styles correctly when secure-ids is enabled', function(L
     $model = $model::class;
     $model = save(new $model, mp4());
 
-    $id = $model->main_file->meta('id');
-    $cover = urlToVideo($model->main_file->url('cover'));
-    $landscape = urlToVideo($model->main_file->url('landscape'));
+    $attachment = $model->attachment('main_file');
+    $id = $attachment->meta('id');
+    $cover = urlToVideo($attachment->url('cover'));
+    $landscape = urlToVideo($attachment->url('landscape'));
 
     expect(Str::isUlid($id))->toBeTrue()
         //
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()
@@ -279,7 +281,7 @@ it('will generate video styles correctly when secure-ids is enabled', function(L
         ->and($cover->duration)
         ->toBe(0)
         //
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()

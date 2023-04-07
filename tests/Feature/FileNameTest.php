@@ -14,8 +14,10 @@ it('will upload file with correct filename [hash]', function(LaruploadHeavyTestM
     $model = $model::class;
     $model = save(new $model, jpg());
 
-    expect($model->main_file->meta('name'))
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash']);
+    $fileName = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash'];
+    $metaName = $model->attachment('main_file')->meta('name');
+
+    expect($metaName)->toBe($fileName);
 
 })->with('models');
 
@@ -25,8 +27,11 @@ it('will upload file with correct filename [slug]', function(LaruploadHeavyTestM
     $model = $model::class;
     $model = save(new $model, jpg());
 
-    expect($model->main_file->meta('name'))
-        ->toContain(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['slug']);
+    $fileName = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['slug'];
+    $metaName = $model->attachment('main_file')->meta('name');
+
+    expect($metaName)->toContain($fileName);
+
 })->with('models');
 
 it('will upload file with utf-8 filename correctly', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
@@ -36,8 +41,11 @@ it('will upload file with utf-8 filename correctly', function(LaruploadHeavyTest
     $model = $model::class;
     $model = save(new $model, jpg(true));
 
-    expect($model->main_file->meta('name'))
-        ->toContain(LaruploadTestConsts::IMAGE_DETAILS['jpg-fa']['name']['slug']);
+    $fileName = LaruploadTestConsts::IMAGE_DETAILS['jpg-fa']['name']['slug'];
+    $metaName = $model->attachment('main_file')->meta('name');
+
+    expect($metaName)->toContain($fileName);
+
 })->with('models');
 
 it('will upload file with correct filename [time]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
@@ -49,8 +57,10 @@ it('will upload file with correct filename [time]', function(LaruploadHeavyTestM
     $model = $model::class;
     $model = save(new $model, jpg());
 
-    expect($model->main_file->meta('name'))
-        ->toBe($carbon->unix() . '.jpg');
+    $fileName = $carbon->unix() . '.jpg';
+    $metaName = $model->attachment('main_file')->meta('name');
+
+    expect($metaName)->toBe($fileName);
 
 })->with('models');
 

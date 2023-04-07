@@ -10,6 +10,7 @@ use Mostafaznv\Larupload\Concerns\LaruploadTransformers;
 /**
  * @method static \Illuminate\Database\Eloquent\Relations\HasOne laruploadQueue()
  * @method static \Illuminate\Database\Eloquent\Relations\HasMany laruploadQueues()
+ * @method static \Mostafaznv\Larupload\Storage\Proxy\AttachmentProxy attachment(string $name)
  */
 trait Larupload
 {

@@ -9,7 +9,6 @@ use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - add some comments to help IDEs to show attachment functions
     // TODO - remove meta-data from file
     // TODO - 100% test coverage
 

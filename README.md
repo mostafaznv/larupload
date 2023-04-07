@@ -223,7 +223,12 @@ But in the light mode, only the **filename** is stored in its own column, and ot
    > if you submit the cover file, the priority is to create cover with your uploaded file and it prevents the automatic cover creation by the package
 
     ```php
-    $upload->file->attach($request->file('file'), $request->file('cover'));
+    $file = $request->file('file');
+    $cover = $request->file('cover');
+   
+    $upload->file->attach($file, $cover);
+    // or (recommended)
+    $upload->attachment('file')->attach($file, $cover);
     ```
 
 3. ### Deleting the existing file and the value in the database
@@ -232,6 +237,8 @@ But in the light mode, only the **filename** is stored in its own column, and ot
     $upload->file->detach();
     // or
     $upload->file = LARUPLOAD_NULL;
+    // or (recommended)
+    $upload->attachment('file')->detach();
    
     $upload->save();
     ```
@@ -240,7 +247,13 @@ But in the light mode, only the **filename** is stored in its own column, and ot
 1. ### Upload cover
    Every cover should be assigned to an original file and if you want a cover, you have to upload it with attach function. 
     ```php
-    $upload->file->attach($request->file('file'), $request->file('cover'));
+    $file = $request->file('file');
+    $cover = $request->file('cover');
+   
+    $upload->file->attach($file, $cover);
+    // or (recommended)
+    $upload->attachment('file')->attach($file, $cover);
+   
     $upload->save();
     ```
 
@@ -248,16 +261,25 @@ But in the light mode, only the **filename** is stored in its own column, and ot
    after uploading a file, you can update the cover whenever you want.
 
     ```php
+    $cover = $request->file('cover');
+   
     $upload = Upload::findOrFail($id);
-    $upload->file->updateCover($request->file('cover'));
+   
+    $upload->file->cover()->update($cover);
+    // or (recommended)
+    $upload->attachment('file')->cover()->update($cover);
+   
     $upload->save();
     ```
 
 3. ### Delete cover
-   You can delete an uploaded/generate cover using `detachCover` function.
+   You can delete an uploaded/generated cover using `detach` method.
     ```php
     $upload = Upload::findOrFail($id);
-    $upload->file->detachCover();
+   
+    $upload->file->cover()->detach();
+    // or (recommended)
+    $upload->attachment('file')->cover()->detach();
     $upload->save();
     ```
 
@@ -269,7 +291,11 @@ You can use the following methods to access the uploaded file link:
     
     Code:
     ```php
-    dd($upload->file->urls());
+    $urls = $upload->file->urls();
+    // or (recommended)
+    $urls = $upload->attachment('file')->urls();
+   
+    dd($urls);
     ```
     Output:
     ```php
@@ -295,6 +321,8 @@ You can use the following methods to access the uploaded file link:
 2. ### Get link for a particular style
     ```php
     echo $upload->file->url('thumbnail');
+    // or (recommended)
+    echo $upload->attachment('file')->url('thumbnail');
     ```
     > If you don’t pass any argument, the link to the original file will be automatically returned.
 
@@ -304,8 +332,15 @@ You can use the following methods to generate download response for uploaded fil
 
 Code:
 ```php
-$upload->file->download(); // download original style of attachment
-$upload->file->download('cover'); // download cover style of attachment
+# download original style of attachment
+$upload->file->download(); 
+// or (recommended)
+$upload->attachment('file')->download();
+
+# download cover style of attachment
+$upload->file->download('cover'); 
+// or (recommended)
+$upload->attachment('file')->download('cover');
 ```
 
 > If you don’t pass any argument, larupload will generate a download response for the original file.
@@ -317,7 +352,11 @@ $upload->file->download('cover'); // download cover style of attachment
     
     Code:
     ```php
-    dd($upload->file->meta());
+    $meta = $upload->file->meta();
+    // or (recommended)
+    $meta = $upload->attachment('file')->meta();
+   
+    dd($meta);
     ```
     
     Output:
@@ -343,6 +382,8 @@ $upload->file->download('cover'); // download cover style of attachment
     Code:
     ```php
     echo $upload->file->meta('dominant_color');
+    // or (recommended)
+    echo $upload->attachment('file')->meta('dominant_color');
     ```
     
     Output:

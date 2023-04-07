@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Concerns;
 
 use Mostafaznv\Larupload\Storage\Attachment;
+use Mostafaznv\Larupload\Storage\Proxy\AttachmentProxy;
 
 trait BaseLarupload
 {
@@ -42,4 +43,14 @@ trait BaseLarupload
      * @return Attachment[]
      */
     abstract public function attachments(): array;
+
+
+    public function attachment(string $name): ?AttachmentProxy
+    {
+        if ($attachment = $this->getAttachment($name)) {
+            return new AttachmentProxy($attachment);
+        }
+
+        return null;
+    }
 }

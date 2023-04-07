@@ -12,9 +12,10 @@ it('will update attachment successfully', function (LaruploadHeavyTestModel|Laru
     $png = LaruploadTestConsts::IMAGE_DETAILS['png'];
     $webp = LaruploadTestConsts::IMAGE_DETAILS['webp'];
 
-    $original = $model->main_file->url();
-    $cover = $model->main_file->url('cover');
-    $landscape = $model->main_file->url('landscape');
+    $attachment = $model->attachment('main_file');
+    $original = $attachment->url();
+    $cover = $attachment->url('cover');
+    $landscape = $attachment->url('landscape');
 
     expect($original)
         ->toBeExists()
@@ -23,7 +24,7 @@ it('will update attachment successfully', function (LaruploadHeavyTestModel|Laru
         ->and($landscape)
         ->toBeExists()
         //
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toHaveProperty('name', $jpg['name']['hash'])
         ->toHaveProperty('cover', $png['name']['hash'])
         ->toHaveProperty('size', $jpg['size'])
@@ -32,12 +33,13 @@ it('will update attachment successfully', function (LaruploadHeavyTestModel|Laru
         ->toHaveProperty('height', $jpg['height'])
         ->toHaveProperty('dominant_color', $jpg['color']);
 
-    $model->main_file->attach(webp(), jpg());
+    $model->attachment('main_file')->attach(webp(), jpg());
     $model->save();
 
-    $updatedOriginal = $model->main_file->url();
-    $updatedCover = $model->main_file->url('cover');
-    $updatedLandscape = $model->main_file->url('landscape');
+    $attachment = $model->attachment('main_file');
+    $updatedOriginal = $attachment->url();
+    $updatedCover = $attachment->url('cover');
+    $updatedLandscape = $attachment->url('landscape');
 
     expect($updatedOriginal != $original)
         ->toBeTrue()
@@ -60,7 +62,7 @@ it('will update attachment successfully', function (LaruploadHeavyTestModel|Laru
         ->and($updatedLandscape)
         ->toBeExists()
         //
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toHaveProperty('name', $webp['name']['hash'])
         ->toHaveProperty('cover', $jpg['name']['hash'])
         ->toHaveProperty('size', $webp['size'])
@@ -74,10 +76,11 @@ it('will update attachment successfully', function (LaruploadHeavyTestModel|Laru
 it('wont change id of attachment during update', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg(), png());
 
-    $original = $model->main_file->url();
-    $cover = $model->main_file->url('cover');
-    $landscape = $model->main_file->url('landscape');
-    $id = $model->main_file->meta('id');
+    $attachment = $model->attachment('main_file');
+    $original = $attachment->url();
+    $cover = $attachment->url('cover');
+    $landscape = $attachment->url('landscape');
+    $id = $attachment->meta('id');
 
     expect($original)
         ->toContain($id)
@@ -86,13 +89,14 @@ it('wont change id of attachment during update', function (LaruploadHeavyTestMod
         ->and($landscape)
         ->toContain($id);
 
-    $model->main_file->attach(webp(), jpg());
+    $model->attachment('main_file')->attach(webp(), jpg());
     $model->save();
 
-    $updatedOriginal = $model->main_file->url();
-    $updatedCover = $model->main_file->url('cover');
-    $updatedLandscape = $model->main_file->url('landscape');
-    $updatedId = $model->main_file->meta('id');
+    $attachment = $model->attachment('main_file');
+    $updatedOriginal = $attachment->url();
+    $updatedCover = $attachment->url('cover');
+    $updatedLandscape = $attachment->url('landscape');
+    $updatedId = $attachment->meta('id');
 
     expect($updatedId)->toBe($id)
         //
@@ -111,10 +115,11 @@ it('wont change id of attachment during update when secure-ids is enabled', func
     $model = $model::class;
     $model = save(new $model, jpg(), png());
 
-    $original = $model->main_file->url();
-    $cover = $model->main_file->url('cover');
-    $landscape = $model->main_file->url('landscape');
-    $id = $model->main_file->meta('id');
+    $attachment = $model->attachment('main_file');
+    $original = $attachment->url();
+    $cover = $attachment->url('cover');
+    $landscape = $attachment->url('landscape');
+    $id = $attachment->meta('id');
 
     expect($original)
         ->toContain($id)
@@ -123,13 +128,14 @@ it('wont change id of attachment during update when secure-ids is enabled', func
         ->and($landscape)
         ->toContain($id);
 
-    $model->main_file->attach(webp(), jpg());
+    $model->attachment('main_file')->attach(webp(), jpg());
     $model->save();
 
-    $updatedOriginal = $model->main_file->url();
-    $updatedCover = $model->main_file->url('cover');
-    $updatedLandscape = $model->main_file->url('landscape');
-    $updatedId = $model->main_file->meta('id');
+    $attachment = $model->attachment('main_file');
+    $updatedOriginal = $attachment->url();
+    $updatedCover = $attachment->url('cover');
+    $updatedLandscape = $attachment->url('landscape');
+    $updatedId = $attachment->meta('id');
 
     expect($updatedId)->toBe($id)
         //

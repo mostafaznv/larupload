@@ -13,11 +13,14 @@ it('will upload file with cover', function(LaruploadHeavyTestModel|LaruploadLigh
     $model = save($model, pdf(), jpg());
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
 
-    expect($model->main_file->url('cover'))
+    $url = $model->attachment('main_file')->url('cover');
+    $meta = $model->attachment('main_file')->meta();
+
+    expect($url)
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($meta)
         ->toHaveProperty('cover', $details['name']['hash'])
         ->toHaveProperty('dominant_color', $details['color']);
 
@@ -42,14 +45,18 @@ it('will upload file with cover in standalone mode', function() {
 it('will update cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
-    expect($model->main_file->meta('cover'))
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash']);
+    $fileCover = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash'];
+    $metaCover = $model->attachment('main_file')->meta('cover');
 
-    $model->main_file->updateCover(png());
+    expect($metaCover)->toBe($fileCover);
+
+    $model->attachment('main_file')->cover()->update(png());
     $model->save();
 
-    expect($model->main_file->meta('cover'))
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['png']['name']['hash']);
+    $fileCover = LaruploadTestConsts::IMAGE_DETAILS['png']['name']['hash'];
+    $metaCover = $model->attachment('main_file')->meta('cover');
+
+    expect($metaCover)->toBe($fileCover);
 
 })->with('models');
 
@@ -76,37 +83,51 @@ it('will update cover when secure-ids is enabled', function(LaruploadHeavyTestMo
     $model = $model::class;
     $model = save(new $model, jpg());
 
-    expect($model->main_file->url('cover'))
-        ->toBeExists()
-        ->and($model->main_file->meta('cover'))
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash']);
+    $url = $model->attachment('main_file')->url('cover');
+    $metaCover = $model->attachment('main_file')->meta('cover');
+    $fileCover = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash'];
 
-    $model->main_file->updateCover(png());
+    expect($url)
+        ->toBeExists()
+        ->and($metaCover)
+        ->toBe($fileCover);
+
+    $model->attachment('main_file')->cover()->update(png());
     $model->save();
 
-    expect($model->main_file->url('cover'))
+    $url = $model->attachment('main_file')->url('cover');
+    $metaCover = $model->attachment('main_file')->meta('cover');
+    $fileCover = LaruploadTestConsts::IMAGE_DETAILS['png']['name']['hash'];
+
+    expect($url)
         ->toBeExists()
-        ->and($model->main_file->meta('cover'))
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['png']['name']['hash']);
+        ->and($metaCover)
+        ->toBe($fileCover);
 
 })->with('models');
 
 it('will delete cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
-    expect($model->main_file->url('cover'))
+    $url = $model->attachment('main_file')->url('cover');
+    $meta = $model->attachment('main_file')->meta('cover');
+
+    expect($url)
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()
-        ->and($model->main_file->meta('cover'))
+        ->and($meta)
         ->toBeTruthy();
 
-    $model->main_file->detachCover();
+    $model->attachment('main_file')->cover()->detach();
     $model->save();
 
-    expect($model->main_file->url('cover'))
+    $url = $model->attachment('main_file')->url('cover');
+    $meta = $model->attachment('main_file')->meta('cover');
+
+    expect($url)
         ->toBeNull()
-        ->and($model->main_file->meta('cover'))
+        ->and($meta)
         ->toBeNull();
 
 })->with('models');
@@ -136,23 +157,27 @@ it('will delete cover when secure-ids is enabled', function(LaruploadHeavyTestMo
     $model = $model::class;
     $model = save(new $model, jpg());
 
-    $oldCover = $model->main_file->url('cover');
+    $oldCover = $model->attachment('main_file')->url('cover');
+    $meta = $model->attachment('main_file')->meta('cover');
 
     expect($oldCover)
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists()
-        ->and($model->main_file->meta('cover'))
+        ->and($meta)
         ->toBeTruthy();
 
-    $model->main_file->detachCover();
+    $model->attachment('main_file')->cover()->detach();
     $model->save();
+
+    $url = $model->attachment('main_file')->url('cover');
+    $cover = $model->attachment('main_file')->meta('cover');
 
     expect($oldCover)
         ->toNotExists()
-        ->and($model->main_file->url('cover'))
+        ->and($url)
         ->toBeNull()
-        ->and($model->main_file->meta('cover'))
+        ->and($cover)
         ->toBeNull();
 
 })->with('models');
@@ -169,7 +194,7 @@ it('can customize cover style', function(LaruploadHeavyTestModel|LaruploadLightT
     $model = $model::class;
     $model = save(new $model, jpg());
 
-    $cover = $model->main_file->url('cover');
+    $cover = $model->attachment('main_file')->url('cover');
 
     expect($cover)
         ->toBeTruthy()

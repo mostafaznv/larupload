@@ -31,7 +31,7 @@ it('will delete all files after deleting model when secure-ids is enabled', func
     $model = save(new $model, jpg());
 
     $paths = urlsToPath($model->main_file);
-    $id = $model->main_file->meta('id');
+    $id = $model->attachment('main_file')->meta('id');
 
     expect(Str::isUlid($id))->toBeTrue();
 
@@ -87,7 +87,7 @@ it('wont delete files when model has soft-delete trait', function() {
 it('will delete files by setting LARUPLOAD_NULL to attribute', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
-    expect($model->main_file->url())
+    expect($model->attachment('main_file')->url())
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists();
@@ -95,9 +95,9 @@ it('will delete files by setting LARUPLOAD_NULL to attribute', function(Laruploa
     $model->main_file = LARUPLOAD_NULL;
     $model->save();
 
-    expect($model->main_file->url())
+    expect($model->attachment('main_file')->url())
         ->toBeNull()
-        ->and($model->main_file->meta('name'))
+        ->and($model->attachment('main_file')->meta('name'))
         ->toBeNull();
 
 })->with('models');
@@ -105,17 +105,17 @@ it('will delete files by setting LARUPLOAD_NULL to attribute', function(Laruploa
 it('will delete files by detach function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
-    expect($model->main_file->url())
+    expect($model->attachment('main_file')->url())
         ->toBeTruthy()
         ->toBeString()
         ->toBeExists();
 
-    $model->main_file->detach();
+    $model->attachment('main_file')->detach();
     $model->save();
 
-    expect($model->main_file->url())
+    expect($model->attachment('main_file')->url())
         ->toBeNull()
-        ->and($model->main_file->meta('name'))
+        ->and($model->attachment('main_file')->meta('name'))
         ->toBeNull();
 
 })->with('models');

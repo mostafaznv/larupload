@@ -7,12 +7,14 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 it('will create folder with kebab-case convention', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
-    expect($model->main_file->url())
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toContain('/main-file/')
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toContain('/main-file/')
         ->toContain('/cover/')
-        ->and($model->main_file->url('small_size'))
+        ->and($attachment->url('small_size'))
         ->toContain('/small-size/');
 
 })->with('models');

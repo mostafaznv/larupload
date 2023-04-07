@@ -15,22 +15,24 @@ it('will optimize jpg', function(LaruploadHeavyTestModel|LaruploadLightTestModel
     $model = save($model, jpg());
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
 
-    expect($model->main_file->url())
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->and($model->main_file->meta('size'))
+        ->and($attachment->meta('size'))
         ->toBeLessThan($details['size']);
 
 })->with('models');
@@ -39,22 +41,24 @@ it('will optimize png', function(LaruploadHeavyTestModel|LaruploadLightTestModel
     $model = save($model, png());
     $details = LaruploadTestConsts::IMAGE_DETAILS['png'];
 
-    expect($model->main_file->url())
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->and($model->main_file->meta('size'))
+        ->and($attachment->meta('size'))
         ->toBeLessThan($details['size']);
 
 })->with('models');
@@ -63,22 +67,24 @@ it('will optimize webp', function(LaruploadHeavyTestModel|LaruploadLightTestMode
     $model = save($model, webp());
     $details = LaruploadTestConsts::IMAGE_DETAILS['webp'];
 
-    expect($model->main_file->url())
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->and($model->main_file->meta('size'))
+        ->and($attachment->meta('size'))
         ->not->toBe($details['size']);
 
 })->with('models');
@@ -90,44 +96,49 @@ it('will optimize svg', function(LaruploadHeavyTestModel|LaruploadLightTestModel
     $model = save(new $model, svg());
     $details = LaruploadTestConsts::IMAGE_DETAILS['svg'];
 
-    expect($model->main_file->url())
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->and($model->main_file->meta('size'))
+        ->and($attachment->meta('size'))
         ->toBeLessThan($details['size']);
 
 })->with('models');
 
 it('wont optimize non-image files', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, mp3());
-    $details = LaruploadTestConsts::AUDIO_DETAILS;
 
-    expect($model->main_file->url())
+    $details = LaruploadTestConsts::AUDIO_DETAILS;
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta('size'))
+        ->and($attachment->meta('size'))
         ->toBe($details['size']);
 
     $model = save($model, $pdf = pdf());
+    $attachment = $model->attachment('main_file');
 
-    expect($model->main_file->url())
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta('size'))
+        ->and($attachment->meta('size'))
         ->toBe($pdf->getSize());
 
 })->with('models');
@@ -164,24 +175,26 @@ it('will optimize images when secure-ids is enabled', function(LaruploadHeavyTes
 
     $model = $model::class;
     $model = save(new $model, jpg());
-    $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
 
-    expect($model->main_file->url())
+    $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->and($model->main_file->meta('size'))
+        ->and($attachment->meta('size'))
         ->toBeLessThan($details['size']);
 
 })->with('models');

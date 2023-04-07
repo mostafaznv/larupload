@@ -48,7 +48,7 @@ it('will return meta properties camelCase', function(LaruploadHeavyTestModel|Lar
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
 
-    expect($model->main_file->meta())
+    expect($model->attachment('main_file')->meta())
         ->toBeObject()
         ->toBeObject()
         ->toHaveProperty('mimeType', $details['mime_type'])

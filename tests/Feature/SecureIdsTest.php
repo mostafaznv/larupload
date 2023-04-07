@@ -13,38 +13,40 @@ it('will hide ids using ulid method', function (LaruploadHeavyTestModel|Laruploa
     $model = $model::class;
     $model = save(new $model, jpg());
 
-    $id = $model->main_file->meta('id');
+    $attachment = $model->attachment('main_file');
+    $id = $attachment->meta('id');
 
     expect(Str::isUlid($id))->toBeTrue()
-        ->and($model->main_file->url())
+        ->and($attachment->url())
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toContain($id)
         ->toBeExists();
 
     $model = save(new $model, mp4());
-    $id = $model->main_file->meta('id');
+    $attachment = $model->attachment('main_file');
+    $id = $attachment->meta('id');
 
     expect(Str::isUlid($id))->toBeTrue()
-        ->and($model->main_file->url())
+        ->and($attachment->url())
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('stream'))
+        ->and($attachment->url('stream'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toContain($id)
         ->toBeExists();
 
@@ -56,38 +58,40 @@ it('will hide ids using uuid method', function (LaruploadHeavyTestModel|Laruploa
     $model = $model::class;
     $model = save(new $model, jpg());
 
-    $id = $model->main_file->meta('id');
+    $attachment = $model->attachment('main_file');
+    $id = $attachment->meta('id');
 
     expect(Str::isUuid($id))->toBeTrue()
-        ->and($model->main_file->url())
+        ->and($attachment->url())
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toContain($id)
         ->toBeExists();
 
     $model = save(new $model, mp4());
-    $id = $model->main_file->meta('id');
+    $attachment = $model->attachment('main_file');
+    $id = $attachment->meta('id');
 
     expect(Str::isUuid($id))->toBeTrue()
-        ->and($model->main_file->url())
+        ->and($attachment->url())
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('stream'))
+        ->and($attachment->url('stream'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toContain($id)
         ->toBeExists();
 
@@ -101,39 +105,41 @@ it('will hide ids using hashid method', function (LaruploadHeavyTestModel|Larupl
 
     $hashIds = new Hashids(config('app.key'), 20);
 
-    $id = $model->main_file->meta('id');
+    $attachment = $model->attachment('main_file');
+    $id = $attachment->meta('id');
 
 
     expect($hashIds->decode($id))->toBe([1])
-        ->and($model->main_file->url())
+        ->and($attachment->url())
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toContain($id)
         ->toBeExists();
 
     $model = save(new $model, mp4());
-    $id = $model->main_file->meta('id');
+    $attachment = $model->attachment('main_file');
+    $id = $attachment->meta('id');
 
     expect($hashIds->decode($id))->toBe([2])
-        ->and($model->main_file->url())
+        ->and($attachment->url())
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('stream'))
+        ->and($attachment->url('stream'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toContain($id)
         ->toBeExists();
 
@@ -141,38 +147,41 @@ it('will hide ids using hashid method', function (LaruploadHeavyTestModel|Larupl
 
 it('wont hide hide id in upload path when secure-ids is disabled', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
-    $id = $model->main_file->meta('id');
+
+    $attachment = $model->attachment('main_file');
+    $id = $attachment->meta('id');
 
     expect($id)->toBe('1')
-        ->and($model->main_file->url())
+        ->and($attachment->url())
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toContain($id)
         ->toBeExists();
 
     $model = save($model, mp4());
-    $id = $model->main_file->meta('id');
+    $attachment = $model->attachment('main_file');
+    $id = $attachment->meta('id');
 
     expect($id)->toBe('1')
-        ->and($model->main_file->url())
+        ->and($attachment->url())
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('cover'))
+        ->and($attachment->url('cover'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('stream'))
+        ->and($attachment->url('stream'))
         ->toContain($id)
         ->toBeExists()
         //
-        ->and($model->main_file->url('landscape'))
+        ->and($attachment->url('landscape'))
         ->toContain($id)
         ->toBeExists();
 

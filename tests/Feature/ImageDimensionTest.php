@@ -9,29 +9,35 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 it('will calculate image width correctly', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
-    expect($model->main_file->meta('width'))
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['width']);
+    $fileWidth = LaruploadTestConsts::IMAGE_DETAILS['jpg']['width'];
+    $metaWidth = $model->attachment('main_file')->meta('width');
+
+    expect($metaWidth)
+        ->toBe($fileWidth);
 
 })->with('models');
 
 it('will calculate image height correctly', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
-    expect($model->main_file->meta('height'))
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['height']);
+    $fileHeight = LaruploadTestConsts::IMAGE_DETAILS['jpg']['height'];
+    $metaHeight = $model->attachment('main_file')->meta('height');
+
+    expect($metaHeight)
+        ->toBe($fileHeight);
 
 })->with('models');
 
 it('will calculate dimension of different styles correctly', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
-    $cover = urlToImage($model->main_file->url('cover'));
-    $small = urlToImage($model->main_file->url('small'));
-    $medium = urlToImage($model->main_file->url('medium'));
-    $landscape = urlToImage($model->main_file->url('landscape'));
-    $portrait = urlToImage($model->main_file->url('portrait'));
-    $exact = urlToImage($model->main_file->url('exact'));
-    $auto = urlToImage($model->main_file->url('auto'));
+    $cover = urlToImage($model->attachment('main_file')->url('cover'));
+    $small = urlToImage($model->attachment('main_file')->url('small'));
+    $medium = urlToImage($model->attachment('main_file')->url('medium'));
+    $landscape = urlToImage($model->attachment('main_file')->url('landscape'));
+    $portrait = urlToImage($model->attachment('main_file')->url('portrait'));
+    $exact = urlToImage($model->attachment('main_file')->url('exact'));
+    $auto = urlToImage($model->attachment('main_file')->url('auto'));
 
 
     expect($cover->getSize()->getWidth())->toBe(500)
@@ -53,13 +59,13 @@ it('will calculate dimension of different styles correctly', function(LaruploadH
 it('will calculate dimension of different styles correctly [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, webp());
 
-    $cover = urlToImage($model->main_file->url('cover'));
-    $small = urlToImage($model->main_file->url('small'));
-    $medium = urlToImage($model->main_file->url('medium'));
-    $landscape = urlToImage($model->main_file->url('landscape'));
-    $portrait = urlToImage($model->main_file->url('portrait'));
-    $exact = urlToImage($model->main_file->url('exact'));
-    $auto = urlToImage($model->main_file->url('auto'));
+    $cover = urlToImage($model->attachment('main_file')->url('cover'));
+    $small = urlToImage($model->attachment('main_file')->url('small'));
+    $medium = urlToImage($model->attachment('main_file')->url('medium'));
+    $landscape = urlToImage($model->attachment('main_file')->url('landscape'));
+    $portrait = urlToImage($model->attachment('main_file')->url('portrait'));
+    $exact = urlToImage($model->attachment('main_file')->url('exact'));
+    $auto = urlToImage($model->attachment('main_file')->url('auto'));
 
     expect($cover->getSize()->getWidth())->toBe(500)
         ->and($cover->getSize()->getHeight())->toBe(500)

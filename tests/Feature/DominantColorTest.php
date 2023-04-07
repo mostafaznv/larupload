@@ -9,24 +9,30 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 it('will calculate dominant color correctly [jpg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
-    expect($model->main_file->meta('dominant_color'))
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']);
+    $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'];
+    $fileColor = $model->attachment('main_file')->meta('dominant_color');
+
+    expect($fileColor)->toBe($dominantColor);
 
 })->with('models');
 
 it('will calculate dominant color correctly [png]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, png());
 
-    expect($model->main_file->meta('dominant_color'))
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['png']['color']);
+    $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['png']['color'];
+    $fileColor = $model->attachment('main_file')->meta('dominant_color');
+
+    expect($fileColor)->toBe($dominantColor);
 
 })->with('models');
 
 it('will calculate dominant color correctly [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, webp());
 
-    expect($model->main_file->meta('dominant_color'))
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['webp']['color']);
+    $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['webp']['color'];
+    $fileColor = $model->attachment('main_file')->meta('dominant_color');
+
+    expect($fileColor)->toBe($dominantColor);
 
 })->with('models');
 
@@ -36,8 +42,9 @@ it('will calculate dominant color correctly [svg]', function(LaruploadHeavyTestM
     $model = $model::class;
     $model = save(new $model, svg());
 
-    expect($model->main_file->meta('dominant_color'))
-        ->toMatch(LaruploadTestConsts::HEX_REGEX);
+    $fileColor = $model->attachment('main_file')->meta('dominant_color');
+
+    expect($fileColor)->toMatch(LaruploadTestConsts::HEX_REGEX);
 
 })->with('models');
 
@@ -73,7 +80,8 @@ it('will calculate dominant color with high quality', function(LaruploadHeavyTes
     $model = $model::class;
     $model = save(new $model, webp());
 
-    expect($model->main_file->meta('dominant_color'))
-        ->toBe('#f6c009');
+    $fileColor = $model->attachment('main_file')->meta('dominant_color');
+
+    expect($fileColor)->toBe('#f6c009');
 
 })->with('models');

@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Concerns;
 
 use Mostafaznv\Larupload\Enums\LaruploadMode;
+use Mostafaznv\Larupload\Storage\Proxy\AttachmentProxy;
 use stdClass;
 use Mostafaznv\Larupload\Storage\Attachment;
 
@@ -34,7 +35,7 @@ trait LaruploadTransformers
     public function getAttribute($key): mixed
     {
         if ($attachment = $this->getAttachment($key)) {
-            return $attachment;
+            return new AttachmentProxy($attachment);
         }
 
         return parent::getAttribute($key);

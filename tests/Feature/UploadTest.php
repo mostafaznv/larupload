@@ -11,13 +11,15 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 
 it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
-    $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
 
-    expect($model->main_file->url())
+    $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
@@ -34,13 +36,15 @@ it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|Laru
 
 it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, webp());
-    $details = LaruploadTestConsts::IMAGE_DETAILS['webp'];
 
-    expect($model->main_file->url())
+    $details = LaruploadTestConsts::IMAGE_DETAILS['webp'];
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
@@ -57,13 +61,15 @@ it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|Lar
 
 it('will upload image successfully [png]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, png());
-    $details = LaruploadTestConsts::IMAGE_DETAILS['png'];
 
-    expect($model->main_file->url())
+    $details = LaruploadTestConsts::IMAGE_DETAILS['png'];
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
@@ -83,13 +89,15 @@ it('will upload image successfully [svg]', function(LaruploadHeavyTestModel|Laru
 
     $model = $model::class;
     $model = save(new $model, svg());
-    $details = LaruploadTestConsts::IMAGE_DETAILS['svg'];
 
-    expect($model->main_file->url())
+    $details = LaruploadTestConsts::IMAGE_DETAILS['svg'];
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
@@ -105,13 +113,15 @@ it('will upload image successfully [svg]', function(LaruploadHeavyTestModel|Laru
 
 it('will upload audio successfully', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, mp3());
-    $details = LaruploadTestConsts::AUDIO_DETAILS;
 
-    expect($model->main_file->url())
+    $details = LaruploadTestConsts::AUDIO_DETAILS;
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name'])
@@ -125,13 +135,15 @@ it('will upload audio successfully', function(LaruploadHeavyTestModel|LaruploadL
 
 it('will upload video successfully', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, mp4());
-    $details = LaruploadTestConsts::VIDEO_DETAILS;
 
-    expect($model->main_file->url())
+    $details = LaruploadTestConsts::VIDEO_DETAILS;
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name'])
@@ -150,16 +162,17 @@ it('will upload with attach function', function(LaruploadHeavyTestModel|Laruploa
     $model = $model::class;
 
     $model = new $model;
-    $model->main_file->attach(jpg());
+    $model->attachment('main_file')->attach(jpg());
     $model->save();
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
+    $attachment = $model->attachment('main_file');
 
-    expect($model->main_file->url())
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
@@ -255,12 +268,13 @@ it('will upload using create method of model', function(LaruploadHeavyTestModel|
     ]);
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
+    $attachment = $model->attachment('main_file');
 
-    expect($model->main_file->url())
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($model->main_file->meta())
+        ->and($attachment->meta())
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])

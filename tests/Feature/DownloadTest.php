@@ -8,8 +8,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 it('will download original file', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
+    $attachment = $model->attachment('main_file');
 
-    expect($model->main_file->download())
+    expect($attachment->download())
         ->toBeInstanceOf(StreamedResponse::class)
         ->getStatusCode()
         ->toBe(200);
@@ -18,8 +19,9 @@ it('will download original file', function(LaruploadHeavyTestModel|LaruploadLigh
 
 it('will download cover file', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
+    $attachment = $model->attachment('main_file');
 
-    expect($model->main_file->download('cover'))
+    expect($attachment->download('cover'))
         ->toBeInstanceOf(StreamedResponse::class)
         ->getStatusCode()
         ->toBe(200);
@@ -28,8 +30,9 @@ it('will download cover file', function(LaruploadHeavyTestModel|LaruploadLightTe
 
 it('will download custom styles', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
+    $attachment = $model->attachment('main_file');
 
-    expect($model->main_file->download('landscape'))
+    expect($attachment->download('landscape'))
         ->toBeInstanceOf(StreamedResponse::class)
         ->getStatusCode()
         ->toBe(200);
@@ -38,8 +41,9 @@ it('will download custom styles', function(LaruploadHeavyTestModel|LaruploadLigh
 
 it('will return null for styles that do not exist', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
+    $attachment = $model->attachment('main_file');
 
-    expect($model->main_file->download('not-exists'))
+    expect($attachment->download('not-exists'))
         ->toBeNull();
 
 })->with('models');
@@ -49,8 +53,9 @@ it('will download original file when secure-ids is enabled', function(LaruploadH
 
     $model = $model::class;
     $model = save(new $model, jpg());
+    $attachment = $model->attachment('main_file');
 
-    expect($model->main_file->download())
+    expect($attachment->download())
         ->toBeInstanceOf(StreamedResponse::class)
         ->getStatusCode()
         ->toBe(200);
