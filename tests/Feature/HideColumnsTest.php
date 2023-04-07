@@ -23,7 +23,9 @@ it('will hide larupload columns from toArray response', function(LaruploadHeavyT
     $model = save(new $model, jpg());
     $array = $model->toArray();
 
-    expect(isset($array['main_file_file_name']))
-        ->toBeFalse();
+    foreach ($this->metaKeys as $meta) {
+        expect(isset($array["main_file_file_$meta"]))
+            ->toBeFalse();
+    }
 
 })->with('models');
