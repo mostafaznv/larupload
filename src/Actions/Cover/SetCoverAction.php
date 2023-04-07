@@ -10,7 +10,7 @@ use Mostafaznv\Larupload\DTOs\CoverActionData;
 class SetCoverAction
 {
     public function __construct(
-        private readonly ?UploadedFile    $file,
+        private readonly ?UploadedFile   $file,
         private readonly mixed           $cover,
         private readonly CoverActionData $data
     ) {}
