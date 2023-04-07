@@ -132,6 +132,22 @@ it('will delete cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel
 
 })->with('models');
 
+it('will clear dominant color after deleting cover for non-image files', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model = save($model, pdf(), jpg());
+
+    $dominantColor = $model->attachment('main_file')->meta('dominant_color');
+
+    expect($dominantColor)->toBeTruthy();
+
+    $model->attachment('main_file')->cover()->detach();
+    $model->save();
+
+    $dominantColor = $model->attachment('main_file')->meta('dominant_color');
+
+    expect($dominantColor)->toBeNull();
+
+})->with('models');
+
 it('will delete cover in standalone mode', function() {
     $upload = Larupload::init('uploader')->upload(jpg());
 
