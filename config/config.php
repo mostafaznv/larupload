@@ -113,7 +113,7 @@ return [
     |
     */
 
-    'naming-method' => Mostafaznv\Larupload\Enums\LaruploadNamingMethod::SLUG,
+    'naming-method' => Mostafaznv\Larupload\Enums\LaruploadNamingMethod::HASH_FILE,
     'lang'          => '',
 
     /*
