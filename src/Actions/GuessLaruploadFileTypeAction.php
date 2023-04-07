@@ -75,7 +75,8 @@ class GuessLaruploadFileTypeAction
 
     private function isCompressed(string $mime): bool {
         $mimeTypes = [
-            'application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed', 'application/x-tar',
+            'application/zip', 'application/x-compressed', 'application/x-zip-compressed', 'multipart/x-zip',
+            'application/x-rar-compressed', 'application/x-7z-compressed', 'application/x-tar',
             'application/gzip', 'application/x-bzip2', 'application/x-xz', 'application/x-lzip', 'application/x-lz4',
             'application/zstd', 'application/x-compress', 'application/gzip', 'application/x-bzip-compressed-tar',
             'application/x-bzip2-compressed-tar'
