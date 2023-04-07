@@ -245,3 +245,24 @@ it('can customize cover style in standalone mode', function() {
         ->toBe(150);
 
 });
+
+it('wont upload if cover has an error', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    save($model, pdf(), png(2));
+
+})->with('models')->throws(RuntimeException::class, 'The [main_file-cover] field has an error');
+
+it('wont upload if cover has an error in standalone mode', function() {
+    Larupload::init('uploader')->upload(pdf(), png(2));
+
+})->throws(RuntimeException::class, 'The [uploader-cover] field has an error');
+
+it('wont update cover if cover has an error', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model = save($model, pdf());
+    $model->attachment('main_file')->cover()->update(png(2));
+    $model->save();
+})->with('models')->throws(RuntimeException::class, 'The [main_file-cover] field has an error');;
+
+it('wont update cover if cover has an error in standalone mode', function() {
+    Larupload::init('uploader')->upload(jpg());
+    Larupload::init('uploader')->changeCover(png(2));
+})->throws(RuntimeException::class, 'The [uploader-cover] field has an error');;

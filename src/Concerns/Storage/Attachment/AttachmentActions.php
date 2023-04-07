@@ -23,6 +23,9 @@ trait AttachmentActions
         $coverIsAttachable = (file_has_value($cover) or $cover == null);
 
         if ($fileIsAttachable and $coverIsAttachable) {
+            file_is_valid($file, $this->name, 'file');
+            file_is_valid($cover, $this->name, 'cover');
+
             $this->file = $file;
             $this->uploaded = false;
 

@@ -288,3 +288,13 @@ it('will upload using create method of model', function(LaruploadHeavyTestModel|
         ->toHaveProperty('duration', null);
 
 })->with('models');
+
+it('wont upload file if file has an error', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    save($model, png(2));
+
+})->with('models')->throws(RuntimeException::class, 'The [main_file-file] field has an error');
+
+it('wont upload file if file has an error in standalone mode', function() {
+    Larupload::init('uploader')->upload(png(2));
+
+})->throws(RuntimeException::class, 'The [uploader-file] field has an error');

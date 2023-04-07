@@ -158,3 +158,30 @@ if (!function_exists('file_has_value')) {
         return $file and ($file instanceof \Illuminate\Http\UploadedFile);
     }
 }
+
+if (!function_exists('file_is_valid')) {
+    /**
+     * Throw exception if file is not valid
+     *
+     * @param mixed $file
+     * @param string $name
+     * @param string $type
+     * @return bool
+     */
+    function file_is_valid(mixed $file, string $name, string $type): bool
+    {
+        if ($file instanceof \Illuminate\Http\UploadedFile) {
+            $condition = $file->isValid() === false;
+            $message = trans('larupload::messages.file-has-error', [
+                'attribute' => "$name-$type",
+                'error'     => $file->getErrorMessage()
+            ]);
+
+            throw_if($condition, $message);
+        }
+
+        return true;
+    }
+}
+
+

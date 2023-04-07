@@ -14,6 +14,9 @@ trait BaseStandaloneLarupload
     {
         $this->internalFunctionIsCallable = true;
 
+        file_is_valid($file, $this->name, 'file');
+        file_is_valid($cover, $this->name, 'cover');
+
         $this->file = $this->optimizeImage ? OptimizeImageAction::make($file)->process() : $file;
         $this->type = GuessLaruploadFileTypeAction::make($file)->calc();
         $this->cover = $cover;

@@ -35,7 +35,7 @@ uses(TestCase::class)
 |--------------------------------------------------------------------------
 */
 
-expect()->extend('toBeExists', function () {
+expect()->extend('toBeExists', function() {
     $baseUrl = config('app.url');
     $url = str_replace($baseUrl, '', $this->value);
     $path = public_path($url);
@@ -45,7 +45,7 @@ expect()->extend('toBeExists', function () {
         : throw new Exception('File not exists');
 });
 
-expect()->extend('toNotExists', function () {
+expect()->extend('toNotExists', function() {
     $baseUrl = config('app.url');
     $url = str_replace($baseUrl, '', $this->value);
     $path = public_path($url);
@@ -129,7 +129,7 @@ function macroColumns(LaruploadMode $mode): array
     return $columns;
 }
 
-function copyFile(string $path, string $name, string $mimeType): UploadedFile
+function copyFile(string $path, string $name, string $mimeType, int $error = 0): UploadedFile
 {
     $tempBasePath = larupload_temp_dir() . '/test-files';
     $tempFile = $tempBasePath . '/' . basename($path);
@@ -137,7 +137,7 @@ function copyFile(string $path, string $name, string $mimeType): UploadedFile
     @mkdir($tempBasePath);
     copy($path, $tempFile);
 
-    return new UploadedFile($tempFile, $name, $mimeType, null, true);
+    return new UploadedFile($tempFile, $name, $mimeType, $error, true);
 }
 
 function jpg(bool $withFarsiTitle = false): UploadedFile
@@ -151,9 +151,9 @@ function jpg(bool $withFarsiTitle = false): UploadedFile
     return copyFile("$path/image.jpg", 'image.jpg', 'image/jpeg');
 }
 
-function png(): UploadedFile
+function png(int $error = 0): UploadedFile
 {
-    return copyFile(realpath(__DIR__ . '/Support/Data/image.png'), 'image.png', 'image/png');
+    return copyFile(realpath(__DIR__ . '/Support/Data/image.png'), 'image.png', 'image/png', $error);
 }
 
 function webp(): UploadedFile
@@ -179,4 +179,14 @@ function mp3(): UploadedFile
 function pdf(): UploadedFile
 {
     return new UploadedFile(realpath(__DIR__ . '/Support/Data/pdf-1.pdf'), 'pdf-1.pdf', 'application/pdf', null, true);
+}
+
+function zip(): UploadedFile
+{
+    return new UploadedFile(realpath(__DIR__ . '/Support/Data/compress.zip'), 'compress.zip', 'application/zip', null, true);
+}
+
+function php(): UploadedFile
+{
+    return new UploadedFile(realpath(__DIR__ . '/Support/Data/php.php'), 'pdf-1.pdf', 'text/x-php', null, true);
 }

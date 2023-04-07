@@ -9,8 +9,9 @@ use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - remove meta-data from file
     // TODO - 100% test coverage
+    // TODO - documentation
+    // TODO - remove meta-data from file
 
     public function boot(): void
     {

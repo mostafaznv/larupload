@@ -13,7 +13,9 @@ trait CoverAttachment
 {
     public function updateCover(UploadedFile $file): bool
     {
-        if ($this->output['type'] and $file->isValid()) {
+        file_is_valid($file, $this->name, 'cover');
+
+        if ($this->output['type']) {
             $this->uploaded = false;
             $this->cover = $file;
             $this->type = LaruploadFileType::from($this->output['type']);
