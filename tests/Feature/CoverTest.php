@@ -42,6 +42,32 @@ it('will upload file with cover in standalone mode', function() {
         ->toHaveProperty('dominant_color', $details['color']);
 });
 
+it('wont upload cover if file is not an image', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model = save($model, pdf(), zip());
+
+    $url = $model->attachment('main_file')->url('cover');
+    $meta = $model->attachment('main_file')->meta();
+
+    expect($url)
+        ->toBeNull()
+        ->and($meta)
+        ->toHaveProperty('cover', null)
+        ->toHaveProperty('dominant_color', null);
+
+})->with('models');
+
+it('wont upload cover if file is not an image in standalone mode', function() {
+    $upload = Larupload::init('uploader')
+        ->upload(pdf(), zip());
+
+    expect($upload->cover)
+        ->toBeNull()
+        ->and($upload->meta)
+        ->toHaveProperty('cover', null)
+        ->toHaveProperty('dominant_color', null);
+
+});
+
 it('will update cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
