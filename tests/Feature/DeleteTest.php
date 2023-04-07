@@ -49,12 +49,10 @@ it('will delete all files after deleting model when secure-ids is enabled', func
 })->with('models');
 
 it('wont delete files when preserveFiles is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    config()->set('larupload.preserve-files', true);
+
     $model = $model::class;
-    $model = new $model;
-
-    $model->main_file->preserveFiles(true);
-
-    $model = save($model, jpg());
+    $model = save(new $model, jpg());
     $paths = urlsToPath($model->main_file);
 
     foreach ($paths as $path) {

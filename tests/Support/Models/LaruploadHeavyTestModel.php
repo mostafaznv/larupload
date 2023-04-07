@@ -25,7 +25,6 @@ class LaruploadHeavyTestModel extends Model
         return [
             Attachment::make('main_file', LaruploadMode::HEAVY)
                 ->disk('local')
-                ->namingMethod(LaruploadNamingMethod::HASH_FILE)
                 ->withMeta(true)
                 ->image('small_size', 200, 200, LaruploadMediaStyle::CROP)
                 ->image('small', 200, 200, LaruploadMediaStyle::CROP)
