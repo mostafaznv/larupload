@@ -196,7 +196,7 @@ it('will upload image in standalone mode', function() {
         ->toHaveProperty('dominant_color', $details['color'])
         ->toHaveProperty('duration', null)
         ->and($upload->meta->name)
-        ->toContain($details['name']['slug']);
+        ->toContain($details['name']['hash']);
 });
 
 it('will upload audio in standalone mode', function() {
