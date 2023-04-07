@@ -1,5 +1,6 @@
 <?php
 
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 
@@ -9,6 +10,7 @@ it('will create all columns in heavy mode', function() {
     expect($columns)
         ->toBeArray()
         ->toHaveCount(11)
+        //
         ->and($columns)
         ->toHaveKey('file_file_name')
         ->and($columns['file_file_name'])
@@ -32,14 +34,16 @@ it('will create all columns in heavy mode', function() {
         ->toHaveKey('type', 'integer')
         ->toHaveKey('unsigned', true)
         ->toHaveKey('nullable', true)
+        ->toHaveKey('index', true)
         //
         ->and($columns)
         ->toHaveKey('file_file_type')
         ->and($columns['file_file_type'])
         ->toBeArray()
-        ->toHaveKey('type', 'string')
-        ->toHaveKey('length', 85)
+        ->toHaveKey('type', 'enum')
+        ->toHaveKey('allowed', enum_to_names(LaruploadFileType::cases()))
         ->toHaveKey('nullable', true)
+        ->toHaveKey('index', true)
         //
         ->and($columns)
         ->toHaveKey('file_file_mime_type')
@@ -72,6 +76,7 @@ it('will create all columns in heavy mode', function() {
         ->toHaveKey('type', 'integer')
         ->toHaveKey('unsigned', true)
         ->toHaveKey('nullable', true)
+        ->toHaveKey('index', true)
         //
         ->and($columns)
         ->toHaveKey('file_file_dominant_color')

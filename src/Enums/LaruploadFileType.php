@@ -7,7 +7,7 @@ enum LaruploadFileType
     case IMAGE;
     case VIDEO;
     case AUDIO;
-    case PDF;
+    case DOCUMENT;
     case COMPRESSED;
     case FILE;
 
@@ -17,7 +17,7 @@ enum LaruploadFileType
             'IMAGE'      => LaruploadFileType::IMAGE,
             'VIDEO'      => LaruploadFileType::VIDEO,
             'AUDIO'      => LaruploadFileType::AUDIO,
-            'PDF'        => LaruploadFileType::PDF,
+            'DOCUMENT'   => LaruploadFileType::DOCUMENT,
             'COMPRESSED' => LaruploadFileType::COMPRESSED,
             default      => LaruploadFileType::FILE,
         };

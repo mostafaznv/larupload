@@ -9,13 +9,11 @@ use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - convert functions/traits/concerns to action
-    // TODO - add index to database columns
     // TODO - add some comments to help IDEs to show attachment functions
-    // TODO - remove meta data from file
+    // TODO - remove meta-data from file
     // TODO - 100% test coverage
 
-    public function boot()
+    public function boot(): void
     {
         $this->loadTranslationsFrom(__DIR__ . '/../translations', 'larupload');
 
@@ -26,14 +24,14 @@ class LaruploadServiceProvider extends ServiceProvider
         }
     }
 
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'larupload');
 
         $this->registerMacros();
     }
 
-    protected function registerMacros()
+    protected function registerMacros(): void
     {
         BlueprintIlluminate::macro('upload', function(string $name, LaruploadMode $mode = LaruploadMode::HEAVY) {
             Blueprint::columns($this, $name, $mode);

@@ -4,6 +4,7 @@ namespace Mostafaznv\Larupload\Database\Schema;
 
 use Illuminate\Database\Schema\Blueprint as BlueprintIlluminate;
 use Illuminate\Support\Facades\DB;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use PDO;
 
@@ -22,12 +23,12 @@ class Blueprint
 
         if ($mode === LaruploadMode::HEAVY) {
             $table->string("{$name}_file_id", 36)->nullable();
-            $table->unsignedInteger("{$name}_file_size")->nullable();
-            $table->string("{$name}_file_type", 85)->nullable();
+            $table->unsignedInteger("{$name}_file_size")->nullable()->index();
+            $table->enum("{$name}_file_type", enum_to_names(LaruploadFileType::cases()))->nullable()->index();
             $table->string("{$name}_file_mime_type", 85)->nullable();
             $table->unsignedInteger("{$name}_file_width")->nullable();
             $table->unsignedInteger("{$name}_file_height")->nullable();
-            $table->unsignedInteger("{$name}_file_duration")->nullable();
+            $table->unsignedInteger("{$name}_file_duration")->nullable()->index();
             $table->string("{$name}_file_dominant_color", 7)->nullable();
             $table->string("{$name}_file_format", 85)->nullable();
             $table->string("{$name}_file_cover", 85)->nullable();
