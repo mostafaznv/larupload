@@ -129,6 +129,25 @@ function macroColumns(LaruploadMode $mode): array
     return $columns;
 }
 
+function rmRf(string $path): void
+{
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($files as $file) {
+        if ($file->isDir()) {
+            rmdir($file->getRealPath());
+        }
+        else {
+            unlink($file->getRealPath());
+        }
+    }
+
+    rmdir($path);
+}
+
 function copyFile(string $path, string $name, string $mimeType, int $error = 0): UploadedFile
 {
     $tempBasePath = larupload_temp_dir() . '/test-files';

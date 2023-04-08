@@ -132,6 +132,23 @@ it('will update cover when secure-ids is enabled', function(LaruploadHeavyTestMo
 
 })->with('models');
 
+it('wont update cover if meta file doesnt exist in standalone mode', function() {
+    $upload = Larupload::init('uploader')->upload(jpg());
+
+    expect($upload->meta->cover)
+        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash']);
+
+    $meta = public_path('uploads/uploader/.meta');
+    expect(file_exists($meta))->toBeTrue();
+
+    unlink($meta);
+    expect(file_exists($meta))->toBeFalse();
+
+    $upload = Larupload::init('uploader')->changeCover(png());
+
+    expect($upload)->toBeNull();
+});
+
 it('will delete cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 

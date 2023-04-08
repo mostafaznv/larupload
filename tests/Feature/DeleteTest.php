@@ -133,3 +133,20 @@ it('will delete all files in standalone mode', function() {
 
     expect(file_exists($path))->toBeFalse();
 });
+
+it("won't crash on delete if file doesn't exist in standalone mode", function() {
+    Larupload::init('uploader')->upload(jpg());
+
+    $path = public_path('uploads/uploader');
+
+    expect(is_dir($path))->toBeTrue();
+
+    rmRf($path);
+
+    expect(is_dir($path))->toBeFalse();
+
+    $result = Larupload::init('uploader')->delete();
+
+    expect($result)->toBeFalse();
+});
+
