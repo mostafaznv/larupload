@@ -166,6 +166,11 @@ function svg(): UploadedFile
     return copyFile(realpath(__DIR__ . '/Support/Data/image.svg'), 'image.svg', 'image/svg+xml');
 }
 
+function gif(): UploadedFile
+{
+    return copyFile(realpath(__DIR__ . '/Support/Data/image.gif'), 'image.gif', 'image/gif');
+}
+
 function mp4(): UploadedFile
 {
     return new UploadedFile(realpath(__DIR__ . '/Support/Data/video-1.mp4'), 'video-1.mp4', 'video/mp4', null, true);
