@@ -70,3 +70,39 @@ it('will return meta properties camelCase in standalone mode', function() {
         ->toHaveProperty('dominantColor', $details['color']);
 
 });
+
+it('will return urls of all attachments on getAttachment method', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
+    $model = save($model, pdf());
+    $attachments = $model->getAttachments();
+
+    expect($attachments)
+        ->toBeObject()
+        ->toHaveProperty('main_file')
+        ->and($attachments->main_file)
+        ->toBeObject()
+        ->toHaveProperties($properties);
+
+})->with('models');
+
+it('will return specific attachment on getAttachment method when attachment name passed', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
+    $model = save($model, pdf());
+    $attachments = $model->getAttachments('main_file');
+
+    expect($attachments)
+        ->toBeObject()
+        ->not()
+        ->toHaveProperty('main_file')
+        ->and($attachments)
+        ->toBeObject()
+        ->toHaveProperties($properties);
+
+})->with('models');
+
+it("will return null if attachment item doesn't exist", function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $attachment = $model->attachment('not-found');
+    expect($attachment)->toBeNull();
+
+    $attachments = $model->getAttachments('not-found');
+    expect($attachments)->toBeNull();
+
+})->with('models');

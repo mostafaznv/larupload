@@ -68,6 +68,19 @@ trait LaruploadTransformers
     }
 
     /**
+     * @param string $name
+     * @return AttachmentProxy|null
+     */
+    public function attachment(string $name): ?AttachmentProxy
+    {
+        if ($attachment = $this->getAttachment($name)) {
+            return new AttachmentProxy($attachment);
+        }
+
+        return null;
+    }
+
+    /**
      * Override toArray method
      *
      * @return array
@@ -82,19 +95,6 @@ trait LaruploadTransformers
         }
 
         return $array;
-    }
-
-    /**
-     * @param string $name
-     * @return AttachmentProxy|null
-     */
-    public function attachment(string $name): ?AttachmentProxy
-    {
-        if ($attachment = $this->getAttachment($name)) {
-            return new AttachmentProxy($attachment);
-        }
-
-        return null;
     }
 
     /**
