@@ -85,6 +85,19 @@ trait LaruploadTransformers
     }
 
     /**
+     * @param string $name
+     * @return AttachmentProxy|null
+     */
+    public function attachment(string $name): ?AttachmentProxy
+    {
+        if ($attachment = $this->getAttachment($name)) {
+            return new AttachmentProxy($attachment);
+        }
+
+        return null;
+    }
+
+    /**
      * Retrieve attachment if exists, otherwise return null
      *
      * @param $name
