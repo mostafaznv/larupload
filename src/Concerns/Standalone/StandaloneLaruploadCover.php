@@ -39,7 +39,7 @@ trait StandaloneLaruploadCover
     {
         if ($this->metaExists()) {
             $this->internalFunctionIsCallable = true;
-            $res = parent::detachCover();
+            $res = $this->detachCover();
 
             if ($res) {
                 $this->setCover($this->id);
