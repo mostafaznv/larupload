@@ -26,6 +26,12 @@ uses(TestCase::class)
         if (is_dir($tempBasePath)) {
             array_map('unlink', glob("$tempBasePath/*.*"));
         }
+
+        $path = public_path('uploads');
+
+        if (is_dir($path)) {
+            rmRf($path);
+        }
     })
     ->in(__DIR__);
 
