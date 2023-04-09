@@ -210,6 +210,22 @@ it('will delete cover in standalone mode', function() {
 
 });
 
+it('wont delete cover if meta file doesnt exist in standalone mode', function() {
+    $upload = Larupload::init('uploader')->upload(jpg());
+
+    expect($upload->cover)->toBeExists();
+
+    $meta = public_path('uploads/uploader/.meta');
+    expect(file_exists($meta))->toBeTrue();
+
+    unlink($meta);
+    expect(file_exists($meta))->toBeFalse();
+
+    $upload = Larupload::init('uploader')->deleteCover();
+
+    expect($upload)->toBeNull();
+});
+
 it('will delete cover when secure-ids is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
 
