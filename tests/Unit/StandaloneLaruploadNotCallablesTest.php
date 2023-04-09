@@ -55,3 +55,8 @@ it('will throw exception when updateCover method cals on standalone larupload fa
     Larupload::init('uploader')->updateCover(jpg());
 
 })->throws(Exception::class, $msg);
+
+it('will throw exception when detachCover method cals on standalone larupload facade', function () {
+    Larupload::init('uploader')->detachCover();
+
+})->throws(Exception::class, $msg);
