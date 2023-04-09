@@ -50,3 +50,8 @@ it('will throw exception when secureIdsMethod method cals on standalone laruploa
     Larupload::init('uploader')->secureIdsMethod(LaruploadSecureIdsMethod::ULID);
 
 })->throws(Exception::class, $msg);
+
+it('will throw exception when updateCover method cals on standalone larupload facade', function () {
+    Larupload::init('uploader')->updateCover(jpg());
+
+})->throws(Exception::class, $msg);
