@@ -17,7 +17,9 @@ trait BootStandaloneLarupload
         static::$laruploadNull = crc32(time());
 
         if (!defined('LARUPLOAD_NULL')) {
+            // @codeCoverageIgnoreStart
             define('LARUPLOAD_NULL', static::$laruploadNull);
+            // @codeCoverageIgnoreEnd
         }
 
         parent::__construct($name, LaruploadMode::STANDALONE);
