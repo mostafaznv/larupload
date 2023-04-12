@@ -29,21 +29,21 @@ class ImageStyle extends Style
         if ($this->mode === LaruploadMediaStyle::SCALE_HEIGHT) {
             if ($this->width === null or $this->width === 0) {
                 throw new Exception(
-                    'Width is required when you are in landscape mode'
+                    'Width is required when you are in SCALE_HEIGHT mode'
                 );
             }
         }
         else if ($this->mode === LaruploadMediaStyle::SCALE_WIDTH) {
             if ($this->height === null or $this->height === 0) {
                 throw new Exception(
-                    'Height is required when you are in portrait mode'
+                    'Height is required when you are in SCALE_WIDTH mode'
                 );
             }
         }
         else if (in_array($this->mode, [LaruploadMediaStyle::CROP, LaruploadMediaStyle::FIT])) {
             if (!$this->width or !$this->height) {
                 throw new Exception(
-                    'Width and Height are required when you are in crop/exact mode'
+                    'Width and Height are required when you are in CROP/FIT mode'
                 );
             }
         }

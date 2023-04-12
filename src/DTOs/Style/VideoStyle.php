@@ -53,7 +53,7 @@ class VideoStyle extends Style
         else if ($this->mode === LaruploadMediaStyle::AUTO) {
             if (!$this->width and !$this->height) {
                 throw new Exception(
-                    'Width or height are required when you are in exact mode'
+                    'Width and height are required when you are in auto mode'
                 );
             }
         }

@@ -39,6 +39,12 @@ class StreamStyle
 
     private function validateName(): void
     {
+        if (is_numeric($this->name)) {
+            throw new Exception(
+                "Style name [$this->name] is numeric. please use string name for your style"
+            );
+        }
+
         if (ctype_alnum($this->name) === false) {
             throw new Exception(
                 "stream name [$this->name] should be an alpha numeric string"
