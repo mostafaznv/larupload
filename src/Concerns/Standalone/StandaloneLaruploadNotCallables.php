@@ -18,7 +18,7 @@ trait StandaloneLaruploadNotCallables
      */
     public static function make(string $name, LaruploadMode $mode = LaruploadMode::HEAVY): UploadEntities
     {
-        $self = new self();
+        $self = new self($name, $mode);
         $self->internalException();
     }
 

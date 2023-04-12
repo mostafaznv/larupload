@@ -1,5 +1,6 @@
 <?php
 
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
@@ -58,5 +59,10 @@ it('will throw exception when updateCover method cals on standalone larupload fa
 
 it('will throw exception when detachCover method cals on standalone larupload facade', function () {
     Larupload::init('uploader')->detachCover();
+
+})->throws(Exception::class, $msg);
+
+it('will throw exception when make method cals on standalone larupload facade', function () {
+    Larupload::make('test', LaruploadMode::HEAVY);
 
 })->throws(Exception::class, $msg);
