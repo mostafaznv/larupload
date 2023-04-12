@@ -101,6 +101,26 @@ it('will update cover after retrieving model', function(LaruploadHeavyTestModel|
 
 })->with('models');
 
+it('wont update cover if original file doesnt exist', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    DB::table($model->getTable())->insert(['id' => 1]);
+    $model = $model::find(1);
+
+    $meta = $model->attachment('main_file')->meta();
+
+    expect($meta)
+        ->name->toBeNull()
+        ->id->toBeNull()
+        ->type->toBeNull();
+
+    $model->attachment('main_file')->cover()->update(png());
+    $model->save();
+
+    $metaCover = $model->attachment('main_file')->meta('cover');
+
+    expect($metaCover)->toBeNull();
+
+})->with('models');
+
 it('will update cover in standalone mode', function() {
     $upload = Larupload::init('uploader')
         ->namingMethod(LaruploadNamingMethod::HASH_FILE)
