@@ -1,9 +1,12 @@
 <?php
 
 use Mostafaznv\Larupload\Larupload;
+use Mostafaznv\Larupload\Storage\Attachment;
+use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
+use Illuminate\Support\Facades\Storage;
 
 $properties = [
     'original', 'cover', 'stream', 'small_size', 'small', 'medium', 'landscape', 'portrait', 'exact', 'auto', 'meta'
@@ -106,6 +109,56 @@ it('will return null for cover in urls method, if generateCover property is disa
     expect($urls->cover)->toBeNull();
 
 })->with('models');
+
+it('will return null url, if file is set and the value is LARUPLOAD_NULL', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
+    $model = save($model, jpg());
+
+    $url = $model->attachment('main_file')->url();
+    expect($url)->toBeTruthy();
+
+    $model->main_file = LARUPLOAD_NULL;
+    $url = $model->attachment('main_file')->url();
+
+
+    expect($url)->toBeNull();
+
+})->with('models');
+
+it('will return full-url for not-local storage drivers', function() {
+    Storage::fake('s3');
+    $baseUrl = config('filesystems.disks.s3.url');
+    $attachments = [
+        Attachment::make('main_file')->disk('s3')
+    ];
+
+    $model = LaruploadTestModels::HEAVY->instance();
+    $model->setAttachments($attachments);
+
+    $model = save($model, jpg());
+    $url = $model->attachment('main_file')->url();
+
+    expect($url)
+        ->toStartWith($baseUrl)
+        ->toEndWith('.jpg');
+});
+
+it('will return relative url for not-local storage drivers', function() {
+    Storage::fake('s3');
+    config()->set('filesystems.disks.s3.url', null);
+    $attachments = [
+        Attachment::make('main_file')->disk('s3')
+    ];
+
+    $model = LaruploadTestModels::HEAVY->instance();
+    $model->setAttachments($attachments);
+
+    $model = save($model, jpg());
+    $url = $model->attachment('main_file')->url();
+
+    expect($url)
+        ->toStartWith('1/main-file/original/')
+        ->toEndWith('.jpg');
+});
 
 it('will return specific attachment on getAttachment method when attachment name passed', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
     $model = save($model, pdf());

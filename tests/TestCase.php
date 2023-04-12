@@ -39,6 +39,14 @@ abstract class TestCase extends Orchestra
         $app['config']->set('filesystems.disks.local.root', public_path('uploads'));
         $app['config']->set('filesystems.disks.local.url', $app['config']->get('app.url') . '/uploads');
         $app['config']->set('filesystems.disks.local.visibility', 'public');
+
+        $app['config']->set('filesystems.disks.s3.driver', 's3');
+        $app['config']->set('filesystems.disks.s3.key', 'key');
+        $app['config']->set('filesystems.disks.s3.secret', 'secret');
+        $app['config']->set('filesystems.disks.s3.region', 'region-1');
+        $app['config']->set('filesystems.disks.s3.bucket', 'uploads');
+        $app['config']->set('filesystems.disks.s3.url', 'https://s3-storage.dev/uploads');
+        $app['config']->set('filesystems.disks.s3.endpoint', 'https://console.s3-storage.dev:9000');
     }
 
     protected function setUpDatabase(Application $app)
