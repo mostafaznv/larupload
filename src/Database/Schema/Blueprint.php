@@ -43,31 +43,35 @@ class Blueprint
      *
      * @param BlueprintIlluminate $table
      * @param string $name
+     * @param LaruploadMode $mode
      */
-    public static function dropColumns(BlueprintIlluminate $table, string $name): void
-    {
-        $table->dropColumn(static::getDefaultColumns($name));
-    }
-
-    /**
-     * Get a list of default columns
-     *
-     * @param string $name
-     * @return array
-     */
-    public static function getDefaultColumns(string $name): array
+    public static function dropColumns(BlueprintIlluminate $table, string $name, LaruploadMode $mode = LaruploadMode::HEAVY): void
     {
         $columns = [
             "{$name}_file_name"
         ];
 
-        $coverColumns = [
-            "{$name}_file_id", "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type",
-            "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration",
-            "{$name}_file_format", "{$name}_file_cover"
-        ];
+        if ($mode === LaruploadMode::HEAVY) {
+            $tableName = $table->getTable();
+            $heavyColumns = [
+                "{$name}_file_id", "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type",
+                "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration",
+                "{$name}_file_dominant_color", "{$name}_file_format", "{$name}_file_cover"
+            ];
 
-        return array_merge($columns, $coverColumns);
+
+            $columns = array_merge($columns, $heavyColumns);
+
+            $table->dropIndex("{$tableName}_{$name}_file_size_index");
+            $table->dropIndex("{$tableName}_{$name}_file_type_index");
+            $table->dropIndex("{$tableName}_{$name}_file_duration_index");
+        }
+        else {
+            $columns[] = "{$name}_file_meta";
+        }
+
+
+        $table->dropColumn($columns);
     }
 
     /**

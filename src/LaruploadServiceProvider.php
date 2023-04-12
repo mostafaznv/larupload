@@ -9,7 +9,6 @@ use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - 100% test coverage
     // TODO - documentation
     // TODO - remove meta-data from file
 
@@ -37,8 +36,8 @@ class LaruploadServiceProvider extends ServiceProvider
             Blueprint::columns($this, $name, $mode);
         });
 
-        BlueprintIlluminate::macro('dropUpload', function(string $name) {
-            Blueprint::dropColumns($this, $name);
+        BlueprintIlluminate::macro('dropUpload', function(string $name, LaruploadMode $mode = LaruploadMode::HEAVY) {
+            Blueprint::dropColumns($this, $name, $mode);
         });
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Schema\Blueprint;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 
@@ -126,4 +127,41 @@ it('will create all columns in light mode', function() {
         ->toHaveKey('nullable', true)
         ->and($columns['file_file_meta']['type'])
         ->toBeIn(['text', 'json']);
+});
+
+
+it('will drop upload column in heavy mode', function() {
+    $table = 'upload_heavy';
+    $builder = $this->app['db']->connection()->getSchemaBuilder();
+
+    $builder->table($table, function(Blueprint $table) {
+        $table->dropUpload('main_file', LaruploadMode::HEAVY);
+    });
+
+    $columns = $builder->getColumnListing($table);
+
+    expect($columns)
+        ->toBeArray()
+        ->toHaveCount(3)
+        ->toMatchArray([
+            'id', 'created_at', 'updated_at'
+        ]);
+});
+
+it('will drop upload column in light mode', function() {
+    $table = 'upload_light';
+    $builder = $this->app['db']->connection()->getSchemaBuilder();
+
+    $builder->table($table, function(Blueprint $table) {
+        $table->dropUpload('main_file', LaruploadMode::LIGHT);
+    });
+
+    $columns = $builder->getColumnListing($table);
+
+    expect($columns)
+        ->toBeArray()
+        ->toHaveCount(3)
+        ->toMatchArray([
+            'id', 'created_at', 'updated_at'
+        ]);
 });

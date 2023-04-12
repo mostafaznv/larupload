@@ -4,7 +4,6 @@ namespace Mostafaznv\Larupload\Test;
 
 use Illuminate\Foundation\Application;
 use Mostafaznv\Larupload\LaruploadServiceProvider;
-use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestTablesMigration;
 use Orchestra\Testbench\TestCase as Orchestra;
 
