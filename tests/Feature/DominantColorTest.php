@@ -85,3 +85,27 @@ it('will calculate dominant color with high quality', function(LaruploadHeavyTes
     expect($fileColor)->toBe('#f6c009');
 
 })->with('models');
+
+it('wont calculate dominant color if it is disabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    config()->set('larupload.dominant-color', false);
+
+    $model = $model::class;
+    $model = save(new $model, jpg());
+
+    $fileColor = $model->attachment('main_file')->meta('dominant_color');
+
+    expect($fileColor)->toBeNull();
+
+})->with('models');
+
+it('wont crash if dominant color calculation fails', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    config()->set('larupload.dominant-color-quality', -1);
+
+    $model = $model::class;
+    $model = save(new $model, jpg());
+
+    $fileColor = $model->attachment('main_file')->meta('dominant_color');
+
+    expect($fileColor)->toBeNull();
+
+})->with('models');
