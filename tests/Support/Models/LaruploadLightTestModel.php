@@ -66,4 +66,9 @@ class LaruploadLightTestModel extends Model
                 )
         ];
     }
+
+    public function setAttachments(array $attachments): void
+    {
+        $this->attachments = $attachments;
+    }
 }
