@@ -56,6 +56,14 @@ it('will return meta properties camelCase', function(LaruploadHeavyTestModel|Lar
 
 })->with('models');
 
+it('will return null if meta key doesnt exist', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model = save(new $model, pdf());
+    $meta = $model->attachment('main_file')->meta('doesnt-exist');
+
+    expect($meta)->toBeNull();
+
+})->with('models');
+
 it('will return meta properties camelCase in standalone mode', function() {
     config()->set('larupload.camel-case-response', true);
 
