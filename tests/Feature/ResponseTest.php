@@ -92,6 +92,21 @@ it('will return urls of all attachments on getAttachment method', function(Larup
 
 })->with('models');
 
+it('will return null for cover in urls method, if generateCover property is disabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
+    $model = save($model, jpg());
+    $urls = $model->attachment('main_file')->urls();
+
+    expect($urls->cover)->toBeTruthy();
+
+    config()->set('larupload.generate-cover', false);
+
+    $model = $model::find($model->id);
+    $urls = $model->attachment('main_file')->urls();
+
+    expect($urls->cover)->toBeNull();
+
+})->with('models');
+
 it('will return specific attachment on getAttachment method when attachment name passed', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
     $model = save($model, pdf());
     $attachments = $model->getAttachments('main_file');
