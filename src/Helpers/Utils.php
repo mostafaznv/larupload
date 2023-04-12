@@ -34,12 +34,14 @@ if (!function_exists('larupload_temp_dir')) {
      */
     function larupload_temp_dir(): string
     {
+        // @codeCoverageIgnoreStart
         if (ini_get('upload_tmp_dir')) {
             $path = ini_get('upload_tmp_dir');
         }
         else if (getenv('temp')) {
             $path = getenv('temp');
         }
+        // @codeCoverageIgnoreEnd
         else {
             $path = sys_get_temp_dir();
         }
@@ -82,7 +84,7 @@ if (!function_exists('get_larupload_save_path')) {
         }
         else {
             $tempDir = larupload_temp_dir();
-            $tempName = time() . '-' . $name;
+            $tempName = \Illuminate\Support\Carbon::now()->unix() . '-' . $name;
             $temp = "$tempDir/$tempName";
         }
 
@@ -127,6 +129,7 @@ if (!function_exists('larupload_finalize_save')) {
                             $saveToPath, $fileObject, $fileObject->getFilename()
                         );
 
+                        @unlink($filePath);
                         unset($fileObject);
                     }
                 }
