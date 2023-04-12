@@ -10,7 +10,7 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 use Illuminate\Support\Facades\DB;
 
-it('will upload file with cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload file with cover', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, pdf(), jpg());
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
 
@@ -27,7 +27,7 @@ it('will upload file with cover', function(LaruploadHeavyTestModel|LaruploadLigh
 
 })->with('models');
 
-it('will upload file with cover in standalone mode', function() {
+it('will upload file with cover in standalone mode', function () {
     $upload = Larupload::init('uploader')
         ->namingMethod(LaruploadNamingMethod::HASH_FILE)
         ->upload(pdf(), jpg());
@@ -43,7 +43,7 @@ it('will upload file with cover in standalone mode', function() {
         ->toHaveProperty('dominant_color', $details['color']);
 });
 
-it('wont upload cover if file is not an image', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('wont upload cover if file is not an image', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, pdf(), zip());
 
     $url = $model->attachment('main_file')->url('cover');
@@ -57,7 +57,7 @@ it('wont upload cover if file is not an image', function(LaruploadHeavyTestModel
 
 })->with('models');
 
-it('wont upload cover if file is not an image in standalone mode', function() {
+it('wont upload cover if file is not an image in standalone mode', function () {
     $upload = Larupload::init('uploader')
         ->upload(pdf(), zip());
 
@@ -69,7 +69,7 @@ it('wont upload cover if file is not an image in standalone mode', function() {
 
 });
 
-it('will update cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will update cover', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
     $fileCover = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash'];
@@ -87,7 +87,7 @@ it('will update cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel
 
 })->with('models');
 
-it('will update cover after retrieving model', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will update cover after retrieving model', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
     $model = $model::find(1);
 
@@ -101,7 +101,7 @@ it('will update cover after retrieving model', function(LaruploadHeavyTestModel|
 
 })->with('models');
 
-it('wont update cover if original file doesnt exist', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('wont update cover if original file doesnt exist', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     DB::table($model->getTable())->insert(['id' => 1]);
     $model = $model::find(1);
 
@@ -112,16 +112,38 @@ it('wont update cover if original file doesnt exist', function(LaruploadHeavyTes
         ->id->toBeNull()
         ->type->toBeNull();
 
-    $model->attachment('main_file')->cover()->update(png());
+    $attached = $model->attachment('main_file')->cover()->update(png());
     $model->save();
 
     $metaCover = $model->attachment('main_file')->meta('cover');
 
-    expect($metaCover)->toBeNull();
+    expect($metaCover)->toBeNull()
+        ->and($attached)->toBeFalse();
 
 })->with('models');
 
-it('will update cover in standalone mode', function() {
+it('wont detach cover if original file doesnt exist', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    DB::table($model->getTable())->insert(['id' => 1]);
+    $model = $model::find(1);
+
+    $meta = $model->attachment('main_file')->meta();
+
+    expect($meta)
+        ->name->toBeNull()
+        ->id->toBeNull()
+        ->type->toBeNull();
+
+    $detached = $model->attachment('main_file')->cover()->detach();
+    $model->save();
+
+    $metaCover = $model->attachment('main_file')->meta('cover');
+
+    expect($metaCover)->toBeNull()
+        ->and($detached)->toBeFalse();
+
+})->with('models');
+
+it('will update cover in standalone mode', function () {
     $upload = Larupload::init('uploader')
         ->namingMethod(LaruploadNamingMethod::HASH_FILE)
         ->upload(jpg());
@@ -138,7 +160,7 @@ it('will update cover in standalone mode', function() {
 
 });
 
-it('will update cover when secure-ids is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will update cover when secure-ids is enabled', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
 
     $model = $model::class;
@@ -167,7 +189,7 @@ it('will update cover when secure-ids is enabled', function(LaruploadHeavyTestMo
 
 })->with('models');
 
-it('wont update cover if meta file doesnt exist in standalone mode', function() {
+it('wont update cover if meta file doesnt exist in standalone mode', function () {
     $upload = Larupload::init('uploader')->upload(jpg());
 
     expect($upload->meta->cover)
@@ -184,7 +206,7 @@ it('wont update cover if meta file doesnt exist in standalone mode', function() 
     expect($upload)->toBeNull();
 });
 
-it('will delete cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will delete cover', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
     $url = $model->attachment('main_file')->url('cover');
@@ -210,7 +232,7 @@ it('will delete cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel
 
 })->with('models');
 
-it('will clear dominant color after deleting cover for non-image files', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will clear dominant color after deleting cover for non-image files', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, pdf(), jpg());
 
     $dominantColor = $model->attachment('main_file')->meta('dominant_color');
@@ -226,7 +248,7 @@ it('will clear dominant color after deleting cover for non-image files', functio
 
 })->with('models');
 
-it('will delete cover in standalone mode', function() {
+it('will delete cover in standalone mode', function () {
     $upload = Larupload::init('uploader')->upload(jpg());
 
     expect($upload->cover)
@@ -245,7 +267,7 @@ it('will delete cover in standalone mode', function() {
 
 });
 
-it('wont delete cover if meta file doesnt exist in standalone mode', function() {
+it('wont delete cover if meta file doesnt exist in standalone mode', function () {
     $upload = Larupload::init('uploader')->upload(jpg());
 
     expect($upload->cover)->toBeExists();
@@ -261,7 +283,7 @@ it('wont delete cover if meta file doesnt exist in standalone mode', function() 
     expect($upload)->toBeNull();
 });
 
-it('will delete cover when secure-ids is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will delete cover when secure-ids is enabled', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
 
     $model = $model::class;
@@ -292,7 +314,7 @@ it('will delete cover when secure-ids is enabled', function(LaruploadHeavyTestMo
 
 })->with('models');
 
-it('can customize cover style', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('can customize cover style', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     config()->set('larupload.cover-style', ImageStyle::make(
         name: 'cover',
         width: 200,
@@ -320,7 +342,7 @@ it('can customize cover style', function(LaruploadHeavyTestModel|LaruploadLightT
 
 })->with('models');
 
-it('can customize cover style in standalone mode', function() {
+it('can customize cover style in standalone mode', function () {
     $upload = Larupload::init('uploader')
         ->coverStyle('cover', 200, 150, LaruploadMediaStyle::CROP)
         ->upload(jpg());
@@ -340,23 +362,23 @@ it('can customize cover style in standalone mode', function() {
 
 });
 
-it('wont upload if cover has an error', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('wont upload if cover has an error', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     save($model, pdf(), png(2));
 
 })->with('models')->throws(RuntimeException::class, 'The [main_file-cover] field has an error');
 
-it('wont upload if cover has an error in standalone mode', function() {
+it('wont upload if cover has an error in standalone mode', function () {
     Larupload::init('uploader')->upload(pdf(), png(2));
 
 })->throws(RuntimeException::class, 'The [uploader-cover] field has an error');
 
-it('wont update cover if cover has an error', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('wont update cover if cover has an error', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, pdf());
     $model->attachment('main_file')->cover()->update(png(2));
     $model->save();
 })->with('models')->throws(RuntimeException::class, 'The [main_file-cover] field has an error');;
 
-it('wont update cover if cover has an error in standalone mode', function() {
+it('wont update cover if cover has an error in standalone mode', function () {
     Larupload::init('uploader')->upload(jpg());
     Larupload::init('uploader')->changeCover(png(2));
 })->throws(RuntimeException::class, 'The [uploader-cover] field has an error');;
