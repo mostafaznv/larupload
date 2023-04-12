@@ -8,6 +8,7 @@ use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
+use Illuminate\Support\Facades\DB;
 
 it('will upload file with cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, pdf(), jpg());
@@ -75,6 +76,20 @@ it('will update cover', function(LaruploadHeavyTestModel|LaruploadLightTestModel
     $metaCover = $model->attachment('main_file')->meta('cover');
 
     expect($metaCover)->toBe($fileCover);
+
+    $model->attachment('main_file')->cover()->update(png());
+    $model->save();
+
+    $fileCover = LaruploadTestConsts::IMAGE_DETAILS['png']['name']['hash'];
+    $metaCover = $model->attachment('main_file')->meta('cover');
+
+    expect($metaCover)->toBe($fileCover);
+
+})->with('models');
+
+it('will update cover after retrieving model', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model = save($model, jpg());
+    $model = $model::find(1);
 
     $model->attachment('main_file')->cover()->update(png());
     $model->save();
