@@ -875,8 +875,6 @@ if you want to generate m3u8 files from video sources, you should use `stream`. 
 | 4     | format           | X264   | true     | -       | Default format is X264. You can set additional options (video/audio kilo bitrate and more) for this format |
 | 5     | padding          | bool   | false    | false   | If true, the video will be padded with black color to fit the given dimension                              |
 
-## Changelog
-Refer to the [Changelog](CHANGELOG.md) for a full history of the project.
 
 ----
 I develop in a open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
