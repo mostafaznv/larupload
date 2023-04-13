@@ -72,12 +72,15 @@ class FFMpeg
         if (empty($this->meta)) {
             $meta = $this->media->getStreams()->first()->all();
 
+            // support rotate tag in old ffmpeg versions
             if (isset($meta['tags']['rotate'])) {
+                // @codeCoverageIgnoreStart
                 $rotate = $meta['tags']['rotate'];
 
                 if ($rotate == 90 or $rotate == 270) {
                     list($meta['height'], $meta['width']) = array($meta['width'], $meta['height']);
                 }
+                // @codeCoverageIgnoreEnd
             }
 
             $this->meta = FFMpegMeta::make(
