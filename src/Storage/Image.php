@@ -58,22 +58,17 @@ class Image
     {
         $saveTo = Storage::disk($this->disk)->path($saveTo);
 
-        if ($style->mode) {
-            if ($style->mode === LaruploadMediaStyle::SCALE_HEIGHT and $style->width) {
-                $this->resizeLandscape($style->width);
-            }
-            else if ($style->mode == LaruploadMediaStyle::SCALE_WIDTH and $style->height) {
-                $this->resizePortrait($style->height);
-            }
-            else if ($style->mode == LaruploadMediaStyle::CROP and $style->height and $style->width) {
-                $this->resizeCrop($style->width, $style->height);
-            }
-            else if ($style->mode == LaruploadMediaStyle::FIT and $style->height and $style->width) {
-                $this->resizeExact($style->width, $style->height);
-            }
-            else {
-                $this->resizeAuto($style->width, $style->height);
-            }
+        if ($style->mode === LaruploadMediaStyle::SCALE_HEIGHT and $style->width) {
+            $this->resizeLandscape($style->width);
+        }
+        else if ($style->mode == LaruploadMediaStyle::SCALE_WIDTH and $style->height) {
+            $this->resizePortrait($style->height);
+        }
+        else if ($style->mode == LaruploadMediaStyle::CROP and $style->height and $style->width) {
+            $this->resizeCrop($style->width, $style->height);
+        }
+        else if ($style->mode == LaruploadMediaStyle::FIT and $style->height and $style->width) {
+            $this->resizeExact($style->width, $style->height);
         }
         else {
             $this->resizeAuto($style->width, $style->height);
