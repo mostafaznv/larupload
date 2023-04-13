@@ -169,11 +169,16 @@ class FFMpeg
             $this->media->filters()->custom("scale=$scaleType,crop=$width:$height,setsar=1");
         }
         else {
+            /**
+             * With new validation rules in Video/Image/Stream style, this code will never happen
+             */
+            // @codeCoverageIgnoreStart
             $this->media->filters()->custom("scale=$scaleType,crop=$scale:$scale,setsar=1");
+            // @codeCoverageIgnoreEnd
         }
     }
 
-    public function frame(int|float|null $fromSeconds, array $saveTo): void
+    private function frame(int|float|null $fromSeconds, array $saveTo): void
     {
         if (is_null($fromSeconds)) {
             $fromSeconds = $this->getMeta()->duration / 2;
@@ -199,8 +204,11 @@ class FFMpeg
         }
         catch (ExecutionFailureException $e) {
             if (file_exists($saveToPath) && is_writable($saveToPath)) {
-                unlink($saveToPath);
+                // @codeCoverageIgnoreStart
+                @unlink($saveToPath);
+                // @codeCoverageIgnoreEnd
             }
+
             throw new RuntimeException('Unable to save frame', $e->getCode(), $e);
         }
     }
