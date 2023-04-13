@@ -251,7 +251,7 @@ it('can stream videos', function() {
     $folders = ['lq', 'mq'];
 
     $styles = [
-        StreamStyle::make($folders[0], 400, 300, new X264, LaruploadMediaStyle::SCALE_HEIGHT),
+        StreamStyle::make($folders[0], 400, 300, new X264, LaruploadMediaStyle::CROP),
         StreamStyle::make($folders[1], 500, 400, new X264, LaruploadMediaStyle::SCALE_WIDTH, true),
     ];
 

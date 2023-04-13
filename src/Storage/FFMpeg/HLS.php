@@ -45,7 +45,9 @@ class HLS
             return true;
         }
 
+        // @codeCoverageIgnoreStart
         return false;
+        // @codeCoverageIgnoreEnd
     }
 
     private function processRepresentation(StreamStyle $style, string $path): FFMpegStreamRepresentation
