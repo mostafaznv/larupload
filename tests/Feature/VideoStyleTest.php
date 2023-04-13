@@ -52,7 +52,7 @@ it('will generate video styles correctly', function(LaruploadHeavyTestModel|Laru
         ->and($medium->width)
         ->toBe(800)
         ->and($medium->height)
-        ->toBe(450)
+        ->toBe(800)
         ->and($medium->duration)
         ->toBe(5)
         //

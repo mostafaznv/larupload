@@ -35,7 +35,7 @@ class LaruploadHeavyTestModel extends Model
                 ->image('auto', 300, 190, LaruploadMediaStyle::AUTO)
                 ->video('small_size', 200, 200, LaruploadMediaStyle::CROP)
                 ->video('small', 200, 200, LaruploadMediaStyle::CROP)
-                ->video('medium', 800, 800, LaruploadMediaStyle::AUTO)
+                ->video('medium', 800, 800, LaruploadMediaStyle::AUTO, new X264, true)
                 ->video('landscape', 400, null, LaruploadMediaStyle::SCALE_HEIGHT)
                 ->video('portrait', null, 400, LaruploadMediaStyle::SCALE_WIDTH)
                 ->video('exact', 300, 190, LaruploadMediaStyle::FIT)
