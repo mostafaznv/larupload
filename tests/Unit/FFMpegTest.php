@@ -12,6 +12,7 @@ use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Storage\FFMpeg\FFMpeg;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function() {
     $this->ffmpeg = new FFMpeg(mp4(), 'local', 10);
@@ -144,6 +145,27 @@ it('can capture screenshots from videos', function(int|null $fromSeconds, ImageS
     ]
 ]);
 
+it('can upload captured screenshots to remote disks', function() {
+    $disk = 's3';
+    Storage::fake($disk);
+
+    $ffmpeg = new FFMpeg(mp4(), $disk, 10);
+    $ffmpeg->capture(
+        fromSeconds: 2,
+        style: ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::CROP),
+        saveTo: 'cover.jpg'
+    );
+
+    $files = Storage::disk($disk)->allFiles();
+
+    expect($files)
+        ->toBeArray()
+        ->toHaveCount(1)
+        ->toMatchArray([
+            'cover.jpg'
+        ]);
+});
+
 it('wont capture screenshot if from second is wrong', function() {
     $fileName = 'cover.jpg';
     $path = get_larupload_save_path('local', $fileName)['local'];
@@ -245,6 +267,26 @@ it('can manipulate videos', function(VideoStyle $style, int $width, int $height)
     ]
 ]);
 
+it('can upload manipulated videos to remote disks', function() {
+    $disk = 's3';
+    Storage::fake($disk);
+
+    $ffmpeg = new FFMpeg(mp4(), $disk, 10);
+    $ffmpeg->manipulate(
+        style: VideoStyle::make('crop', 400, 300, LaruploadMediaStyle::CROP),
+        saveTo: 'video.mp4'
+    );
+
+    $files = Storage::disk($disk)->allFiles();
+
+    expect($files)
+        ->toBeArray()
+        ->toHaveCount(1)
+        ->toMatchArray([
+            'video.mp4'
+        ]);
+});
+
 it('can stream videos', function() {
     $fileName = 'stream.m3u8';
     $path = get_larupload_save_path('local', '')['local'];
@@ -271,6 +313,39 @@ it('can stream videos', function() {
 
         rmRf($folderPath);
     }
+});
+
+it('can upload streams to remote disks', function() {
+    $disk = 's3';
+    Storage::fake($disk);
+
+    $ffmpeg = new FFMpeg(mp4(), $disk, 10);
+    $ffmpeg->stream(
+        styles: [
+            StreamStyle::make('lq', 300, 200, new X264, LaruploadMediaStyle::SCALE_WIDTH),
+        ],
+        basePath: '/',
+        fileName: 'stream.m3u8'
+    );
+
+    $files = Storage::disk($disk)->allFiles();
+    $directories = Storage::disk($disk)->allDirectories();
+
+    expect($files)
+        ->toBeArray()
+        ->toHaveCount(4)
+        ->toMatchArray([
+            'lq/lq-0.ts',
+            'lq/lq-list.m3u8',
+            'lq/master.m3u8',
+            'stream.m3u8'
+        ])
+        ->and($directories)
+        ->toBeArray()
+        ->toHaveCount(1)
+        ->toMatchArray([
+            'lq'
+        ]);
 });
 
 it('can clone itself', function() {
