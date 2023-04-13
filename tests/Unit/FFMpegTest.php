@@ -68,7 +68,7 @@ it('can set meta from outside', function() {
         ->toBe(6);
 });
 
-it('can capture screenshots from videos', function(int|null $fromSeconds, ImageStyle $style, int $width, int $height, string $hash) {
+it('can capture screenshots from videos', function(int|null $fromSeconds, ImageStyle $style, int $width, int $height, array $hash) {
     $fileName = 'cover.jpg';
     $path = get_larupload_save_path('local', $fileName)['local'];
 
@@ -84,7 +84,7 @@ it('can capture screenshots from videos', function(int|null $fromSeconds, ImageS
     $size = $image->getSize();
 
     expect($hashFile)
-        ->toBe($hash)
+        ->toBeIn($hash)
         ->and($size->getWidth())
         ->toBe($width)
         ->and($size->getHeight())
@@ -98,49 +98,49 @@ it('can capture screenshots from videos', function(int|null $fromSeconds, ImageS
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::FIT),
         'width'       => 400,
         'height'      => 300,
-        'hash'        => 'ff1190d19a78893233945f6c1ff405ff'
+        'hash'        => ['ff1190d19a78893233945f6c1ff405ff', 'b0900d5ec361495f121fe122f6867512']
     ],
     [
         'fromSeconds' => 1,
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::AUTO),
         'width'       => 400,
         'height'      => 226,
-        'hash'        => '7ebea4afbe53f5d52c61973fa94d218a'
+        'hash'        => ['7ebea4afbe53f5d52c61973fa94d218a', '2c58b919940e3e9ef551ff10bff3273e']
     ],
     [
         'fromSeconds' => 2,
         'style'       => ImageStyle::make('cover', null, 300, LaruploadMediaStyle::SCALE_WIDTH),
         'width'       => 534,
         'height'      => 300,
-        'hash'        => 'a70cd56c065ec6c02fc60dbffcc0326a'
+        'hash'        => ['a70cd56c065ec6c02fc60dbffcc0326a', '66444a2e3642994f9c67701ca0ec65d2']
     ],
     [
         'fromSeconds' => 3,
         'style'       => ImageStyle::make('cover', 400, null, LaruploadMediaStyle::SCALE_HEIGHT),
         'width'       => 400,
         'height'      => 226,
-        'hash'        => '41f01b4fad7e8212b7563421c3ef7db6'
+        'hash'        => ['41f01b4fad7e8212b7563421c3ef7db6', '294363c52d24c6ecf09550d21bf05528']
     ],
     [
         'fromSeconds' => 4,
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::CROP),
         'width'       => 400,
         'height'      => 300,
-        'hash'        => 'a298452b17b6f725655dec733e2caa0c'
+        'hash'        => ['a298452b17b6f725655dec733e2caa0c', 'd25d8dae46a853bb291b8c223a1a5165']
     ],
     [
         'fromSeconds' => 5,
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::CROP),
         'width'       => 400,
         'height'      => 300,
-        'hash'        => '136d39b3469cc80223d0214e6382d155'
+        'hash'        => ['136d39b3469cc80223d0214e6382d155', '57e84a29f42f080d6bc1c97369d1ea0a']
     ],
     [
         'fromSeconds' => null, // center
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::CROP),
         'width'       => 400,
         'height'      => 300,
-        'hash'        => '94ca95920c56f3114bd20254a3774aa3'
+        'hash'        => ['94ca95920c56f3114bd20254a3774aa3', 'c2e8277e6fbfe6164c3627ccf5e02c77']
     ]
 ]);
 
