@@ -15,6 +15,12 @@ trait TestAttachments
     {
         $this->attachments = $attachments;
 
+        $table = $this->getTable();
+
+        foreach ($this->attachments as $attachment) {
+            $attachment->folder($table);
+        }
+
         return $this->attachments;
     }
 
