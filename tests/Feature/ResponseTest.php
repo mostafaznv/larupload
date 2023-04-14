@@ -13,6 +13,7 @@ $properties = [
 ];
 
 it('will return larupload object in toArray function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
+    $model->withAllAttachments();
     $model = save($model, jpg());
     $array = $model->toArray();
 
@@ -28,6 +29,7 @@ it('will return larupload object in toArray function', function(LaruploadHeavyTe
 })->with('models');
 
 it('will return larupload object in toJson function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
+    $model->withAllAttachments();
     $model = save($model, jpg());
     $json = json_decode($model->toJson());
 
@@ -83,6 +85,7 @@ it('will return meta properties camelCase in standalone mode', function() {
 });
 
 it('will return urls of all attachments on getAttachment method', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
+    $model->withAllAttachments();
     $model = save($model, pdf());
     $attachments = $model->getAttachments();
 
@@ -161,6 +164,7 @@ it('will return relative url for not-local storage drivers', function() {
 });
 
 it('will return specific attachment on getAttachment method when attachment name passed', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
+    $model->withAllAttachments();
     $model = save($model, pdf());
     $attachments = $model->getAttachments('main_file');
 

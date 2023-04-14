@@ -29,6 +29,7 @@ it('will calculate image height correctly', function(LaruploadHeavyTestModel|Lar
 })->with('models');
 
 it('will calculate dimension of different styles correctly', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->withAllImages();
     $model = save($model, jpg());
 
     $cover = urlToImage($model->attachment('main_file')->url('cover'));
@@ -57,6 +58,7 @@ it('will calculate dimension of different styles correctly', function(LaruploadH
 })->with('models');
 
 it('will calculate dimension of different styles correctly [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->withAllImages();
     $model = save($model, webp());
 
     $cover = urlToImage($model->attachment('main_file')->url('cover'));

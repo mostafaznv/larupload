@@ -6,12 +6,17 @@ use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
+use Mostafaznv\Larupload\Test\Support\TestAttachmentBuilder;
 
 beforeEach(function() {
     config()->set('larupload.optimize-image.enable', true);
 });
 
 it('will optimize jpg', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withLandscapeImage()->toArray()
+    );
+
     $model = save($model, jpg());
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
 
@@ -38,6 +43,10 @@ it('will optimize jpg', function(LaruploadHeavyTestModel|LaruploadLightTestModel
 })->with('models');
 
 it('will optimize png', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withLandscapeImage()->toArray()
+    );
+
     $model = save($model, png());
     $details = LaruploadTestConsts::IMAGE_DETAILS['png'];
 
@@ -64,6 +73,10 @@ it('will optimize png', function(LaruploadHeavyTestModel|LaruploadLightTestModel
 })->with('models');
 
 it('will optimize webp', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withLandscapeImage()->toArray()
+    );
+
     $model = save($model, webp());
     $details = LaruploadTestConsts::IMAGE_DETAILS['webp'];
 
@@ -92,9 +105,13 @@ it('will optimize webp', function(LaruploadHeavyTestModel|LaruploadLightTestMode
 it('will optimize svg', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     config()->set('larupload.image-processing-library', LaruploadImageLibrary::IMAGICK);
 
-    $model = $model::class;
-    $model = save(new $model, svg());
     $details = LaruploadTestConsts::IMAGE_DETAILS['svg'];
+
+    $model = new ($model::class);
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withLandscapeImage()->toArray()
+    );
+    $model = save($model, svg());
 
     $attachment = $model->attachment('main_file');
 
@@ -173,8 +190,11 @@ it('will optimize images in standalone mode', function() {
 it('will optimize images when secure-ids is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
 
-    $model = $model::class;
-    $model = save(new $model, jpg());
+    $model = new ($model::class);
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withLandscapeImage()->toArray()
+    );
+    $model = save($model, jpg());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
     $attachment = $model->attachment('main_file');

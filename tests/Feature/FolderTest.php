@@ -3,10 +3,14 @@
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
+use Mostafaznv\Larupload\Test\Support\TestAttachmentBuilder;
 
 it('will create folder with kebab-case convention', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
-    $model = save($model, jpg());
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withSmallSizeImage()->toArray()
+    );
 
+    $model = save($model, jpg());
     $attachment = $model->attachment('main_file');
 
     expect($attachment->url())

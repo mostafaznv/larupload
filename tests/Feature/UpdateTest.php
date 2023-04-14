@@ -4,9 +4,11 @@ use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
+use Mostafaznv\Larupload\Test\Support\TestAttachmentBuilder;
 
 
 it('will update attachment successfully', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->withAllImages();
     $model = save($model, jpg(), png());
     $jpg = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
     $png = LaruploadTestConsts::IMAGE_DETAILS['png'];
@@ -74,6 +76,9 @@ it('will update attachment successfully', function (LaruploadHeavyTestModel|Laru
 })->with('models');
 
 it('wont change id of attachment during update', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withLandscapeImage()->toArray()
+    );
     $model = save($model, jpg(), png());
 
     $attachment = $model->attachment('main_file');
@@ -112,9 +117,12 @@ it('wont change id of attachment during update', function (LaruploadHeavyTestMod
 it('wont change id of attachment during update when secure-ids is enabled', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
 
-    $model = $model::class;
-    $model = save(new $model, jpg(), png());
+    $model = new ($model::class);
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withLandscapeImage()->toArray()
+    );
 
+    $model = save($model, jpg(), png());
     $attachment = $model->attachment('main_file');
     $original = $attachment->url();
     $cover = $attachment->url('cover');

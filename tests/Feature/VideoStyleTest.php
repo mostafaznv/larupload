@@ -10,8 +10,10 @@ use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
 use Mostafaznv\Larupload\Storage\Attachment;
+use Mostafaznv\Larupload\Test\Support\TestAttachmentBuilder;
 
 it('will generate video styles correctly', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->withAllVideos();
     $model = save($model, mp4());
 
     $attachment = $model->attachment('main_file');
@@ -103,6 +105,7 @@ it('will generate video styles correctly', function(LaruploadHeavyTestModel|Laru
 })->with('models');
 
 it('will generate stream correctly', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->withStreams();
     $model = save($model, mp4());
 
     $baseUrl = url('/');
@@ -262,8 +265,11 @@ it('will generate stream in standalone mode correctly', function() {
 it('will generate video styles correctly when secure-ids is enabled', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
 
-    $model = $model::class;
-    $model = save(new $model, mp4());
+    $model = new ($model::class);
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withLandscapeVideo()->toArray()
+    );
+    $model = save($model, mp4());
 
     $attachment = $model->attachment('main_file');
     $id = $attachment->meta('id');
@@ -296,7 +302,7 @@ it('will generate video styles correctly when secure-ids is enabled', function(L
 
 })->with('models');
 
-it('will capture cover in resize mode', function() {
+it('will capture cover in resize mode [standalone]', function() {
     $model = LaruploadTestModels::HEAVY->instance();
     $model->setAttachments([
         Attachment::make('main_file')

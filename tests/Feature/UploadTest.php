@@ -10,6 +10,7 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 
 
 it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->withAllImages();
     $model = save($model, jpg());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
@@ -35,6 +36,7 @@ it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|Laru
 })->with('models');
 
 it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->withAllImages();
     $model = save($model, webp());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['webp'];
@@ -60,6 +62,7 @@ it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|Lar
 })->with('models');
 
 it('will upload image successfully [png]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->withAllImages();
     $model = save($model, png());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['png'];
@@ -87,8 +90,9 @@ it('will upload image successfully [png]', function(LaruploadHeavyTestModel|Laru
 it('will upload image successfully [svg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $this->app['config']->set('larupload.image-processing-library', LaruploadImageLibrary::IMAGICK);
 
-    $model = $model::class;
-    $model = save(new $model, svg());
+    $model = new ($model::class);
+    $model->withAllImages();
+    $model = save($model, svg());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['svg'];
     $attachment = $model->attachment('main_file');
@@ -134,6 +138,7 @@ it('will upload audio successfully', function(LaruploadHeavyTestModel|LaruploadL
 })->with('models');
 
 it('will upload video successfully', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->withAllVideos();
     $model = save($model, mp4());
 
     $details = LaruploadTestConsts::VIDEO_DETAILS;
@@ -190,7 +195,6 @@ it('will upload with attach function', function(LaruploadHeavyTestModel|Laruploa
 
 it('will returns false if attached item is not a file', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = $model::class;
-
     $model = new $model;
     $attached = $model->attachment('main_file')->attach('is a string');
 

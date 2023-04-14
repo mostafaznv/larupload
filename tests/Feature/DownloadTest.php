@@ -5,6 +5,7 @@ use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
+use Mostafaznv\Larupload\Test\Support\TestAttachmentBuilder;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Http\RedirectResponse;
 
@@ -32,6 +33,10 @@ it('will download cover file', function(LaruploadHeavyTestModel|LaruploadLightTe
 })->with('models');
 
 it('will download custom styles', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withLandscapeImage()->toArray()
+    );
+
     $model = save($model, jpg());
     $attachment = $model->attachment('main_file');
 
