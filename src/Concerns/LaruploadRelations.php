@@ -17,7 +17,7 @@ trait LaruploadRelations
     {
         return $this->hasOne(LaruploadFFMpegQueue::class, 'record_id')
             ->where('record_class', self::class)
-            ->orderBy('id', 'desc');
+            ->orderByDesc('id');
     }
 
     /**
@@ -29,6 +29,6 @@ trait LaruploadRelations
     {
         return $this->hasMany(LaruploadFFMpegQueue::class, 'record_id')
             ->where('record_class', self::class)
-            ->orderBy('id', 'desc');
+            ->orderByDesc('id');
     }
 }
