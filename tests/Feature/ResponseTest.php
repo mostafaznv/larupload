@@ -159,7 +159,7 @@ it('will return relative url for not-local storage drivers', function() {
     $url = $model->attachment('main_file')->url();
 
     expect($url)
-        ->toStartWith('1/main-file/original/')
+        ->toStartWith('upload-heavy/1/main-file/original/')
         ->toEndWith('.jpg');
 });
 
