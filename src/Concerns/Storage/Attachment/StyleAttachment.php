@@ -33,6 +33,10 @@ trait StyleAttachment
 
             case LaruploadFileType::VIDEO:
                 if ($this->ffmpegQueue) {
+                    if ($this->driverIsNotLocal()) {
+                        $this->uploadOriginalFile($id, $this->localDisk);
+                    }
+
                     $this->initializeFFMpegQueue($id, $class, $standalone);
                 }
                 else {

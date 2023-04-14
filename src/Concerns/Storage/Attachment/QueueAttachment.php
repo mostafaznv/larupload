@@ -17,20 +17,17 @@ trait QueueAttachment
     /**
      * Handle FFMpeg queue on running ffmpeg queue:work
      */
-    public function handleFFMpegQueue(bool $isLastOne = false): void
+    public function handleFFMpegQueue(bool $isLastOne = false, bool $standalone = false): void
     {
-        $driverIsLocal = $this->driverIsLocal();
-
-        $path = $this->getBasePath($this->id, Larupload::ORIGINAL_FOLDER);
-        $path = Storage::disk($driverIsLocal ? $this->disk : $this->localDisk)->path("$path/{$this->output['name']}");
-
-        $this->file = new UploadedFile($path, $this->output['name'], null, null, true);
+        $this->file = $this->prepareFileForFFMpegProcess();
         $this->type = GuessLaruploadFileTypeAction::make($this->file)->calc();
 
         $this->handleVideoStyles($this->id);
 
-        if (!$driverIsLocal and $isLastOne) {
-            Storage::disk($this->localDisk)->deleteDirectory("$this->folder/$this->id");
+        if ($this->driverIsNotLocal() and $isLastOne) {
+            Storage::disk($this->localDisk)->deleteDirectory(
+                $standalone ? "$this->name" : "$this->folder/$this->id"
+            );
         }
     }
 
@@ -85,5 +82,16 @@ trait QueueAttachment
                 'ffmpeg_queue_max_num' => trans('larupload::messages.max-queue-num-exceeded')
             ]));
         }
+    }
+
+    private function prepareFileForFFMpegProcess(): UploadedFile
+    {
+        $basePath = $this->getBasePath($this->id, Larupload::ORIGINAL_FOLDER);
+        $path = $basePath . '/' . $this->output['name'];
+        $disk = $this->driverIsLocal() ? $this->disk : $this->localDisk;
+
+        $path = Storage::disk($disk)->path($path);
+
+        return new UploadedFile($path, $this->output['name'], null, null, true);
     }
 }

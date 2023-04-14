@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Jobs;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -48,26 +49,23 @@ class ProcessFFMpeg implements ShouldQueue
 
         try {
             if ($this->standalone) {
-                $this->standalone->handleFFMpegQueue();
+                $this->standalone->handleFFMpegQueue(
+                    isLastOne: $this->availableQueues() === 1,
+                    standalone: true
+                );
             }
             else {
-                /** @var \Illuminate\Database\Eloquent\Model $class */
+                /** @var Model $class */
                 $class = $this->model;
                 $modelNotSaved = true;
 
                 while ($modelNotSaved) {
-                    $model = $class::where('id', $this->id)->first();
+                    $model = $class::query()->where('id', $this->id)->first();
 
                     if ($model->{$this->name}->meta('name')) {
                         $modelNotSaved = false;
 
-                        $availableQueues = DB::table(Larupload::FFMPEG_QUEUE_TABLE)
-                            ->where('record_id', $this->id)
-                            ->where('record_class', $this->model)
-                            ->where('status', false)
-                            ->count();
-
-                        $model->{$this->name}->handleFFMpegQueue($availableQueues === 1);
+                        $model->{$this->name}->handleFFMpegQueue($this->availableQueues() === 1);
                     }
 
                     sleep(1);
@@ -106,5 +104,14 @@ class ProcessFFMpeg implements ShouldQueue
         }
 
         return $result;
+    }
+
+    protected function availableQueues(): int
+    {
+        return DB::table(Larupload::FFMPEG_QUEUE_TABLE)
+            ->where('record_id', $this->id)
+            ->where('record_class', $this->model)
+            ->where('status', false)
+            ->count();
     }
 }

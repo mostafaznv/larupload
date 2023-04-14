@@ -46,4 +46,9 @@ class AttachmentProxy
     {
         return $this->attachment->download($style);
     }
+
+    public function handleFFMpegQueue(bool $isLastOne = false): void
+    {
+        $this->attachment->handleFFMpegQueue($isLastOne);
+    }
 }

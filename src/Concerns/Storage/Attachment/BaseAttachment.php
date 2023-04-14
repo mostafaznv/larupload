@@ -70,9 +70,9 @@ trait BaseAttachment
     /**
      * Upload original file
      */
-    protected function uploadOriginalFile(string $id): void
+    protected function uploadOriginalFile(string $id, ?string $disk = null): void
     {
-        Storage::disk($this->disk)
+        Storage::disk($disk ?: $this->disk)
             ->putFileAs(
                 path: $this->getBasePath($id, Larupload::ORIGINAL_FOLDER),
                 file: $this->file,

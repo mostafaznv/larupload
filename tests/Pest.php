@@ -10,6 +10,8 @@ use Mostafaznv\Larupload\Storage\Proxy\AttachmentProxy;
 use Mostafaznv\Larupload\Storage\FFMpeg\FFMpeg;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
+use Mostafaznv\Larupload\Test\Support\Models\LaruploadQueueTestModel;
+use Mostafaznv\Larupload\Test\Support\Models\LaruploadRemoteQueueTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadSoftDeleteTestModel;
 use Mostafaznv\Larupload\Test\TestCase;
 
@@ -46,9 +48,9 @@ expect()->extend('toBeExists', function() {
     $url = str_replace($baseUrl, '', $this->value);
     $path = public_path($url);
 
-    return file_exists($path)
-        ? true
-        : throw new Exception('File not exists');
+    expect(file_exists($path))->toBeTrue();
+
+    return $this;
 });
 
 expect()->extend('toNotExists', function() {
@@ -56,9 +58,9 @@ expect()->extend('toNotExists', function() {
     $url = str_replace($baseUrl, '', $this->value);
     $path = public_path($url);
 
-    return file_exists($path)
-        ? throw new Exception('File exists')
-        : true;
+    expect(file_exists($path))->toBeFalse();
+
+    return $this;
 });
 
 /*
@@ -67,7 +69,7 @@ expect()->extend('toNotExists', function() {
 |--------------------------------------------------------------------------
 */
 
-function save(LaruploadHeavyTestModel|LaruploadLightTestModel|LaruploadSoftDeleteTestModel $model, UploadedFile $file, ?UploadedFile $cover = null): LaruploadHeavyTestModel|LaruploadLightTestModel|LaruploadSoftDeleteTestModel
+function save(LaruploadHeavyTestModel|LaruploadLightTestModel|LaruploadSoftDeleteTestModel|LaruploadQueueTestModel|LaruploadRemoteQueueTestModel $model, UploadedFile $file, ?UploadedFile $cover = null): LaruploadHeavyTestModel|LaruploadLightTestModel|LaruploadSoftDeleteTestModel|LaruploadQueueTestModel|LaruploadRemoteQueueTestModel
 {
     if ($cover) {
         $model->attachment('main_file')->attach($file, $cover);

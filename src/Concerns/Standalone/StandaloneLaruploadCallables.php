@@ -45,10 +45,10 @@ trait StandaloneLaruploadCallables
     /**
      * @internal
      */
-    public function handleFFMpegQueue(bool $isLastOne = false): void
+    public function handleFFMpegQueue(bool $isLastOne = false, bool $standalone = false): void
     {
         if ($this->internalFunctionIsCallable) {
-            parent::handleFFMpegQueue($isLastOne);
+            parent::handleFFMpegQueue($isLastOne, $standalone);
         }
         else {
             $this->internalException();
