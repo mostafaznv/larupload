@@ -196,6 +196,16 @@ function gif(): UploadedFile
     return copyFile(realpath(__DIR__ . '/Support/Data/image.gif'), 'image.gif', 'image/gif');
 }
 
+function squareImage(): UploadedFile
+{
+    return new UploadedFile(realpath(__DIR__ . '/Support/Data/square-image.jpg'), 'square-image.jpg', 'image/jpeg', null, true);
+}
+
+function verticalImage(): UploadedFile
+{
+    return new UploadedFile(realpath(__DIR__ . '/Support/Data/vertical-image.jpeg'), 'vertical-image.jpeg', 'image/jpeg', null, true);
+}
+
 function mp4(): UploadedFile
 {
     return new UploadedFile(realpath(__DIR__ . '/Support/Data/video-1.mp4'), 'video-1.mp4', 'video/mp4', null, true);

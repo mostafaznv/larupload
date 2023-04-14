@@ -69,6 +69,17 @@ class LaruploadTestConsts
                 'hash' => '341a0d4d58d60c0595586725e8737d8c.svg',
             ]
         ],
+
+        'gif' => [
+            'size'      => 15860,
+            'width'     => 150,
+            'height'    => 189,
+            'mime_type' => 'image/gif',
+            'color'     => '#0a660b',
+            'name'      => [
+                'hash' => '710bf7618c3a942d5c3279ff0bb282c1.gif',
+            ]
+        ],
     ];
 
     public const AUDIO_DETAILS = [

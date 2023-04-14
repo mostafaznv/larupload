@@ -126,9 +126,11 @@ class Image
                 }
             }
         }
+        // @codeCoverageIgnoreStart
         catch (Exception) {
             // do nothing
         }
+        // @codeCoverageIgnoreEnd
 
         return null;
     }
