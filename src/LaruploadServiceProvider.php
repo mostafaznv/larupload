@@ -9,7 +9,7 @@ use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - documentation
+    // TODO - throw a custom exception when ffmpeg queue exceeds the limit
     // TODO - remove meta-data from file
 
     public function boot(): void
