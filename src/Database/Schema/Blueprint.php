@@ -4,7 +4,8 @@ namespace Mostafaznv\Larupload\Database\Schema;
 
 use Illuminate\Database\Schema\Blueprint as BlueprintIlluminate;
 use Illuminate\Support\Facades\DB;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 use PDO;
 
 class Blueprint
@@ -14,19 +15,20 @@ class Blueprint
      *
      * @param BlueprintIlluminate $table
      * @param string $name
-     * @param string $mode
+     * @param LaruploadMode $mode
      */
-    public static function columns(BlueprintIlluminate $table, string $name, string $mode = LaruploadEnum::HEAVY_MODE): void
+    public static function columns(BlueprintIlluminate $table, string $name, LaruploadMode $mode = LaruploadMode::HEAVY): void
     {
         $table->string("{$name}_file_name", 255)->nullable();
 
-        if ($mode == LaruploadEnum::HEAVY_MODE) {
-            $table->unsignedInteger("{$name}_file_size")->nullable();
-            $table->string("{$name}_file_type", 85)->nullable();
+        if ($mode === LaruploadMode::HEAVY) {
+            $table->string("{$name}_file_id", 36)->nullable();
+            $table->unsignedInteger("{$name}_file_size")->nullable()->index();
+            $table->enum("{$name}_file_type", enum_to_names(LaruploadFileType::cases()))->nullable()->index();
             $table->string("{$name}_file_mime_type", 85)->nullable();
             $table->unsignedInteger("{$name}_file_width")->nullable();
             $table->unsignedInteger("{$name}_file_height")->nullable();
-            $table->unsignedInteger("{$name}_file_duration")->nullable();
+            $table->unsignedInteger("{$name}_file_duration")->nullable()->index();
             $table->string("{$name}_file_dominant_color", 7)->nullable();
             $table->string("{$name}_file_format", 85)->nullable();
             $table->string("{$name}_file_cover", 85)->nullable();
@@ -41,29 +43,35 @@ class Blueprint
      *
      * @param BlueprintIlluminate $table
      * @param string $name
+     * @param LaruploadMode $mode
      */
-    public static function dropColumns(BlueprintIlluminate $table, string $name): void
-    {
-        $table->dropColumn(static::getDefaultColumns($name));
-    }
-
-    /**
-     * Get a list of default columns
-     *
-     * @param string $name
-     * @return array
-     */
-    public static function getDefaultColumns(string $name): array
+    public static function dropColumns(BlueprintIlluminate $table, string $name, LaruploadMode $mode = LaruploadMode::HEAVY): void
     {
         $columns = [
             "{$name}_file_name"
         ];
 
-        $coverColumns = [
-            "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type", "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration", "{$name}_file_format", "{$name}_file_cover"
-        ];
+        if ($mode === LaruploadMode::HEAVY) {
+            $tableName = $table->getTable();
+            $heavyColumns = [
+                "{$name}_file_id", "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type",
+                "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration",
+                "{$name}_file_dominant_color", "{$name}_file_format", "{$name}_file_cover"
+            ];
 
-        return array_merge($columns, $coverColumns);
+
+            $columns = array_merge($columns, $heavyColumns);
+
+            $table->dropIndex("{$tableName}_{$name}_file_size_index");
+            $table->dropIndex("{$tableName}_{$name}_file_type_index");
+            $table->dropIndex("{$tableName}_{$name}_file_duration_index");
+        }
+        else {
+            $columns[] = "{$name}_file_meta";
+        }
+
+
+        $table->dropColumn($columns);
     }
 
     /**

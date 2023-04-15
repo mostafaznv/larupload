@@ -3,9 +3,9 @@
 namespace Mostafaznv\Larupload\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Larupload;
 
 class LaruploadFFMpegQueue extends Model
 {
-    protected $table = LaruploadEnum::FFMPEG_QUEUE_TABLE;
+    protected $table = Larupload::FFMPEG_QUEUE_TABLE;
 }

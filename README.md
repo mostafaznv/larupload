@@ -1,10 +1,13 @@
 ![larupload-banner](https://user-images.githubusercontent.com/7619687/53000850-837af180-343e-11e9-90a1-c30ff435b0b1.png)
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/mostafaznv/larupload.svg?style=flat-square)](https://packagist.org/packages/mostafaznv/larupload)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mostafaznv/larupload/Run%20Tests?label=Build&style=flat-square)](https://github.com/mostafaznv/larupload/actions)
+
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mostafaznv/larupload/run-tests.yml?branch=master&label=Build&style=flat-square&logo=github)](https://github.com/mostafaznv/larupload/actions)
+[![Codecov branch](https://img.shields.io/codecov/c/github/mostafaznv/larupload/master.svg?style=flat-square&logo=codecov)](https://app.codecov.io/gh/mostafaznv/larupload)
 [![Quality Score](https://img.shields.io/scrutinizer/g/mostafaznv/larupload.svg?style=flat-square)](https://scrutinizer-ci.com/g/mostafaznv/larupload)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/mostafaznv/larupload.svg?style=flat-square)](https://packagist.org/packages/mostafaznv/larupload)
 [![Total Downloads](https://img.shields.io/packagist/dt/mostafaznv/larupload.svg?style=flat-square)](https://packagist.org/packages/mostafaznv/larupload)
+
 
 # Larupload
 **Larupload** will help you upload your files easily. in addition to uploading files, Larupload has interesting features for uploading `video`, `audio` and `image`.
@@ -12,7 +15,7 @@
 in larupload we’ve used the laravel [filesystem](https://laravel.com/docs/filesystem). Thanks to laravel filesystem, it’s easy to switch between "any" desired driver (such as local, sftp, s3, etc.)
 
 ----
-I develop in a open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
+I develop in an open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
 
 [![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
 
@@ -24,6 +27,7 @@ I develop in a open-source journey 🚀, I wish I lived in an environment where 
 - Ability to resize/crop photos and videos
 - Ability to create multiple sizes of the videos and images
 - Ability to create HTTP Live Streaming (HLS) from video sources
+- Built-in support for optimizing images
 - Extract the width and height of the image
 - Extract width, height and duration of the video
 - Extract the duration of the audio
@@ -39,15 +43,9 @@ I develop in a open-source journey 🚀, I wish I lived in an environment where 
 - Queue FFMpeg processes and finish them in background
 - Easy to use
 
-----
-🚀 If you find this project interesting, please consider supporting me on the open source journey
-
-[![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
-
-----
-
 ## Requirements:
-- Laravel 8.* or higher
+- Laravel 10.* or higher
+- PHP 8.1 or higher
 - GD library
 - FFMPEG
 
@@ -80,7 +78,7 @@ I develop in a open-source journey 🚀, I wish I lived in an environment where 
     use Illuminate\Support\Facades\Schema;
     use Illuminate\Database\Schema\Blueprint;
     use Illuminate\Database\Migrations\Migration;
-    use Mostafaznv\Larupload\LaruploadEnum;
+    use Mostafaznv\Larupload\Enums\LaruploadMode;
     
     class Uploads extends Migration
     {
@@ -88,8 +86,8 @@ I develop in a open-source journey 🚀, I wish I lived in an environment where 
         {
             Schema::create('uploads', function (Blueprint $table) {
                 $table->increments('id');
-                $table->upload('main_file'); // or $table->upload('file', LaruploadEnum::HEAVY_MODE);
-                $table->upload('other_file', LaruploadEnum::LIGHT_MODE); // or $table->upload('file', LaruploadEnum::HEAVY_MODE);
+                $table->upload('main_file'); // or $table->upload('file', LaruploadMode::HEAVY);
+                $table->upload('other_file', LaruploadMode::LIGHT); // or $table->upload('file', LaruploadMode::HEAVY);
                 $table->timestamps();
             });
         }
@@ -111,7 +109,7 @@ I develop in a open-source journey 🚀, I wish I lived in an environment where 
     use Illuminate\Database\Eloquent\Model;
     use Mostafaznv\Larupload\Storage\Attachment;
     use Mostafaznv\Larupload\Traits\Larupload;
-    use Mostafaznv\Larupload\LaruploadEnum;
+    use Mostafaznv\Larupload\Enums\LaruploadMode;
     
     class Upload extends Model
     {
@@ -127,7 +125,7 @@ I develop in a open-source journey 🚀, I wish I lived in an environment where 
         {
             return [
                 Attachment::make('main_file'),
-                Attachment::make('other_file', LaruploadEnum::LIGHT_MODE),
+                Attachment::make('other_file', LaruploadMode::LIGHT),
             ];
         }
     }
@@ -193,11 +191,11 @@ to make creating the columns required by Larupload easier, we have created an ar
 
 2. ### Create columns for light mode
     ```php
-    use Mostafaznv\Larupload\LaruploadEnum;
+    use Mostafaznv\Larupload\Enums\LaruploadMode;
     
     Schema::create('uploads', function (Blueprint $table) {
         $table->increments('id');
-        $table->upload('file', LaruploadEnum::LIGHT_MODE);
+        $table->upload('file', LaruploadMode::LIGHT);
         $table->timestamps();
     });
     ```
@@ -225,7 +223,12 @@ But in the light mode, only the **filename** is stored in its own column, and ot
    > if you submit the cover file, the priority is to create cover with your uploaded file and it prevents the automatic cover creation by the package
 
     ```php
-    $upload->file->attach($request->file('file'), $request->file('cover'));
+    $file = $request->file('file');
+    $cover = $request->file('cover');
+   
+    $upload->file->attach($file, $cover);
+    // or (recommended)
+    $upload->attachment('file')->attach($file, $cover);
     ```
 
 3. ### Deleting the existing file and the value in the database
@@ -234,6 +237,8 @@ But in the light mode, only the **filename** is stored in its own column, and ot
     $upload->file->detach();
     // or
     $upload->file = LARUPLOAD_NULL;
+    // or (recommended)
+    $upload->attachment('file')->detach();
    
     $upload->save();
     ```
@@ -242,7 +247,13 @@ But in the light mode, only the **filename** is stored in its own column, and ot
 1. ### Upload cover
    Every cover should be assigned to an original file and if you want a cover, you have to upload it with attach function. 
     ```php
-    $upload->file->attach($request->file('file'), $request->file('cover'));
+    $file = $request->file('file');
+    $cover = $request->file('cover');
+   
+    $upload->file->attach($file, $cover);
+    // or (recommended)
+    $upload->attachment('file')->attach($file, $cover);
+   
     $upload->save();
     ```
 
@@ -250,16 +261,25 @@ But in the light mode, only the **filename** is stored in its own column, and ot
    after uploading a file, you can update the cover whenever you want.
 
     ```php
+    $cover = $request->file('cover');
+   
     $upload = Upload::findOrFail($id);
-    $upload->file->updateCover($request->file('cover'));
+   
+    $upload->file->cover()->update($cover);
+    // or (recommended)
+    $upload->attachment('file')->cover()->update($cover);
+   
     $upload->save();
     ```
 
 3. ### Delete cover
-   You can delete an uploaded/generate cover using `detachCover` function.
+   You can delete an uploaded/generated cover using `detach` method.
     ```php
     $upload = Upload::findOrFail($id);
-    $upload->file->detachCover();
+   
+    $upload->file->cover()->detach();
+    // or (recommended)
+    $upload->attachment('file')->cover()->detach();
     $upload->save();
     ```
 
@@ -271,7 +291,11 @@ You can use the following methods to access the uploaded file link:
     
     Code:
     ```php
-    dd($upload->file->urls());
+    $urls = $upload->file->urls();
+    // or (recommended)
+    $urls = $upload->attachment('file')->urls();
+   
+    dd($urls);
     ```
     Output:
     ```php
@@ -297,6 +321,8 @@ You can use the following methods to access the uploaded file link:
 2. ### Get link for a particular style
     ```php
     echo $upload->file->url('thumbnail');
+    // or (recommended)
+    echo $upload->attachment('file')->url('thumbnail');
     ```
     > If you don’t pass any argument, the link to the original file will be automatically returned.
 
@@ -306,8 +332,15 @@ You can use the following methods to generate download response for uploaded fil
 
 Code:
 ```php
-$upload->file->download(); // download original style of attachment
-$upload->file->download('cover'); // download cover style of attachment
+# download original style of attachment
+$upload->file->download(); 
+// or (recommended)
+$upload->attachment('file')->download();
+
+# download cover style of attachment
+$upload->file->download('cover'); 
+// or (recommended)
+$upload->attachment('file')->download('cover');
 ```
 
 > If you don’t pass any argument, larupload will generate a download response for the original file.
@@ -319,7 +352,11 @@ $upload->file->download('cover'); // download cover style of attachment
     
     Code:
     ```php
-    dd($upload->file->meta());
+    $meta = $upload->file->meta();
+    // or (recommended)
+    $meta = $upload->attachment('file')->meta();
+   
+    dd($meta);
     ```
     
     Output:
@@ -345,6 +382,8 @@ $upload->file->download('cover'); // download cover style of attachment
     Code:
     ```php
     echo $upload->file->meta('dominant_color');
+    // or (recommended)
+    echo $upload->attachment('file')->meta('dominant_color');
     ```
     
     Output:
@@ -465,8 +504,9 @@ As you know, larupload works with 2 strategies, ORM-Based and standalone. in the
      $cover = $request->file('cover');
    
      $upload = Larupload::init('path')
-            ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
-            ->style('thumbnail', 1000, 750, LaruploadEnum::CROP_STYLE_MODE)
+            ->namingMethod(LaruploadNamingMethod::HASH_FILE)
+            ->image('thumbnail', 1000, 750, LaruploadMediaStyle::CROP)
+            ->video('thumbnail', 1000, 750, LaruploadMediaStyle::CROP)         
             ->stream('480p', 640, 480, '64K', '1M')
             ->stream('720p', 1280, 720, '64K', '1M')
             ->upload($file, $cover);
@@ -502,6 +542,16 @@ In larupload, we’ve put a lot of effort into making the package more customize
     - Light mode stores additional information as `json_encode` in a column named meta. 
         > Note that the selection of each of these modes should fit the type of table created.
 
+- #### SecureIds
+  This option allows you to hide the real ID of model records by using a different ID format in the file upload path. This can be useful for security or privacy reasons, as it prevents the real IDs from being easily discoverable.
+  <br><br>
+  The following ID formats are supported:
+  - ULID
+  - UUID
+  - HASHID (to use this method, you must install the hashids/hashids package)
+  - NONE (use real IDs)
+  > Note: SecureIds is disabled in standalone mode
+
 - #### With Meta
   With set this value true, meta details will return whenever you retrieve urlsWith set this value true, meta details will return whenever you retrieve urls
 
@@ -534,22 +584,30 @@ In larupload, we’ve put a lot of effort into making the package more customize
 - #### Cover Style
     With this field, you can manage the configuration of the created cover.
     ```php
-    'cover_style' => [
-        'height' => 500,
-        'width'  => 500,
-        'mode'   => 'crop'
-    ]
+    'cover-style' => ImageStyle::make(
+        name: 'cover',
+        width: 500,
+        height: 500,
+        mode: LaruploadMediaStyle::CROP
+    )
     ```
 
 - #### Dominant color
     With this feature, you can extract the dominant color of the image or video.
     > Note that if you disable cover generating, the color extraction of the video will be automatically disabled.
 
+  - #### Dominant Color Quality
+    You can set quality to adjust the calculation accuracy of the dominant color. 1 is the highest quality settings, 10 is the default. But be aware that there is a trade-off between quality and speed/memory consumption! If the quality settings are too high (close to 1) relative to the image size (pixel counts), it may **exceed the memory limit** set in the PHP configuration (and computation will be slow).
+
 - #### Keep old files
     By enabling this feature, `prevent` old files from `deleting` while `updating` the database record.
 
 - #### Preserve files flag
-    Enabling this feature, `prevent` old files from `being deleted` when the database record is `deleted`. 
+    Enabling this feature, `prevent` old files from `being deleted` when the database record is `deleted`.
+
+- #### Optimize Image
+    Enabling this feature, you can `optimize` the uploaded image using [spatie/image-optimizer](https://github.com/spatie/image-optimizer)
+    > Note: To install optimizer binaries, please read its [documentation](https://github.com/spatie/image-optimizer#optimization-tools)
 
 - #### FFMPEG
     If you keep this section empty, larupload will try to find the FFMPEG path using system environment, but you can manually specify the FFMPEG path this way.
@@ -561,6 +619,9 @@ In larupload, we’ve put a lot of effort into making the package more customize
         'ffprobe.binaries' => '/usr/local/bin/ffprobe'
     ],
     ```
+    
+- #### FFMPEG Threads
+  Specify the number of threads that FFMpeg should use
     
 - #### FFMPEG Capture Frame
     Set Capture frame in second
@@ -580,6 +641,16 @@ In larupload, we’ve put a lot of effort into making the package more customize
     ```php
     'ffmpeg' => [
         'capture-frame'  => '0.1',
+    ],
+    ```
+    
+- #### FFMPEG Log Channel
+    Set log channel for ffmpeg process
+
+    Example:
+    ```php
+    'ffmpeg' => [
+        'log-channel' => env('LOG_CHANNEL', 'stack'),
     ],
     ```
     
@@ -618,15 +689,22 @@ In larupload, we’ve put a lot of effort into making the package more customize
 
 ### Customization by model's attachments 
 In addition to using the config file, that is responsible for Larupload general configuration, you can customize each model by attaching attachment entities.
+
 ```php
 <?php
 
 namespace App\Models;
 
 use Exception;
+use FFMpeg\Format\Video\X264;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Mostafaznv\Larupload\LaruploadEnum;
+use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
+use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
+use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
+use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
+use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
 
@@ -646,21 +724,59 @@ class Media extends Model
             Attachment::make('main_file')
                 ->disk('local')
                 ->withMeta(true)
-                ->namingMethod(LaruploadEnum::HASH_FILE_NAMING_METHOD)
+                ->namingMethod(LaruploadNamingMethod::HASH_FILE)
                 ->lang('fa')
-                ->imageProcessingLibrary(LaruploadEnum::GD_IMAGE_LIBRARY)
+                ->imageProcessingLibrary(LaruploadImageLibrary::GD)
                 ->generateCover(false)
-                ->coverStyle(400, 400, LaruploadEnum::CROP_STYLE_MODE)
                 ->dominantColor(true)
+                ->dominantColorQuality(5)
                 ->preserveFiles(true)
-                ->style('thumbnail', 250, 250, LaruploadEnum::AUTO_STYLE_MODE, [])
-                ->style('crop_mode', 1100, 1100, LaruploadEnum::CROP_STYLE_MODE, [])
-                ->style('portrait_mode', 1000, 1000, LaruploadEnum::PORTRAIT_STYLE_MODE, [LaruploadEnum::IMAGE_STYLE_TYPE])
-                ->stream('480p', 640, 480, '64K', '1M')
-                ->stream('720p', 1280, 720, '64K', '1M'),
+                ->secureIdsMethod(LaruploadSecureIdsMethod::ULID)
+                ->optimizeImage(true)
+                ->coverStyle('cover', 400, 400, LaruploadMediaStyle::CROP)
+                ->image('thumbnail', 250, 250, LaruploadMediaStyle::AUTO)
+                ->image('crop_mode', 1100, 1100, LaruploadMediaStyle::CROP)
+                ->image('portrait_mode', 1000, 1000, LaruploadMediaStyle::SCALE_WIDTH)
+                ->video('thumbnail', 250, 250, LaruploadMediaStyle::AUTO)
+                ->video('crop_mode', 1100, 1100, LaruploadMediaStyle::CROP)
+                ->video('portrait_mode', 1000, 1000, LaruploadMediaStyle::SCALE_WIDTH)
+                ->video(
+                    name: 'auto',
+                    width: 300,
+                    height: 190,
+                    mode: LaruploadMediaStyle::AUTO,
+                    format: (new X264)
+                        ->setKiloBitrate(1000)
+                        ->setAudioKiloBitrate(64)
+                )
+                ->stream(
+                    name: '480p',
+                    width: 640,
+                    height: 480,
+                    format: (new X264)
+                        ->setKiloBitrate(3000)
+                        ->setAudioKiloBitrate(64)
+                )
+                ->stream(
+                    name: '720p',
+                    width: 1280,
+                    height:  720,
+                    format: (new X264)
+                        ->setKiloBitrate(1000)
+                        ->setAudioKiloBitrate(64)
+                )
 
-            Attachment::make('other_file', LaruploadEnum::LIGHT_MODE)
-                ->stream('480p', 640, 480, '64K', '1M'),
+            Attachment::make('other_file', LaruploadMode::LIGHT)
+                ->stream(
+                    name: '480p',
+                    width: 640,
+                    height: 480,
+                    format: (new X264)
+                        ->setKiloBitrate(3000)
+                        ->setAudioKiloBitrate(64)
+                        ->setAudioChannels(1)
+                        ->setAudioCodec('libmp3lame')
+                ),
         ];
     }
 }
@@ -723,41 +839,42 @@ Upload::where('id', 21)->with('laruploadQueue', 'laruploadQueues')->first();
 ```
 
 
-## Some notes about stream and style functions in larupload
-As you know, if you want to create hls stream (m3u8) you should use stream function in your attachments function of the model, and if you want to manipulate images or videos, you should handle it with style function.
+## Some notes about stream and style (image/video) functions in larupload
+As you know if you want to create hls stream (m3u8) you should use stream function in your attachments function of the model, and if you want to manipulate images or videos, you should handle it with style function.
 
-to use this functions, you should pass some arguments to these functions. here we show you how:
+to use this functions, you should pass `Style` or `Stream` objects to these functions. here we show you how:
 
-#### Style
+#### Image Style
 
-| index | name   | type   | required | default | description                                                                                                                                                                                                                                                                                        |
-|-------|--------|--------|----------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | name   | string | true     | -       | name of style.  examples: thumbnail, small, ...                                                                                                                                                                                                                                                    |
-| 2     | width  | int    | false    | null    | height of the photo or video.                                                                                                                                                                                                                                                                      |
-| 3     | height | int    | false    | null    | width of the photo or video                                                                                                                                                                                                                                                                        |
-| 4     | mode   | string | false    | null    | larupload decides how to deal with the uploaded video or photo with this field. acceptable values for this field are:larupload decides how to deal with the uploaded video or photo with this field. acceptable values for this field are: `landscape`, `portrait`, `crop`, `exact`, `auto`        |
-| 5     | type   | array  | false    | []      | with this field, you can determine that the defined style is usable for what type of files, `image`, `video` or `both`.                                                                                                                                                                            |
+| index | name   | type                 | required | default | description                                                                                                                                       |
+|-------|--------|----------------------|----------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1     | name   | string               | true     | -       | name of style.  examples: thumbnail, small, ...                                                                                                   |
+| 2     | width  | ?int                 | false    | null    | height of the photo or video.                                                                                                                     |
+| 3     | height | ?int                 | false    | null    | width of the photo or video                                                                                                                       |
+| 4     | mode   | LaruploadMediaStyle  | false    | AUTO    | larupload decides how to deal with the uploaded image. acceptable values for this field are: `FIT`, `AUTO`, `SCALE_WIDTH`, `SCALE_HEIGHT`, `CROP` |
+
+#### Video Style
+
+| index | name     | type                | required | default      | description                                                                                                                                       |
+|-------|----------|---------------------|----------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1     | name     | string              | true     | -            | name of style.  examples: thumbnail, small, ...                                                                                                   |
+| 2     | width    | ?int                | false    | null         | height of the photo or video.                                                                                                                     |
+| 3     | height   | ?int                | false    | null         | width of the photo or video                                                                                                                       |
+| 4     | mode     | LaruploadMediaStyle | false    | SCALE_HEIGHT | larupload decides how to deal with the uploaded video. acceptable values for this field are: `FIT`, `AUTO`, `SCALE_WIDTH`, `SCALE_HEIGHT`, `CROP` |
+| 5     | format   | X264                | false    | new X264     | Default format is X264. You can set additional options (video/audio kilo bitrate and more) for this format                                        |
+| 6     | padding  | bool                | false    | false        | If true, the video will be padded with black color to fit the given dimension                                                                     |
 
 #### Stream
-if you want generate m3u8 files from video sources, you should use `stream`. for now larupload supports hls videos only on stream style.
+if you want to generate m3u8 files from video sources, you should use `stream`. for now larupload supports hls videos only on stream style.
 
-| index | name         | type       | required | default | description                                                                   |
-|-------|--------------|------------|----------|---------|-------------------------------------------------------------------------------|
-| 1     | name         | string     | true     | -       | label for stream quality. highly recommended to use string labels like `720p` |
-| 2     | width        | int        | true     | -       |                                                                               |
-| 3     | height       | int        | true     | -       |                                                                               |
-| 4     | audioBitrate | string/int | true     | -       | you can pass bitrate as an integer or pass it with strings like 64k or ...    |
-| 5     | videoBitrate | string/int | true     | -       | you can pass bitrate as an integer or pass it with strings like 64k or ...    |
+| index | name             | type   | required | default | description                                                                                                |
+|-------|------------------|--------|----------|---------|------------------------------------------------------------------------------------------------------------|
+| 1     | name             | string | true     | -       | label for stream quality. highly recommended to use string labels like `720p`                              |
+| 2     | width            | int    | true     | -       |                                                                                                            |
+| 3     | height           | int    | true     | -       |                                                                                                            |
+| 4     | format           | X264   | true     | -       | Default format is X264. You can set additional options (video/audio kilo bitrate and more) for this format |
+| 5     | padding          | bool   | false    | false   | If true, the video will be padded with black color to fit the given dimension                              |
 
-----
-🚀 If you find this project interesting, please consider supporting me on the open source journey
-
-[![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
-
-----
-
-## Changelog
-Refer to the [Changelog](CHANGELOG.md) for a full history of the project.
 
 ----
 I develop in a open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺

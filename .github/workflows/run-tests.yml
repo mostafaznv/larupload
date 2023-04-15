@@ -9,17 +9,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php: [8.0, 8.1, 8.2]
-        laravel: [9.*, 10.*]
+        php: [8.1, 8.2]
+        laravel: [10.*]
+        coverage: [none]
         dependency-version: [prefer-stable]
         include:
           - laravel: 10.*
             testbench: 8.*
-          - laravel: 9.*
-            testbench: 7.*
-        exclude:
-          - laravel: 10.*
-            php: 8.0
 
     name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
 
@@ -39,13 +35,20 @@ jobs:
           path: ~/.composer/cache/files
           key: dependencies-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
 
+      - name: Install optimizers
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jpegoptim pngquant gifsicle optipng libjpeg-progs webp
+          sudo npm install -g svgo
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, sqlite3, pdo_sqlite, bcmath, fileinfo, gd, imagick
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, sqlite3, pdo_sqlite, bcmath, fileinfo, gd, imagick, xdebug
           tools: composer:v2
-          coverage: none
+          ini-values: xdebug.mode="coverage"
+          coverage: xdebug
 
       - name: Fix Imagick Policy
         run: sudo sed -i 's/none/read|write/g' /etc/ImageMagick-6/policy.xml
@@ -56,4 +59,10 @@ jobs:
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
       - name: Execute tests
-        run: vendor/bin/phpunit
+        run: composer test:ci
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml

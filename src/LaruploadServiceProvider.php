@@ -5,26 +5,14 @@ namespace Mostafaznv\Larupload;
 use Illuminate\Database\Schema\Blueprint as BlueprintIlluminate;
 use Illuminate\Support\ServiceProvider;
 use Mostafaznv\Larupload\Database\Schema\Blueprint;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - use hashids/hashids instead of actual model id in file path (path/model/id/file ==> path/model/hashid/file)
-    // TODO - calculate width/height and dominant color for webp images
-    // TODO - upload with create() function
+    // TODO - documentation
+    // TODO - remove meta-data from file
 
-    // TODO - update m3u8 catalog
-    // TODO - import php-ffmpeg package into the project [NOTICE: wait for a stable version]
-    // TODO - add an ability to custom ffmpeg scripts (video and stream)
-    // TODO - check possibility of change video ffmpeg script to streaming one (none crop mode).
-
-    // TODO - dpi for resized/cropped images and videos
-    // TODO - test s3
-    // TODO - mix with download php-x-sendfile
-    // TODO - add some comments to help IDEs to show attachment functions
-
-    const VERSION = '0.1.1';
-
-    public function boot()
+    public function boot(): void
     {
         $this->loadTranslationsFrom(__DIR__ . '/../translations', 'larupload');
 
@@ -35,21 +23,21 @@ class LaruploadServiceProvider extends ServiceProvider
         }
     }
 
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'larupload');
 
         $this->registerMacros();
     }
 
-    protected function registerMacros()
+    protected function registerMacros(): void
     {
-        BlueprintIlluminate::macro('upload', function(string $name, string $mode = LaruploadEnum::HEAVY_MODE) {
+        BlueprintIlluminate::macro('upload', function(string $name, LaruploadMode $mode = LaruploadMode::HEAVY) {
             Blueprint::columns($this, $name, $mode);
         });
 
-        BlueprintIlluminate::macro('dropUpload', function(string $name) {
-            Blueprint::dropColumns($this, $name);
+        BlueprintIlluminate::macro('dropUpload', function(string $name, LaruploadMode $mode = LaruploadMode::HEAVY) {
+            Blueprint::dropColumns($this, $name, $mode);
         });
     }
 }

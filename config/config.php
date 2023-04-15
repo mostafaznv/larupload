@@ -1,7 +1,5 @@
 <?php
 
-use Mostafaznv\Larupload\LaruploadEnum;
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -42,7 +40,25 @@ return [
     |
     */
 
-    'mode' => LaruploadEnum::HEAVY_MODE,
+    'mode' => Mostafaznv\Larupload\Enums\LaruploadMode::HEAVY,
+
+    /*
+    |--------------------------------------------------------------------------
+    | SecureIds
+    |--------------------------------------------------------------------------
+    |
+    | This option allows you to hide the real ID of model records by using a different ID format
+    | in the file upload path. This can be useful for security or privacy reasons, as it prevents the
+    | real IDs from being easily discoverable.
+    |
+    | The following ID formats are supported:
+    | - ULID
+    | - UUID
+    | - HASHID (to use this method, you must install the hashids/hashids package)
+    | - NONE (use real IDs)
+    */
+
+    'secure-ids' => Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod::NONE,
 
     /*
     |--------------------------------------------------------------------------
@@ -97,7 +113,7 @@ return [
     |
     */
 
-    'naming-method' => LaruploadEnum::SLUG_NAMING_METHOD,
+    'naming-method' => Mostafaznv\Larupload\Enums\LaruploadNamingMethod::HASH_FILE,
     'lang'          => '',
 
     /*
@@ -112,7 +128,7 @@ return [
     |
     */
 
-    'image-processing-library' => LaruploadEnum::GD_IMAGE_LIBRARY,
+    'image-processing-library' => Mostafaznv\Larupload\Enums\LaruploadImageLibrary::GD,
 
     /*
     |--------------------------------------------------------------------------
@@ -139,11 +155,12 @@ return [
     |
     */
 
-    'cover-style' => [
-        'width'  => 500,
-        'height' => 500,
-        'mode'   => 'crop',
-    ],
+    'cover-style' => Mostafaznv\Larupload\DTOs\Style\ImageStyle::make(
+        name: 'cover',
+        width: 500,
+        height: 500,
+        mode: \Mostafaznv\Larupload\Enums\LaruploadMediaStyle::CROP
+    ),
 
     /*
     |--------------------------------------------------------------------------
@@ -155,6 +172,21 @@ return [
     */
 
     'dominant-color' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Dominant Color Quality
+    |--------------------------------------------------------------------------
+    |
+    | You can set quality to adjust the calculation accuracy of the dominant color.
+    | 1 is the highest quality settings, 10 is the default. But be aware that there is a trade-off between
+    | quality and speed/memory consumption!
+    | If the quality settings are too high (close to 1) relative to the image size (pixel counts), it may exceed
+    | the memory limit set in the PHP configuration (and computation will be slow).
+    |
+    */
+
+    'dominant-color-quality' => 10,
 
     /*
     |--------------------------------------------------------------------------
@@ -200,6 +232,17 @@ return [
 
         'ffmpeg-binaries'  => 'ffmpeg',
         'ffprobe-binaries' => 'ffprobe',
+
+        /*
+        |--------------------------------------------------------------------------
+        | FFMPEG Threads
+        |--------------------------------------------------------------------------
+        |
+        | Specify the number of threads that FFMpeg should use
+        |
+        */
+
+        'threads' => 12,
 
         /*
         |--------------------------------------------------------------------------
@@ -251,5 +294,88 @@ return [
         */
 
         'timeout' => 90,
+
+        /*
+        |--------------------------------------------------------------------------
+        | FFMPEG Log Channel
+        |--------------------------------------------------------------------------
+        |
+        | Set log channel for ffmpeg process
+        |
+        */
+
+        'log-channel' => env('LOG_CHANNEL', 'stack'),
     ],
+
+    'optimize-image' => [
+        /*
+        |--------------------------------------------------------------------------
+        | Image Optimizer
+        |--------------------------------------------------------------------------
+        |
+        | You can optimize your uploaded images with this option.
+        |
+        | This package uses spatie/image-optimizer to optimize images.
+        | See: https://github.com/spatie/image-optimizer
+        |
+        */
+
+        'enable' => false,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Image Optimizers
+        |--------------------------------------------------------------------------
+        |
+        | When calling `optimize` the package will automatically determine which optimizers
+        | should run for the given image.
+        |
+        */
+
+        'optimizers' => [
+            Spatie\ImageOptimizer\Optimizers\Jpegoptim::class => [
+                '-m85', // set maximum quality to 85%
+                '--force', // ensure that progressive generation is always done also if a little bigger
+                '--strip-all', // this strips out all text information such as comments and EXIF data
+                '--all-progressive', // this will make sure the resulting image is a progressive one
+            ],
+
+            Spatie\ImageOptimizer\Optimizers\Pngquant::class => [
+                '--force', // required parameter for this package
+            ],
+
+            Spatie\ImageOptimizer\Optimizers\Optipng::class => [
+                '-i0', // this will result in a non-interlaced, progressive scanned image
+                '-o2', // this set the optimization level to two (multiple IDAT compression trials)
+                '-quiet', // required parameter for this package
+            ],
+
+            Spatie\ImageOptimizer\Optimizers\Svgo::class => [
+                '--config=svgo.config.js', // disabling because it is known to cause troubles
+            ],
+
+            Spatie\ImageOptimizer\Optimizers\Gifsicle::class => [
+                '-b', // required parameter for this package
+                '-O3', // this produces the slowest but best results
+            ],
+
+            Spatie\ImageOptimizer\Optimizers\Cwebp::class => [
+                '-m 6', // for the slowest compression method in order to get the best compression.
+                '-pass 10', // for maximizing the amount of analysis pass.
+                '-mt', // multithreading for some speed improvements.
+                '-q 90', //quality factor that brings the least noticeable changes.
+            ],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Image Optimizer Timeout
+        |--------------------------------------------------------------------------
+        |
+        | The maximum time in seconds each optimizer is allowed to run separately.
+        |
+        */
+
+        'timeout' => 60,
+    ]
 ];
