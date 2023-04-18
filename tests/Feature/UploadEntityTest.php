@@ -46,6 +46,36 @@ it('can change dominant-color-quality property', function() {
     expect($color)->toBe('#262f48');
 });
 
+it('can change keep-old-files property', function() {
+    $this->model->setAttachments([
+        $this->attachment
+            ->keepOldFiles(true)
+            ->image('thumb', 400, 400),
+    ]);
+
+
+    $model = save($this->model, jpg());
+    $paths = urlsToPath($model->main_file, ['cover']);
+
+    foreach ($paths as $path) {
+        expect(file_exists($path))->toBeTrue();
+    }
+
+    $model->attachment('main_file')->attach(png());
+    $model->save();
+
+    $newPaths = urlsToPath($model->main_file, ['cover']);
+
+
+    foreach ($paths as $path) {
+        expect(file_exists($path))->toBeTrue();
+    }
+
+    foreach ($newPaths as $path) {
+        expect(file_exists($path))->toBeTrue();
+    }
+});
+
 it('can change preserve-file property', function() {
     $this->model->setAttachments([
         $this->attachment->preserveFiles(true)

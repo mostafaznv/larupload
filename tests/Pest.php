@@ -109,12 +109,16 @@ function urlToVideo(string $url): FFMpegMeta
     return $ffmpeg->getMeta();
 }
 
-function urlsToPath(AttachmentProxy $attachment): array
+function urlsToPath(AttachmentProxy $attachment, array $exclude = []): array
 {
     $paths = [];
     $baseUrl = url('/');
 
     foreach ($attachment->urls() as $name => $url) {
+        if (in_array($name, $exclude)) {
+            continue;
+        }
+
         if ($url and $name != 'meta') {
             $paths[] = public_path(str_replace($baseUrl, '', $url));
         }
