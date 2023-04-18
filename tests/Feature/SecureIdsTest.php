@@ -4,8 +4,6 @@ use Hashids\Hashids;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
-use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
-use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 use Mostafaznv\Larupload\Test\Support\TestAttachmentBuilder;
 
 

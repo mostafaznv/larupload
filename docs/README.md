@@ -1,6 +1,7 @@
-# Larupload
+# Introduction
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mostafaznv/larupload/run-tests.yml?branch=master\&label=Build\&style=flat-square\&logo=github)](https://github.com/mostafaznv/larupload/actions) [![Codecov branch](https://img.shields.io/codecov/c/github/mostafaznv/larupload/master.svg?style=flat-square\&logo=codecov)](https://app.codecov.io/gh/mostafaznv/larupload) [![Quality Score](https://img.shields.io/scrutinizer/g/mostafaznv/larupload.svg?style=flat-square)](https://scrutinizer-ci.com/g/mostafaznv/larupload) ![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square) [![Latest Version on Packagist](https://img.shields.io/packagist/v/mostafaznv/larupload.svg?style=flat-square)](https://packagist.org/packages/mostafaznv/larupload) [![Total Downloads](https://img.shields.io/packagist/dt/mostafaznv/larupload.svg?style=flat-square)](https://packagist.org/packages/mostafaznv/larupload)
+
 
 
 **Larupload** is a file uploader for Laravel, which is based on ORM and allows users to upload `images`, `videos`, `audios`, and other known file formats.
@@ -42,5 +43,4 @@ Moreover, Larupload can calculate the dominant colors of videos and images, as w
 * Easy to use
 
 
-### Documentation
-You can find installation instructions and detailed instructions on how to use this package at the [dedicated documentation site.](https://mostafaznv.gitbook.io/larupload/)
+

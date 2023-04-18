@@ -132,6 +132,13 @@ trait UploadEntityProperties
         return $this->uploaded;
     }
 
+    public function keepOldFiles(bool $status): UploadEntities
+    {
+        $this->keepOldFiles = $status;
+
+        return $this;
+    }
+
     public function preserveFiles(bool $status): UploadEntities
     {
         $this->preserveFiles = $status;
