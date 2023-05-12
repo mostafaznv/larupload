@@ -34,3 +34,19 @@ it('will throw exception when mode is AUTO and both width and height are not set
     ImageStyle::make('test', null, null, LaruploadMediaStyle::AUTO);
 
 })->throws(Exception::class, 'Width and height are required when you are in auto mode');
+
+it('will initialize class using __set_state method', function() {
+    $style = ImageStyle::__set_state([
+        'name' => 'test',
+        'width' => 120,
+        'height' => 140,
+        'mode' => LaruploadMediaStyle::SCALE_HEIGHT,
+        'padding' => true
+    ]);
+
+    expect($style->name)->toBe('test')
+        ->and($style->width)->toBe(120)
+        ->and($style->height)->toBe(140)
+        ->and($style->mode)->toBe(LaruploadMediaStyle::SCALE_HEIGHT)
+        ->and($style->padding)->toBe(true);
+});
