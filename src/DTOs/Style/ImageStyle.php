@@ -18,6 +18,17 @@ class ImageStyle extends Style
         $this->validateDimension();
     }
 
+    public static function __set_state(array $array): object
+    {
+        return new self(
+            name: $array['name'],
+            width: $array['width'],
+            height: $array['height'],
+            mode: $array['mode'],
+            padding: $array['padding']
+        );
+    }
+
     public static function make(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::AUTO, bool $padding = false): self
     {
         return new self($name, $width, $height, $mode, $padding);
