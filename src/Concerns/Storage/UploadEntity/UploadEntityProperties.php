@@ -113,6 +113,11 @@ trait UploadEntityProperties
         return $this;
     }
 
+    public function getGenerateCoverStatus(): bool
+    {
+        return $this->generateCover;
+    }
+
     public function dominantColor(bool $status): UploadEntities
     {
         $this->dominantColor = $status;
