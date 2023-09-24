@@ -19,7 +19,7 @@ class LaruploadServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__ . '/../config/config.php' => config_path('larupload.php')], 'config');
             $this->publishes([__DIR__ . '/../migrations/' => database_path('migrations')], 'migrations');
-            $this->publishes([__DIR__ . '/../translations/' => resource_path('lang/vendor/larupload')]);
+            $this->publishTranslations();
         }
     }
 
@@ -39,5 +39,15 @@ class LaruploadServiceProvider extends ServiceProvider
         BlueprintIlluminate::macro('dropUpload', function(string $name, LaruploadMode $mode = LaruploadMode::HEAVY) {
             Blueprint::dropColumns($this, $name, $mode);
         });
+    }
+
+    private function publishTranslations(): void
+    {
+        $langPath = 'vendor/larupload';
+        $langPath = (function_exists('lang_path'))
+            ? lang_path($langPath)
+            : resource_path('lang/' . $langPath);
+
+        $this->publishes([__DIR__ . '/../translations/' => $langPath]);
     }
 }
