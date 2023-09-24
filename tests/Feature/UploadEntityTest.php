@@ -24,6 +24,18 @@ it('can change generate-cover property', function() {
         ->toBeNull();
 });
 
+it('can get latest status of generate-cover property', function() {
+    $this->attachment->generateCover(false);
+    $status = $this->attachment->getGenerateCoverStatus();
+
+    expect($status)->toBeFalse();
+
+    $this->attachment->generateCover(true);
+    $status = $this->attachment->getGenerateCoverStatus();
+
+    expect($status)->toBeTrue();
+});
+
 it('can change dominant-color property', function() {
     $this->model->setAttachments([
         $this->attachment->dominantColor(false)
