@@ -43,6 +43,16 @@ trait UploadEntityStyle
     protected ImageStyle $coverStyle;
 
 
+    public function getImageStyles(): array
+    {
+        return $this->imageStyles;
+    }
+
+    public function getVideoStyles(): array
+    {
+        return $this->videoStyles;
+    }
+
     public function image(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::AUTO): UploadEntities
     {
         $this->imageStyles[$name] = ImageStyle::make($name, $width, $height, $mode);

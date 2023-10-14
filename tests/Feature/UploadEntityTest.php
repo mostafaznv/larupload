@@ -36,6 +36,36 @@ it('can get latest status of generate-cover property', function() {
     expect($status)->toBeTrue();
 });
 
+it('can return image registered styles', function() {
+    $this->attachment->image('thumb', 400, 400);
+    $this->attachment->image('retina', 800, 800);
+
+    $styles = $this->attachment->getImageStyles();
+
+    expect($styles)
+        ->toBeArray()
+        ->toHaveCount(2)
+        ->and(array_keys($styles))
+        ->toBe([
+            'thumb', 'retina'
+        ]);
+});
+
+it('can return video registered styles', function() {
+    $this->attachment->video('sd', 400, 400);
+    $this->attachment->video('hd', 800, 800);
+
+    $styles = $this->attachment->getVideoStyles();
+
+    expect($styles)
+        ->toBeArray()
+        ->toHaveCount(2)
+        ->and(array_keys($styles))
+        ->toBe([
+            'sd', 'hd'
+        ]);
+});
+
 it('can change dominant-color property', function() {
     $this->model->setAttachments([
         $this->attachment->dominantColor(false)
