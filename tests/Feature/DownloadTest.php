@@ -32,7 +32,7 @@ it('will download cover file', function(LaruploadHeavyTestModel|LaruploadLightTe
 
 })->with('models');
 
-it('will download custom styles', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will download custom image styles', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model->setAttachments(
         TestAttachmentBuilder::make($model->mode)->withLandscapeImage()->toArray()
     );
@@ -41,6 +41,21 @@ it('will download custom styles', function(LaruploadHeavyTestModel|LaruploadLigh
     $attachment = $model->attachment('main_file');
 
     expect($attachment->download('landscape'))
+        ->toBeInstanceOf(StreamedResponse::class)
+        ->getStatusCode()
+        ->toBe(200);
+
+})->with('models');
+
+it('will download custom video styles', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withSmallVideo()->toArray()
+    );
+
+    $model = save($model, mp4());
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->download('small'))
         ->toBeInstanceOf(StreamedResponse::class)
         ->getStatusCode()
         ->toBe(200);
