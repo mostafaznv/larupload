@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
@@ -14,10 +15,10 @@ trait StyleAttachment
      * resize, crop and generate styles from original file
      *
      * @param string $id
-     * @param string $class
+     * @param Model|string $class
      * @param bool $standalone
      */
-    protected function handleStyles(string $id, string $class, bool $standalone = false): void
+    protected function handleStyles(string $id, Model|string $model, bool $standalone = false): void
     {
         switch ($this->type) {
             case LaruploadFileType::IMAGE:
@@ -37,7 +38,16 @@ trait StyleAttachment
                         $this->uploadOriginalFile($id, $this->localDisk);
                     }
 
-                    $this->initializeFFMpegQueue($id, $class, $standalone);
+                    if ($model instanceof Model) {
+                        $this->initializeFFMpegQueue(
+                            $model->id, $model->getMorphClass(), $standalone
+                        );
+                    }
+                    else {
+                        $this->initializeFFMpegQueue(
+                            $id, $model, $standalone
+                        );
+                    }
                 }
                 else {
                     $this->handleVideoStyles($id);

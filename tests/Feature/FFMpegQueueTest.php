@@ -4,6 +4,7 @@ use FFMpeg\Format\Video\X264;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Bus;
+use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -202,6 +203,74 @@ it('can queue ffmpeg for remote disks and deletes local files after finishing th
         ->toHaveCount(8)
         ->and($localFiles)
         ->toHaveCount(0);
+});
+
+it('can queue ffmpeg when using secure-ids', function() {
+    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
+
+    $model = LaruploadTestModels::QUEUE->instance();
+    $model = save($model, mp4());
+
+    $urls = $model->attachment('main_file')->urls();
+
+    expect($urls->original)
+        ->toBeExists()
+        ->and($urls->cover)
+        ->toBeExists()
+        ->and($urls->landscape)
+        ->toNotExists();
+
+    $queue = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->first();
+    $process = new ProcessFFMpeg($queue->id, $model->id, 'main_file', $model::class);
+    $process->handle();
+
+    expect($urls->landscape)->toBeExists();
+});
+
+it('can queue ffmpeg when using secure-ids in standalone mode', function() {
+    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
+
+    $name = 'uploader';
+    $standalone = Larupload::init($name)->video('landscape', 400);
+    $uploader = $standalone->upload(mp4());
+
+    expect($uploader->original)
+        ->toBeExists()
+        ->and($uploader->cover)
+        ->toBeExists()
+        ->and($uploader->landscape)
+        ->toNotExists();
+
+    $queue = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->first();
+    $serializedClass = base64_encode(serialize($standalone));
+    $process = new ProcessFFMpeg($queue->id, $uploader->meta->id, $name, Larupload::class, $serializedClass);
+    $process->handle();
+
+    expect($uploader->landscape)->toBeExists();
+
+
+
+
+
+
+
+    $model = LaruploadTestModels::QUEUE->instance();
+    $model = save($model, mp4());
+
+    $urls = $model->attachment('main_file')->urls();
+
+    expect($urls->original)
+        ->toBeExists()
+        ->and($urls->cover)
+        ->toBeExists()
+        ->and($urls->landscape)
+        ->toNotExists();
+
+    $queue = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->first();
+    $process = new ProcessFFMpeg($queue->id, $model->id, 'main_file', $model::class);
+    $process->handle();
+
+    expect($urls->landscape)->toBeExists();
 });
 
 it('will change queue status after processing queue', function() {
