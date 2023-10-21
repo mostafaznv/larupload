@@ -27,7 +27,7 @@ trait AttachmentEvents
                 $this->setMediaDetails();
                 $this->uploadOriginalFile($this->id);
                 $this->setCover($this->id);
-                $this->handleStyles($this->id, $model->getMorphClass());
+                $this->handleStyles($this->id, $model);
             }
 
             $model = $this->setAttributes($model);
