@@ -7,6 +7,10 @@ With [Nova Artisan File](https://github.com/mostafaznv/nova-file-artisan), you c
 To learn more about Nova Artisan File and how to use it with Larupload, please visit:
 
 {% embed url="https://github.com/mostafaznv/nova-file-artisan" %}
+[https://github.com/mostafaznv/nova-file-artisan](https://github.com/mostafaznv/nova-file-artisan)
+{% endembed %}
+
+####
 
 ***
 
