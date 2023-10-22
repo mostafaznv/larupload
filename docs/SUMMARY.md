@@ -4,8 +4,10 @@
 
 * [Introduction](README.md)
 * [Installation](getting-started/installation.md)
+* [Laravel Nova integration](getting-started/laravel-nova-integration.md)
 * [Support Us](getting-started/support-us.md)
 * [License](getting-started/license.md)
+* [Laravel Nova Integration](getting-started/laravel-nova-integration-1.md)
 
 ## 🚀 Basic Usage
 

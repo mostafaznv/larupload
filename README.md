@@ -39,6 +39,7 @@ Moreover, Larupload can calculate the dominant colors of videos and images, as w
 * Supports Persian and Arabic for file naming
 * Has 2 modes for storage: HEAVY (a big table with indexing) mode and LIGHT (it creates just 2 columns without any indexing)
 * Queue FFMpeg processes and finish them in the background
+* [Official Laravel Nova integration](https://github.com/mostafaznv/nova-file-artisan)
 * Easy to use
 
 
