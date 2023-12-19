@@ -1,6 +1,6 @@
 # Introduction
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mostafaznv/larupload/run-tests.yml?branch=master\&label=Build\&style=flat-square\&logo=github)](https://github.com/mostafaznv/larupload/actions) [![Codecov branch](https://img.shields.io/codecov/c/github/mostafaznv/larupload/master.svg?style=flat-square\&logo=codecov)](https://app.codecov.io/gh/mostafaznv/larupload) [![Quality Score](https://img.shields.io/scrutinizer/g/mostafaznv/larupload.svg?style=flat-square)](https://scrutinizer-ci.com/g/mostafaznv/larupload) ![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square) [![Latest Version on Packagist](https://img.shields.io/packagist/v/mostafaznv/larupload.svg?style=flat-square)](https://packagist.org/packages/mostafaznv/larupload) [![Total Downloads](https://img.shields.io/packagist/dt/mostafaznv/larupload.svg?style=flat-square)](https://packagist.org/packages/mostafaznv/larupload)
+[<img src="https://img.shields.io/github/actions/workflow/status/mostafaznv/larupload/run-tests.yml?branch=master&#x26;label=Build&#x26;style=flat-square&#x26;logo=github" alt="GitHub Workflow Status" data-size="line">](https://github.com/mostafaznv/larupload/actions) [<img src="https://img.shields.io/codecov/c/github/mostafaznv/larupload/master.svg?style=flat-square&#x26;logo=codecov" alt="Codecov branch" data-size="line">](https://app.codecov.io/gh/mostafaznv/larupload) [<img src="https://img.shields.io/scrutinizer/g/mostafaznv/larupload.svg?style=flat-square" alt="Quality Score" data-size="line">](https://scrutinizer-ci.com/g/mostafaznv/larupload) <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square" alt="Software License" data-size="line"> [<img src="https://img.shields.io/packagist/v/mostafaznv/larupload.svg?style=flat-square" alt="Latest Version on Packagist" data-size="line">](https://packagist.org/packages/mostafaznv/larupload) [<img src="https://img.shields.io/packagist/dt/mostafaznv/larupload.svg?style=flat-square" alt="Total Downloads" data-size="line">](https://packagist.org/packages/mostafaznv/larupload)
 
 
 
@@ -14,7 +14,11 @@ It offers many useful features, including the ability to resize, crop, and optim
 
 Moreover, Larupload can calculate the dominant colors of videos and images, as well as extract their width, height, and duration for videos and audio files
 
-[![Donate](https://mostafaznv.github.io/donate/donate.svg)](getting-started/support-us.md)
+<div align="left">
+
+<figure><img src="https://mostafaznv.github.io/donate/donate.svg" alt="" width="188"><figcaption></figcaption></figure>
+
+</div>
 
 
 
@@ -40,6 +44,7 @@ Moreover, Larupload can calculate the dominant colors of videos and images, as w
 * Supports Persian and Arabic for file naming
 * Has 2 modes for storage: HEAVY (a big table with indexing) mode and LIGHT (it creates just 2 columns without any indexing)
 * Queue FFMpeg processes and finish them in the background
+* Official Laravel Nova integration
 * Easy to use
 
 
