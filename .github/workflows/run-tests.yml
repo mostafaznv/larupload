@@ -50,8 +50,8 @@ jobs:
           ini-values: xdebug.mode="coverage"
           coverage: xdebug
 
-      - name: Check Imagick Version
-        run: magick --version
+      - name: Check PHP Modules
+        run: php -m
 
       - name: Fix Imagick Policy
         run: sudo sed -i 's/none/read|write/g' /etc/ImageMagick-6/policy.xml
