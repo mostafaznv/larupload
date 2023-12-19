@@ -42,13 +42,16 @@ jobs:
           sudo npm install -g svgo
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: c@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, sqlite3, pdo_sqlite, bcmath, fileinfo, gd, imagick, xdebug
           tools: composer:v2
           ini-values: xdebug.mode="coverage"
           coverage: xdebug
+
+      - name: Check Imagick Version
+        run: magick --version
 
       - name: Fix Imagick Policy
         run: sudo sed -i 's/none/read|write/g' /etc/ImageMagick-6/policy.xml
