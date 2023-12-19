@@ -75,9 +75,12 @@ class Image
             $this->resizeAuto($style->width, $style->height);
         }
 
+        $isSvg = $this->file->getExtension() === 'svg';
 
         if ($this->driverIsLocal) {
-            $this->image->encode()->save($saveTo);
+            $isSvg
+                ? $this->image->toPng()->save($saveTo)
+                : $this->image->encode()->save($saveTo);
         }
         else {
             list($path, $name) = split_larupload_path($saveTo);
@@ -86,7 +89,9 @@ class Image
             $tempName = time() . '-' . $name;
             $temp = "$tempDir/$tempName";
 
-            $this->image->encode()->save($temp);
+            $isSvg
+                ? $this->image->toPng()->save($temp)
+                : $this->image->encode()->save($temp);
 
             Storage::disk($this->disk)->putFileAs($path, new File($temp), $name);
 

@@ -41,9 +41,6 @@ jobs:
           sudo apt-get install -y jpegoptim pngquant gifsicle optipng libjpeg-progs webp
           sudo npm install -g svgo
 
-      - name: Install librsvg
-        run: sudo apt-get install -y librsvg2-2 librsvg2-bin
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
