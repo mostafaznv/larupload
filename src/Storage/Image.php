@@ -195,11 +195,7 @@ class Image
      */
     private function resizeCrop(int $width, int $height): void
     {
-        $this->image->crop(
-            width: $width,
-            height:  $height,
-            position: 'center'
-        );
+        $this->image->cover($width, $height);
     }
 
     /**
