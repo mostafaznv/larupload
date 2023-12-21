@@ -75,7 +75,7 @@ class Image
             $this->resizeAuto($style->width, $style->height);
         }
 
-        $isSvg = $this->file->getExtension() === 'svg';
+        $isSvg = $this->file->getExtension() === 'svg' || $this->file->getClientOriginalExtension() === 'svg';
 
         if ($this->driverIsLocal) {
             $isSvg
