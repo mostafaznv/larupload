@@ -75,7 +75,7 @@ class LaruploadTestConsts
             'width'     => 150,
             'height'    => 189,
             'mime_type' => 'image/gif',
-            'color'     => '#0a660b',
+            'color'     => '#086e09',
             'name'      => [
                 'hash' => '710bf7618c3a942d5c3279ff0bb282c1.gif',
             ]
