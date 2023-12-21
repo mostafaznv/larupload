@@ -5,7 +5,7 @@ namespace Mostafaznv\Larupload\Storage;
 use ColorThief\ColorThief;
 use Exception;
 use Illuminate\Http\UploadedFile;
-use Intervention\Image\Image as InterventionImage;
+use Intervention\Image\Interfaces\ImageInterface;
 use Intervention\Image\ImageManager;
 use JetBrains\PhpStorm\ArrayShape;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
@@ -19,7 +19,7 @@ class Image
 {
     protected readonly UploadedFile $file;
 
-    protected readonly InterventionImage $image;
+    protected readonly ImageInterface $image;
 
     protected readonly string $disk;
 
@@ -37,11 +37,12 @@ class Image
 
         $path = $file->getRealPath();
 
-        $imageManager = new ImageManager([
-            'driver' => $library === LaruploadImageLibrary::GD ? 'gd' : 'imagick',
-        ]);
+        $imageManager = $library === LaruploadImageLibrary::GD
+            ? ImageManager::gd()
+            : ImageManager::imagick();
 
-        $this->image = $imageManager->make($path);
+
+        $this->image = $imageManager->read($path);
     }
 
 
@@ -76,7 +77,7 @@ class Image
 
 
         if ($this->driverIsLocal) {
-            $this->image->save($saveTo);
+            $this->save($saveTo);
         }
         else {
             list($path, $name) = split_larupload_path($saveTo);
@@ -85,7 +86,7 @@ class Image
             $tempName = time() . '-' . $name;
             $temp = "$tempDir/$tempName";
 
-            $this->image->save($temp);
+            $this->save($temp);
 
             Storage::disk($this->disk)->putFileAs($path, new File($temp), $name);
 
@@ -189,9 +190,7 @@ class Image
      */
     private function resizeCrop(int $width, int $height): void
     {
-        $this->image->fit($width, $height, function($constraint) {
-            $constraint->upsize();
-        });
+        $this->image->cover($width, $height);
     }
 
     /**
@@ -200,9 +199,9 @@ class Image
      */
     private function resizeLandscape(int $width): void
     {
-        $this->image->widen($width, function($constraint) {
-            $constraint->upsize();
-        });
+        $this->image->scale(
+            width: $width
+        );
     }
 
     /**
@@ -211,9 +210,9 @@ class Image
      */
     private function resizePortrait(int $height): void
     {
-        $this->image->heighten($height, function($constraint) {
-            $constraint->upsize();
-        });
+        $this->image->scale(
+            height: $height
+        );
     }
 
     /**
@@ -223,5 +222,20 @@ class Image
     private function resizeExact(int $width, int $height): void
     {
         $this->image->resize($width, $height);
+    }
+
+    /**
+     * Save image file
+     *
+     * @param string $path
+     * @return void
+     */
+    private function save(string $path): void
+    {
+        $isSvg = $this->file->getExtension() === 'svg' || $this->file->getClientOriginalExtension() === 'svg';
+
+        $isSvg
+            ? $this->image->toPng()->save($path)
+            : $this->image->encode()->save($path);
     }
 }
