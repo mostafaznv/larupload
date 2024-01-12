@@ -8,11 +8,9 @@ Your contribution, no matter how small, is deeply appreciated.&#x20;
 
 Thank you for your support!
 
-<div align="left">
 
-<figure><img src="https://mostafaznv.github.io/donate/donate.svg" alt="" width="188"><figcaption></figcaption></figure>
 
-</div>
+[![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
 
 
 
