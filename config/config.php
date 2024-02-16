@@ -54,7 +54,7 @@ return [
     | The following ID formats are supported:
     | - ULID
     | - UUID
-    | - HASHID (to use this method, you must install the hashids/hashids package)
+    | - SQID (to use this method, you must install the sqids/sqids package)
     | - NONE (use real IDs)
     */
 

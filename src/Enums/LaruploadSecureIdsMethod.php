@@ -6,6 +6,6 @@ enum LaruploadSecureIdsMethod
 {
     case ULID;
     case UUID;
-    case HASHID;
+    case SQID;
     case NONE;
 }
