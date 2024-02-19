@@ -1,6 +1,6 @@
 <?php
 
-use SQIDs\SQIDs;
+use Sqids\Sqids;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
@@ -70,9 +70,9 @@ it('will hide ids using sqid method', function () {
     $model = save($model, jpg());
     $attachment = $model->attachment('main_file');
     $id = $attachment->meta('id');
-    $sQIDs = new SQIDs(config('app.key'), 20);
+    $squids = new Sqids(config('app.key'), 20);
 
-    expect($sQIDs->decode($id))->toBe([1])
+    expect($sqids->decode($id))->toBe([1])
         ->and($attachment->url())
         ->toContain($id)
         ->toBeExists()
