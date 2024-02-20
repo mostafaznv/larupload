@@ -47,8 +47,7 @@ class GenerateFileIdAction
 
     private function sqid(): string
     {
-        $salt = config('app.key');
-        $sqids = new \Sqids\Sqids($salt, 20);
+        $sqids = new \Sqids\Sqids(minLength: 20);
 
         return $sqids->encode($this->model->id);
     }
