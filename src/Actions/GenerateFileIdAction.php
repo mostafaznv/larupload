@@ -49,6 +49,6 @@ class GenerateFileIdAction
     {
         $sqids = new \Sqids\Sqids(minLength: 20);
 
-        return $sqids->encode($this->model->id);
+        return $sqids->encode([$this->model->id]);
     }
 }
