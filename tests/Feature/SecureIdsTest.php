@@ -70,7 +70,7 @@ it('will hide ids using sqid method', function () {
     $model = save($model, jpg());
     $attachment = $model->attachment('main_file');
     $id = $attachment->meta('id');
-    $squids = new Sqids(config('app.key'), 20);
+    $sqids = new Sqids(minLength: 20);
 
     expect($sqids->decode($id))->toBe([1])
         ->and($attachment->url())
