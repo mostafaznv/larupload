@@ -23,6 +23,7 @@ $user->attachment('avatar')->urls();
     "meta": {
         "name": "image.jpg",
         "id": "1",
+        "original_name": "image.jpg",
         "size": 35700,
         "type": "IMAGE",
         "mime_type": "image/jpeg",

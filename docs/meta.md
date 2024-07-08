@@ -1,6 +1,6 @@
 # Meta
 
-The `meta` method in Larupload is used to retrieve meta information about an attachment. This method can provide various types of information, such as the `size`, `type`, `mimeType`, `duration`, `width`, `height`, and `dominantColor` of the uploaded file. The method takes an optional argument that specifies which specific piece of meta information is to be retrieved. If no argument is provided, the method returns all available meta information for the attachment.
+The `meta` method in Larupload is used to retrieve meta information about an attachment. This method can provide various types of information, such as the `originalName`, `size,` `type`, `mimeType`, `duration`, `width`, `height`, and `dominantColor` of the uploaded file. The method takes an optional argument that specifies which specific piece of meta information is to be retrieved. If no argument is provided, the method returns all available meta information for the attachment.
 
 For example, to retrieve the size of an attachment named "file", you can use the following code:
 
@@ -25,6 +25,7 @@ $meta = $model->attachment('file')->meta();
 {
     "name": "9e55cf595703eaa109025073caed65a4.jpg",
     "id": "1",
+    "original_name": "image.jpg",
     "size": 35700,
     "type": "IMAGE",
     "mime_type": "image/jpeg",
