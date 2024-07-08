@@ -13,7 +13,7 @@ It offers many useful features, including the ability to resize, crop, and optim
 
 Moreover, Larupload can calculate the dominant colors of videos and images, as well as extract their width, height, and duration for videos and audio files
 
-[![Donate](https://mostafaznv.github.io/donate/donate.svg)](getting-started/support-us.md)
+[![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate/)
 
 
 
