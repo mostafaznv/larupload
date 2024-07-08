@@ -32,6 +32,7 @@ trait BaseUploadEntity
         $this->dominantColorQuality = $config['dominant-color-quality'];
         $this->keepOldFiles = $config['keep-old-files'];
         $this->preserveFiles = $config['preserve-files'];
+        $this->storeOriginalFileName = $config['store-original-file-name'] ?? false;
         $this->optimizeImage = $config['optimize-image']['enable'] ?? false;
         $this->ffmpegQueue = $config['ffmpeg']['queue'];
         $this->ffmpegMaxQueueNum = $config['ffmpeg']['max-queue-num'];
@@ -80,9 +81,11 @@ trait BaseUploadEntity
         if ($this->camelCaseResponse) {
             $output->mimeType = $output->mime_type;
             $output->dominantColor = $output->dominant_color;
+            $output->originalName = $output->original_name;
 
             unset($output->mime_type);
             unset($output->dominant_color);
+            unset($output->original_name);
         }
 
         return $output;

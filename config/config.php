@@ -214,6 +214,17 @@ return [
 
     'preserve-files' => false,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Store Original File Name
+    |--------------------------------------------------------------------------
+    |
+    | Set this to true in order to store the original file name in the database
+    |
+    */
+
+    'store-original-file-name' => false,
+
     'ffmpeg' => [
         /*
         |--------------------------------------------------------------------------

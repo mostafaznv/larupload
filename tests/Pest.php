@@ -18,7 +18,7 @@ use Mostafaznv\Larupload\Test\TestCase;
 uses(TestCase::class)
     ->beforeEach(function() {
         $this->metaKeys = [
-            'name', 'id', 'size', 'type', 'mime_type', 'width', 'height',
+            'name', 'id', 'original_name', 'size', 'type', 'mime_type', 'width', 'height',
             'duration', 'dominant_color', 'format', 'cover'
         ];
     })

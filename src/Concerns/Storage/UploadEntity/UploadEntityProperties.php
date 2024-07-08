@@ -72,6 +72,11 @@ trait UploadEntityProperties
     protected bool $preserveFiles;
 
     /**
+     * Specify whether Larupload should store Original File Name
+     */
+    protected bool $storeOriginalFileName;
+
+    /**
      * Specify whether Larupload should optimize image or not
      */
     protected bool $optimizeImage;
@@ -92,8 +97,9 @@ trait UploadEntityProperties
      * @var array
      */
     protected array $output = [
-        'name'           => null,
         'id'             => null,
+        'name'           => null,
+        'original_name'  => null,
         'size'           => null,
         'type'           => null,
         'mime_type'      => null,
@@ -147,6 +153,13 @@ trait UploadEntityProperties
     public function preserveFiles(bool $status): UploadEntities
     {
         $this->preserveFiles = $status;
+
+        return $this;
+    }
+
+    public function storeOriginalFileName(bool $status): UploadEntities
+    {
+        $this->storeOriginalFileName = $status;
 
         return $this;
     }
