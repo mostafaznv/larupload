@@ -221,6 +221,7 @@ return [
     |
     | Set this to true in order to store the original file name in the database
     |
+    | todo - set it to true by default in the next major version
     */
 
     'store-original-file-name' => false,
