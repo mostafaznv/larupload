@@ -21,6 +21,7 @@ $attachments = $user->getAttachments();
     "meta": {
        "name": "image.jpg",
        "id": "1",
+       "original_name": "image.jpg"
        "size": 35700,
        "type": "IMAGE",
        "mime_type": "image/jpeg",
@@ -38,6 +39,7 @@ $attachments = $user->getAttachments();
     "meta": {
        "name": "cv.pdf",
        "id": "1",
+       "original_name": "image.jpg"
        "size": 71710,
        "type": "DOCUMENT",
        "mime_type": "application/pdf",
@@ -69,6 +71,7 @@ $attachment = $user->getAttachments('avatar');
    "meta": {
        "name": "image.jpg",
        "id": "1",
+       "original_name": "image.jpg"
        "size": 35700,
        "type": "IMAGE",
        "mime_type": "image/jpeg",

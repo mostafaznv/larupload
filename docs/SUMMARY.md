@@ -14,7 +14,7 @@
 * [Model Preparation](basic-usage/model-preparation.md)
 * [Upload](basic-usage/upload.md)
 
-## ⚙ Advanced Usage
+## ⚙️ Advanced Usage
 
 * [Concepts](advanced-usage/concepts.md)
 * [Configuration](advanced-usage/configuration/README.md)
@@ -34,6 +34,7 @@
   * [Dominant Color Quality](advanced-usage/configuration/dominant-color-quality.md)
   * [Keep Old Files](advanced-usage/configuration/keep-old-files.md)
   * [Preserve Files](advanced-usage/configuration/preserve-files.md)
+  * [Store Original File Name](advanced-usage/configuration/store-original-file-name.md)
   * [Optimize Image](advanced-usage/configuration/optimize-image.md)
   * [FFMpeg](advanced-usage/configuration/ffmpeg/README.md)
     * [FFMpeg Binaries](advanced-usage/configuration/ffmpeg/ffmpeg-binaries.md)
@@ -55,6 +56,7 @@
   * [Dominant Color Quality](advanced-usage/attachment/dominant-color-quality.md)
   * [Keep Old Files](advanced-usage/attachment/keep-old-files.md)
   * [Preserve Files](advanced-usage/attachment/preserve-files.md)
+  * [Store Original File Name](advanced-usage/attachment/store-original-file-name.md)
   * [SecureIds Method](advanced-usage/attachment/secureids-method.md)
   * [Optimize Image](advanced-usage/attachment/optimize-image.md)
   * [Media Styles](advanced-usage/attachment/media-styles.md)
@@ -62,6 +64,7 @@
 * [Migrations](advanced-usage/migrations/README.md)
   * [Heavy Columns](advanced-usage/migrations/heavy-columns.md)
   * [Light Columns](advanced-usage/migrations/light-columns.md)
+  * [Add Original File Name to Existing Tables](advanced-usage/migrations/add-original-file-name-to-existing-tables.md)
 
 ***
 
@@ -94,3 +97,7 @@
   * [Update Cover](standalone-uploader/cover/update-cover.md)
   * [Delete Cover](standalone-uploader/cover/delete-cover.md)
 * [Customization](standalone-uploader/customization.md)
+
+## ⚪ OTHER
+
+* [Migration](other/migration.md)

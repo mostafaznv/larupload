@@ -11,6 +11,7 @@ By default, Larupload returns all meta keys in the `snake_case` style. Enabling 
 {
     "name": "image.jpg",
     "id": "1",
+    "originalName": "image.jpg"
     "size": 35700,
     "type": "IMAGE",
     "mimeType": "image/jpeg",
