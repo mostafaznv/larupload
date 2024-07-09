@@ -10,7 +10,7 @@ Adding a new column and working with it could result in a breaking change, so we
 
 To enable this feature:
 
-1. Enable the `store-original-file-name` property in the [`config/larupload.php`](../advanced-usage/configuration/store-original-file-name.md) file.
+1. Enable the `store-original-file-name` property in the [`config/larupload.php`](../advanced-usage/configuration/store-original-file-name.md) file. (You may need to add it to your config file from [here](https://github.com/mostafaznv/larupload/blob/b3392af87d902a133a962daf223a97a93c566482/config/config.php#L217-L227))
 2. Add the `{$name}_file_original_name` column to your existing tables. (for new tables, this column will be added by default).
 
 
