@@ -214,3 +214,30 @@ it('will drop upload file_original_name column in heavy mode', function() {
             'id', 'created_at', 'updated_at'
         ]);
 });
+
+it('will add file_original_name column to existing tables', function() {
+    $table = 'heavy';
+    $column = 'main_file_file_original_name';
+
+    $this->app['db']->connection()
+        ->getSchemaBuilder()
+        ->create($table, function(Blueprint $table) {
+            $table->id();
+            $table->upload('main_file', LaruploadMode::HEAVY);
+            $table->timestamps();
+        });
+
+
+    $builder = $this->app['db']->connection()->getSchemaBuilder();
+    $columns = $builder->getColumnListing($table);
+
+    expect(in_array($column, $columns))->toBeFalse();
+
+    $builder->table($table, function(Blueprint $table) {
+        $table->laruploadAddOriginalName('main_file');
+    });
+
+    $columns = $builder->getColumnListing($table);
+
+    expect(in_array($column, $columns))->toBeTrue();
+});
