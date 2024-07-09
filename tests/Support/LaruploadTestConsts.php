@@ -55,7 +55,8 @@ class LaruploadTestConsts
             'mime_type' => 'image/webp',
             'color'     => '#242e48',
             'name'      => [
-                'hash' => '1489c881d5033d47aaa7462ec12a6432.webp',
+                'original' => 'image.webp',
+                'hash'     => '1489c881d5033d47aaa7462ec12a6432.webp',
             ]
         ],
 

@@ -36,6 +36,8 @@ $cover = $request->file('cover');
 $upload->file->attach($file, $cover);
 // or (recommended)
 $upload->attachment('file')->attach($file, $cover);
+
+$upload->save();
 ```
 
 {% hint style="info" %}

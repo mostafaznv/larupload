@@ -16,8 +16,12 @@ it('will upload file with correct filename [hash]', function(LaruploadHeavyTestM
 
     $fileName = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash'];
     $metaName = $model->attachment('main_file')->meta('name');
+    $metaOriginalName = $model->attachment('main_file')->meta('original_name');
 
-    expect($metaName)->toBe($fileName);
+    expect($metaName)
+        ->toBe($fileName)
+        ->and($metaOriginalName)
+        ->toBeNull();
 
 })->with('models');
 
@@ -29,8 +33,25 @@ it('will upload file with correct filename [slug]', function(LaruploadHeavyTestM
 
     $fileName = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['slug'];
     $metaName = $model->attachment('main_file')->meta('name');
+    $metaOriginalName = $model->attachment('main_file')->meta('original_name');
 
-    expect($metaName)->toContain($fileName);
+    expect($metaName)
+        ->toContain($fileName)
+        ->and($metaOriginalName)
+        ->toBeNull();
+
+})->with('models');
+
+it('can store original name of uploaded file', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    config()->set('larupload.store-original-file-name', true);
+
+    $model = $model::class;
+    $model = save(new $model, jpg());
+
+    $fileName = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['original'];
+    $metaOriginalName = $model->attachment('main_file')->meta('original_name');
+
+    expect($metaOriginalName)->toContain($fileName);
 
 })->with('models');
 
@@ -43,8 +64,12 @@ it('will upload file with utf-8 filename correctly', function(LaruploadHeavyTest
 
     $fileName = LaruploadTestConsts::IMAGE_DETAILS['jpg-fa']['name']['slug'];
     $metaName = $model->attachment('main_file')->meta('name');
+    $metaOriginalName = $model->attachment('main_file')->meta('original_name');
 
-    expect($metaName)->toContain($fileName);
+    expect($metaName)
+        ->toContain($fileName)
+        ->and($metaOriginalName)
+        ->toBeNull();
 
 })->with('models');
 
@@ -59,8 +84,12 @@ it('will upload file with correct filename [time]', function(LaruploadHeavyTestM
 
     $fileName = $carbon->unix() . '.jpg';
     $metaName = $model->attachment('main_file')->meta('name');
+    $metaOriginalName = $model->attachment('main_file')->meta('original_name');
 
-    expect($metaName)->toBe($fileName);
+    expect($metaName)
+        ->toBe($fileName)
+        ->and($metaOriginalName)
+        ->toBeNull();
 
 })->with('models');
 
@@ -70,7 +99,9 @@ it('will upload file with correct filename [hash] in standalone mode', function(
         ->upload(jpg());
 
     expect($upload->meta->name)
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash']);
+        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash'])
+        ->and($upload->meta->original_name)
+        ->toBeNull();
 });
 
 it('will upload file with correct filename [slug] in standalone mode', function() {
@@ -80,7 +111,19 @@ it('will upload file with correct filename [slug] in standalone mode', function(
 
 
     expect($upload->meta->name)
-        ->toContain(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['slug']);
+        ->toContain(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['slug'])
+        ->and($upload->meta->original_name)
+        ->toBeNull();
+});
+
+it('can store original name of uploaded file in standalone mode', function() {
+    $upload = Larupload::init('uploader')
+        ->namingMethod(LaruploadNamingMethod::SLUG)
+        ->storeOriginalFileName(true)
+        ->upload(jpg());
+
+    expect($upload->meta->original_name)
+        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['original']);
 });
 
 it('will upload file with utf-8 filename correctly in standalone mode', function() {
@@ -91,5 +134,7 @@ it('will upload file with utf-8 filename correctly in standalone mode', function
 
 
     expect($upload->meta->name)
-        ->toContain(LaruploadTestConsts::IMAGE_DETAILS['jpg-fa']['name']['slug']);
+        ->toContain(LaruploadTestConsts::IMAGE_DETAILS['jpg-fa']['name']['slug'])
+        ->and($upload->meta->original_name)
+        ->toBeNull();
 });

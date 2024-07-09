@@ -169,3 +169,19 @@ it('can change secure-ids property', function() {
 
     expect(Str::isUlid($id))->toBeTrue();
 });
+
+it('can change store-original-file-name property', function() {
+    $this->model->setAttachments([
+        $this->attachment->storeOriginalFileName(true)
+    ]);
+
+
+    $model = save($this->model, jpg());
+
+    $attachment = $model->attachment('main_file');
+    $originalName = $attachment->meta('original_name');
+
+    $name = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['original'];
+
+    expect($originalName)->toBe($name);
+});

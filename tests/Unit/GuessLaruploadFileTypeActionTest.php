@@ -48,3 +48,17 @@ it("can't guess file type if file is invalid", function() {
 
     expect($result)->toBeNull();
 });
+
+it('all types of file are retrievable using enum', function(string $name, LaruploadFileType $enum) {
+    $result = LaruploadFileType::from($name);
+
+    expect($result)->toBe($enum);
+
+})->with([
+    ['IMAGE', LaruploadFileType::IMAGE],
+    ['VIDEO', LaruploadFileType::VIDEO],
+    ['AUDIO', LaruploadFileType::AUDIO],
+    ['DOCUMENT', LaruploadFileType::DOCUMENT],
+    ['COMPRESSED', LaruploadFileType::COMPRESSED],
+    ['FILE', LaruploadFileType::FILE],
+]);

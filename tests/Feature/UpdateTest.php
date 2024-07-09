@@ -9,6 +9,12 @@ use Mostafaznv\Larupload\Test\Support\TestAttachmentBuilder;
 
 it('will update attachment successfully', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model->withAllImages();
+
+    $model->setAttachments([
+        $model->withAllAttachments()[0]->storeOriginalFileName(true)
+    ]);
+
+
     $model = save($model, jpg(), png());
     $jpg = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
     $png = LaruploadTestConsts::IMAGE_DETAILS['png'];
@@ -28,6 +34,7 @@ it('will update attachment successfully', function (LaruploadHeavyTestModel|Laru
         //
         ->and($attachment->meta())
         ->toHaveProperty('name', $jpg['name']['hash'])
+        ->toHaveProperty('original_name', $jpg['name']['original'])
         ->toHaveProperty('cover', $png['name']['hash'])
         ->toHaveProperty('size', $jpg['size'])
         ->toHaveProperty('format', 'jpg')
@@ -66,6 +73,7 @@ it('will update attachment successfully', function (LaruploadHeavyTestModel|Laru
         //
         ->and($attachment->meta())
         ->toHaveProperty('name', $webp['name']['hash'])
+        ->toHaveProperty('original_name', $webp['name']['original'])
         ->toHaveProperty('cover', $jpg['name']['hash'])
         ->toHaveProperty('size', $webp['size'])
         ->toHaveProperty('format', 'webp')
