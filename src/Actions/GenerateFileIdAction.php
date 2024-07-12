@@ -29,10 +29,10 @@ class GenerateFileIdAction
         }
 
         return match ($this->method) {
-            LaruploadSecureIdsMethod::ULID   => Str::ulid(),
-            LaruploadSecureIdsMethod::UUID   => Str::uuid(),
-            LaruploadSecureIdsMethod::HASHID => $this->hashid(),
-            default                          => $this->model->id,
+            LaruploadSecureIdsMethod::ULID => Str::ulid(),
+            LaruploadSecureIdsMethod::UUID => Str::uuid(),
+            LaruploadSecureIdsMethod::SQID => $this->sqid(),
+            default                        => $this->model->id,
         };
     }
 
@@ -45,11 +45,10 @@ class GenerateFileIdAction
         return json_decode($this->model->{"{$this->attachmentName}_file_meta"})->id ?? null;
     }
 
-    private function hashid(): string
+    private function sqid(): string
     {
-        $salt = config('app.key');
-        $hashids = new \Hashids\Hashids($salt, 20);
+        $sqids = new \Sqids\Sqids(minLength: 20);
 
-        return $hashids->encode($this->model->id);
+        return $sqids->encode([$this->model->id]);
     }
 }

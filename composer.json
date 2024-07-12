@@ -47,7 +47,7 @@
         "spatie/image-optimizer": "^1.6"
     },
     "require-dev": {
-        "hashids/hashids": "^5.0",
+        "sqids/sqids": "^0.4.1",
         "league/flysystem-aws-s3-v3": "^3.0",
         "orchestra/testbench": "^8.0.11",
         "pestphp/pest": "^2.2",
