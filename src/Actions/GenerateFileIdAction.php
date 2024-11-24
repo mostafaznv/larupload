@@ -29,8 +29,8 @@ class GenerateFileIdAction
         }
 
         return match ($this->method) {
-            LaruploadSecureIdsMethod::ULID   => Str::ulid(),
-            LaruploadSecureIdsMethod::UUID   => Str::uuid(),
+            LaruploadSecureIdsMethod::ULID   => Str::ulid()->toBase32(),
+            LaruploadSecureIdsMethod::UUID   => Str::uuid()->toString(),
             LaruploadSecureIdsMethod::HASHID => $this->hashid(),
             default                          => $this->model->id,
         };
