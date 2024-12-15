@@ -22,7 +22,12 @@ trait QueueAttachment
         $this->file = $this->prepareFileForFFMpegProcess();
         $this->type = GuessLaruploadFileTypeAction::make($this->file)->calc();
 
-        $this->handleVideoStyles($this->id);
+        if ( $this->type == 'VIDEO' ) {
+            $this->handleVideoStyles($this->id);
+        } else {
+            $this->handleAudioStyles($this->id);
+        }
+
 
         if ($this->driverIsNotLocal() and $isLastOne) {
             Storage::disk($this->localDisk)->deleteDirectory(
