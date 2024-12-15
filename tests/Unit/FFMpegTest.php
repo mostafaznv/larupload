@@ -94,49 +94,49 @@ it('can capture screenshots from videos', function(int|null $fromSeconds, ImageS
     @unlink($path);
 
 })->with([
-    [
+    fn() => [
         'fromSeconds' => 0,
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::FIT),
         'width'       => 400,
         'height'      => 300,
         'hash'        => ['ff1190d19a78893233945f6c1ff405ff', 'b0900d5ec361495f121fe122f6867512', '6155e85de3c83288426ca98c30f90d35']
     ],
-    [
+    fn() => [
         'fromSeconds' => 1,
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::AUTO),
         'width'       => 400,
         'height'      => 226,
         'hash'        => ['7ebea4afbe53f5d52c61973fa94d218a', '2c58b919940e3e9ef551ff10bff3273e', '12fc748b3226079d35d01046dfafceeb']
     ],
-    [
+    fn() => [
         'fromSeconds' => 2,
         'style'       => ImageStyle::make('cover', null, 300, LaruploadMediaStyle::SCALE_WIDTH),
         'width'       => 534,
         'height'      => 300,
         'hash'        => ['a70cd56c065ec6c02fc60dbffcc0326a', '66444a2e3642994f9c67701ca0ec65d2', 'db4160a73d254c10b0a1b32c802a29ec']
     ],
-    [
+    fn() => [
         'fromSeconds' => 3,
         'style'       => ImageStyle::make('cover', 400, null, LaruploadMediaStyle::SCALE_HEIGHT),
         'width'       => 400,
         'height'      => 226,
         'hash'        => ['41f01b4fad7e8212b7563421c3ef7db6', '294363c52d24c6ecf09550d21bf05528', '42590265e173739b54fc6c5b8cb32221']
     ],
-    [
+    fn() => [
         'fromSeconds' => 4,
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::CROP),
         'width'       => 400,
         'height'      => 300,
         'hash'        => ['a298452b17b6f725655dec733e2caa0c', 'd25d8dae46a853bb291b8c223a1a5165', '6829213239d6d0d2f180ce02c4bef717']
     ],
-    [
+    fn() => [
         'fromSeconds' => 5,
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::CROP),
         'width'       => 400,
         'height'      => 300,
         'hash'        => ['136d39b3469cc80223d0214e6382d155', '57e84a29f42f080d6bc1c97369d1ea0a', '7288c027bbb98e05ed004bd1dbfbb8d8']
     ],
-    [
+    fn() => [
         'fromSeconds' => null, // center
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::CROP),
         'width'       => 400,
@@ -235,32 +235,32 @@ it('can manipulate videos', function(VideoStyle $style, int $width, int $height)
     @unlink($path);
 
 })->with([
-    [
+    fn() => [
         'style'  => VideoStyle::make('fit', 400, 300, LaruploadMediaStyle::FIT),
         'width'  => 400,
         'height' => 300,
     ],
-    [
+    fn() => [
         'style'  => VideoStyle::make('auto', 400, 300, LaruploadMediaStyle::AUTO),
         'width'  => 400,
         'height' => 226,
     ],
-    [
+    fn() => [
         'style'  => VideoStyle::make('scale-width', null, 300, LaruploadMediaStyle::SCALE_WIDTH),
         'width'  => 534,
         'height' => 300,
     ],
-    [
+    fn() => [
         'style'  => VideoStyle::make('scale-height', 400, null, LaruploadMediaStyle::SCALE_HEIGHT),
         'width'  => 400,
         'height' => 226,
     ],
-    [
+    fn() => [
         'style'  => VideoStyle::make('crop', 400, 300, LaruploadMediaStyle::CROP),
         'width'  => 400,
         'height' => 300,
     ],
-    [
+    fn() => [
         'style'  => VideoStyle::make('cover', 400, 300, LaruploadMediaStyle::SCALE_HEIGHT, new X264(), true),
         'width'  => 400,
         'height' => 300
