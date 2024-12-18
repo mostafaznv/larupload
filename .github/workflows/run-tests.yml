@@ -32,7 +32,7 @@ jobs:
         run: sudo apt-get update --fix-missing
 
       - name: Install ffmpeg
-        run: sudo apt-get install ffmpeg
+        run: sudo apt-get install -y ffmpeg
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -47,7 +47,7 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y jpegoptim pngquant gifsicle optipng libjpeg-progs webp
-          sudo npm install -g svgo
+          npm install -g svgo
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
