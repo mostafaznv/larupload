@@ -61,13 +61,13 @@ class LaruploadTestConsts
         ],
 
         'svg' => [
-            'size'      => 11819,
+            'size'      => 7978,
             'width'     => 1077,
             'height'    => 791,
             'mime_type' => 'image/svg+xml',
             'color'     => '#212d4b',
             'name'      => [
-                'hash' => '341a0d4d58d60c0595586725e8737d8c.svg',
+                'hash' => 'e9917ef61fb3f03259129432aee14ad2.svg',
             ]
         ],
 
