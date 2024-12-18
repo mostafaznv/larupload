@@ -70,79 +70,79 @@ it('can resize image file', function(UploadedFile $file, ImageStyle $style, int 
         ->toHaveKey('height', $height);
 
 })->with([
-    [
+    fn() => [
         'file'   => jpg(),
         'style'  => ImageStyle::make('fit', 100, 100, LaruploadMediaStyle::FIT),
         'width'  => 100,
         'height' => 100
     ],
-    [
+    fn() => [
         'file'   => jpg(),
         'style'  => ImageStyle::make('fit', 100, 100, LaruploadMediaStyle::AUTO),
         'width'  => 100,
         'height' => 73
     ],
-    [
+    fn() => [
         'file'   => jpg(),
         'style'  => ImageStyle::make('fit', null, 100, LaruploadMediaStyle::SCALE_WIDTH),
         'width'  => 136,
         'height' => 100
     ],
-    [
+    fn() => [
         'file'   => jpg(),
         'style'  => ImageStyle::make('fit', 100, null, LaruploadMediaStyle::SCALE_HEIGHT),
         'width'  => 100,
         'height' => 73
     ],
-    [
+    fn() => [
         'file'   => jpg(),
         'style'  => ImageStyle::make('fit', 100, 100, LaruploadMediaStyle::CROP),
         'width'  => 100,
         'height' => 100
     ],
-    [
+    fn() => [
         'file'   => jpg(),
         'style'  => ImageStyle::make('fit', 100, 100),
         'width'  => 100,
         'height' => 73
     ],
-    [
+    fn() => [
         'file'   => jpg(),
         'style'  => ImageStyle::make('fit', 100, null, LaruploadMediaStyle::AUTO),
         'width'  => 100,
         'height' => 73
     ],
-    [
+    fn() => [
         'file'   => jpg(),
         'style'  => ImageStyle::make('fit', null, 100, LaruploadMediaStyle::AUTO),
         'width'  => 1077,
         'height' => 791
     ],
-    [
+    fn() => [
         'file'   => jpg(),
         'style'  => ImageStyle::make('fit', null, 100, LaruploadMediaStyle::AUTO),
         'width'  => 1077,
         'height' => 791
     ],
-    [
+    fn() => [
         'file'   => squareImage(),
         'style'  => ImageStyle::make('fit', 101, 100, LaruploadMediaStyle::AUTO),
         'width'  => 101,
         'height' => 101
     ],
-    [
+    fn() => [
         'file'   => squareImage(),
         'style'  => ImageStyle::make('fit', 105, 106, LaruploadMediaStyle::AUTO),
         'width'  => 106,
         'height' => 106
     ],
-    [
+    fn() => [
         'file'   => squareImage(),
         'style'  => ImageStyle::make('fit', 50, 50, LaruploadMediaStyle::AUTO),
         'width'  => 50,
         'height' => 50
     ],
-    [
+    fn() => [
         'file'   => verticalImage(),
         'style'  => ImageStyle::make('fit', 120, 100, LaruploadMediaStyle::AUTO),
         'width'  => 76,
