@@ -41,8 +41,16 @@ class Image
             ? ImageManager::gd()
             : ImageManager::imagick();
 
-
-        $this->image = $imageManager->read($path);
+        try {
+            $this->image = $imageManager->read($path);
+        }
+        catch (Exception $e) {
+            dd(
+                $path,
+                file_exists($path),
+                $e->getMessage()
+            );
+        }
     }
 
 
