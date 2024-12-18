@@ -58,7 +58,7 @@ class ProcessFFMpeg implements ShouldQueue
             }
             else {
                 /** @var Model $class */
-                $class = Relation::getMorphedModel($this->model);
+                $class = class_exists($this->model) ? $this->model : Relation::getMorphedModel($this->model);
                 $modelNotSaved = true;
 
                 while ($modelNotSaved) {
