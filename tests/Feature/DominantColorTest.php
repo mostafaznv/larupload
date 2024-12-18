@@ -7,164 +7,71 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 
 it('will calculate dominant color correctly [jpg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
-    $file = jpg();
+    $model = save($model, jpg());
 
-    try {
-        $model = save($model, $file);
+    $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'];
+    $fileColor = $model->attachment('main_file')->meta('dominant_color');
 
-        $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'];
-        $fileColor = $model->attachment('main_file')->meta('dominant_color');
+    expect($fileColor)->toBe($dominantColor);
 
-        expect($fileColor)->toBe($dominantColor);
-    }
-    catch (Exception $e) {
-        dd(
-            $e->getMessage(),
-            $file->getRealPath(),
-            file_exists($file->getRealPath()),
-            $file->getSize(),
-            $file->dimensions(),
-            $file->getError(),
-        );
-    }
 })->with('models');
 
 it('will calculate dominant color correctly [png]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
-    $file = png();
+    $model = save($model, png());
 
-    try {
-        $model = save($model, $file);
+    $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['png']['color'];
+    $fileColor = $model->attachment('main_file')->meta('dominant_color');
 
-        $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['png']['color'];
-        $fileColor = $model->attachment('main_file')->meta('dominant_color');
+    expect($fileColor)->toBe($dominantColor);
 
-        expect($fileColor)->toBe($dominantColor);
-    }
-    catch (Exception $e) {
-        dd(
-            $e->getMessage(),
-            $file->getRealPath(),
-            file_exists($file->getRealPath()),
-            $file->getSize(),
-            $file->dimensions(),
-            $file->getError(),
-        );
-    }
 })->with('models');
 
 it('will calculate dominant color correctly [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
-    $file = webp();
+    $model = save($model, webp());
 
-    try {
-        $model = save($model, $file);
+    $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['webp']['color'];
+    $fileColor = $model->attachment('main_file')->meta('dominant_color');
 
-        $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['webp']['color'];
-        $fileColor = $model->attachment('main_file')->meta('dominant_color');
-
-        expect($fileColor)->toBe($dominantColor);
-    }
-    catch (Exception $e) {
-        dd(
-            $e->getMessage(),
-            $file->getRealPath(),
-            file_exists($file->getRealPath()),
-            $file->getSize(),
-            $file->dimensions(),
-            $file->getError(),
-        );
-    }
+    expect($fileColor)->toBe($dominantColor);
 
 })->with('models');
 
 it('will calculate dominant color correctly [svg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
-    $file = svg();
+    $this->app['config']->set('larupload.image-processing-library', LaruploadImageLibrary::IMAGICK);
 
-    try {
-        $this->app['config']->set('larupload.image-processing-library', LaruploadImageLibrary::IMAGICK);
+    $model = $model::class;
+    $model = save(new $model, svg());
 
-        $model = $model::class;
-        $model = save(new $model, $file);
+    $fileColor = $model->attachment('main_file')->meta('dominant_color');
 
-        $fileColor = $model->attachment('main_file')->meta('dominant_color');
-
-        expect($fileColor)->toMatch(LaruploadTestConsts::HEX_REGEX);
-    }
-    catch (Exception $e) {
-        dd(
-            $e->getMessage(),
-            $file->getRealPath(),
-            file_exists($file->getRealPath()),
-            $file->getSize(),
-            $file->dimensions(),
-            $file->getError(),
-        );
-    }
+    expect($fileColor)->toMatch(LaruploadTestConsts::HEX_REGEX);
 
 })->with('models');
 
 it('will calculate dominant color correctly [jpg] in standalone mode', function() {
-    $file = jpg();
+    $upload = Larupload::init('uploader')->upload(jpg());
 
-    try {
-        $upload = Larupload::init('uploader')->upload($file);
+    expect($upload->meta->dominant_color)
+        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']);
 
-        expect($upload->meta->dominant_color)
-            ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']);
-    }
-    catch (Exception $e) {
-        dd(
-            $e->getMessage(),
-            $file->getRealPath(),
-            file_exists($file->getRealPath()),
-            $file->getSize(),
-            $file->dimensions(),
-            $file->getError(),
-        );
-    }
 });
 
 it('will calculate dominant color correctly [png] in standalone mode', function() {
-    $file = png();
+    $upload = Larupload::init('uploader')->upload(png());
 
-    try {
-        $upload = Larupload::init('uploader')->upload($file);
+    expect($upload->meta->dominant_color)
+        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['png']['color']);
 
-        expect($upload->meta->dominant_color)
-            ->toBe(LaruploadTestConsts::IMAGE_DETAILS['png']['color']);
-    }
-    catch (Exception $e) {
-        dd(
-            $e->getMessage(),
-            $file->getRealPath(),
-            file_exists($file->getRealPath()),
-            $file->getSize(),
-            $file->dimensions(),
-            $file->getError(),
-        );
-    }
 });
 
 it('will calculate dominant color correctly [svg] in standalone mode', function() {
-    $file = svg();
+    $upload = Larupload::init('uploader')
+        ->imageProcessingLibrary(LaruploadImageLibrary::IMAGICK)
+        ->upload(svg());
 
-    try {
-        $upload = Larupload::init('uploader')
-            ->imageProcessingLibrary(LaruploadImageLibrary::IMAGICK)
-            ->upload($file);
+    expect($upload->meta->dominant_color)
+        ->toMatch(LaruploadTestConsts::HEX_REGEX);
 
-        expect($upload->meta->dominant_color)
-            ->toMatch(LaruploadTestConsts::HEX_REGEX);
-    }
-    catch (Exception $e) {
-        dd(
-            $e->getMessage(),
-            $file->getRealPath(),
-            file_exists($file->getRealPath()),
-            $file->getSize(),
-            $file->dimensions(),
-            $file->getError(),
-        );
-    }
 });
 
 it('will calculate dominant color with high quality', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
