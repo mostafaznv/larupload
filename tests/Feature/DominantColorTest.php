@@ -7,12 +7,26 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 
 it('will calculate dominant color correctly [jpg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
-    $model = save($model, jpg());
+    $file = jpg();
 
-    $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'];
-    $fileColor = $model->attachment('main_file')->meta('dominant_color');
+    try {
+        $model = save($model, $file);
 
-    expect($fileColor)->toBe($dominantColor);
+        $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'];
+        $fileColor = $model->attachment('main_file')->meta('dominant_color');
+
+        expect($fileColor)->toBe($dominantColor);
+    }
+    catch (Exception $e) {
+        dd(
+            $file->getRealPath(),
+            file_exists($file->getRealPath()),
+            $file->getSize(),
+            $file->dimensions(),
+            $file->getError(),
+            $e->getMessage(),
+        );
+    }
 
 })->with('models');
 
