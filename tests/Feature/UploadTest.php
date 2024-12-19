@@ -87,7 +87,7 @@ it('will upload image successfully [png]', function(LaruploadHeavyTestModel|Laru
 
 })->with('models');
 
-/*it('will upload image successfully [svg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload image successfully [svg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $this->app['config']->set('larupload.image-processing-library', LaruploadImageLibrary::IMAGICK);
 
     $model = new ($model::class);
@@ -113,7 +113,7 @@ it('will upload image successfully [png]', function(LaruploadHeavyTestModel|Laru
         ->toHaveProperty('height', $details['height'])
         ->toHaveProperty('duration', null);
 
-})->with('models');*/
+})->with('models');
 
 it('will upload audio successfully', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, mp3());

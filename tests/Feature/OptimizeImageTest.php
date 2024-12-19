@@ -102,7 +102,7 @@ it('will optimize webp', function(LaruploadHeavyTestModel|LaruploadLightTestMode
 
 })->with('models');
 
-/*it('will optimize svg', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will optimize svg', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     config()->set('larupload.image-processing-library', LaruploadImageLibrary::IMAGICK);
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['svg'];
@@ -133,7 +133,7 @@ it('will optimize webp', function(LaruploadHeavyTestModel|LaruploadLightTestMode
         ->and($attachment->meta('size'))
         ->toBeLessThan($details['size']);
 
-})->with('models');*/
+})->with('models');
 
 it('wont optimize non-image files', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, mp3());

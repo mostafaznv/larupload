@@ -18,13 +18,13 @@ it('can optimize png', function() {
     expect($size)->toBeGreaterThan($optimized->getSize());
 });
 
-/*it('can optimize svg', function() {
+it('can optimize svg', function() {
     $file = svg();
     $size = $file->getSize();
     $optimized = OptimizeImageAction::make($file)->process();
 
     expect($size)->toBeGreaterThan($optimized->getSize());
-});*/
+});
 
 it('can optimize gif', function() {
     $file = gif();
