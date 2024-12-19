@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,6 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
 use Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished;
 use Mostafaznv\Larupload\Larupload;
+
 
 class ProcessFFMpeg implements ShouldQueue
 {
@@ -56,7 +58,7 @@ class ProcessFFMpeg implements ShouldQueue
             }
             else {
                 /** @var Model $class */
-                $class = $this->model;
+                $class = class_exists($this->model) ? $this->model : Relation::getMorphedModel($this->model);
                 $modelNotSaved = true;
 
                 while ($modelNotSaved) {
