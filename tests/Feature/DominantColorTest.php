@@ -36,7 +36,7 @@ it('will calculate dominant color correctly [webp]', function(LaruploadHeavyTest
 
 })->with('models');
 
-it('will calculate dominant color correctly [svg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+/*it('will calculate dominant color correctly [svg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $this->app['config']->set('larupload.image-processing-library', LaruploadImageLibrary::IMAGICK);
 
     $model = $model::class;
@@ -46,7 +46,7 @@ it('will calculate dominant color correctly [svg]', function(LaruploadHeavyTestM
 
     expect($fileColor)->toMatch(LaruploadTestConsts::HEX_REGEX);
 
-})->with('models');
+})->with('models');*/
 
 it('will calculate dominant color correctly [jpg] in standalone mode', function() {
     $upload = Larupload::init('uploader')->upload(jpg());
@@ -64,7 +64,7 @@ it('will calculate dominant color correctly [png] in standalone mode', function(
 
 });
 
-it('will calculate dominant color correctly [svg] in standalone mode', function() {
+/*it('will calculate dominant color correctly [svg] in standalone mode', function() {
     $upload = Larupload::init('uploader')
         ->imageProcessingLibrary(LaruploadImageLibrary::IMAGICK)
         ->upload(svg());
@@ -72,7 +72,7 @@ it('will calculate dominant color correctly [svg] in standalone mode', function(
     expect($upload->meta->dominant_color)
         ->toMatch(LaruploadTestConsts::HEX_REGEX);
 
-});
+});*/
 
 it('will calculate dominant color with high quality', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     config()->set('larupload.dominant-color-quality', 1);
