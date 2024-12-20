@@ -2,24 +2,26 @@
 
 namespace Mostafaznv\Larupload\Storage\FFMpeg;
 
-use Alchemy\BinaryDriver\Exception\ExecutionFailureException;
-use FFMpeg\Coordinate\Dimension;
-use FFMpeg\Coordinate\TimeCode;
-use FFMpeg\Exception\RuntimeException;
-use FFMpeg\FFMpeg as FFMpegLib;
-use FFMpeg\Filters\Video\ResizeFilter;
-use FFMpeg\Format\Video\X264;
 use FFMpeg\Media\Audio;
 use FFMpeg\Media\Video;
+use FFMpeg\Format\Audio\Mp3;
+use Psr\Log\LoggerInterface;
+use FFMpeg\Format\Video\X264;
+use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\FFMpeg as FFMpegLib;
+use FFMpeg\Coordinate\Dimension;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
-use Mostafaznv\Larupload\DTOs\FFMpeg\FFMpegMeta;
-use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
-use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
-use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
-use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
+use FFMpeg\Exception\RuntimeException;
+use FFMpeg\Filters\Video\ResizeFilter;
 use Mostafaznv\Larupload\Storage\Image;
-use Psr\Log\LoggerInterface;
+use Mostafaznv\Larupload\DTOs\Style\AudioStyle;
+use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
+use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
+use Mostafaznv\Larupload\DTOs\FFMpeg\FFMpegMeta;
+use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
+use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
+use Alchemy\BinaryDriver\Exception\ExecutionFailureException;
 
 class FFMpeg
 {
@@ -131,6 +133,15 @@ class FFMpeg
             : $this->crop($style);
 
         $this->media->save($style->format, $saveTo['local']);
+        larupload_finalize_save($this->disk, $saveTo);
+    }
+
+    public function audio(AudioStyle $style, string $saveTo): void
+    {
+        $saveTo = get_larupload_save_path($this->disk, $saveTo);
+
+        $this->media->save($style->format, $saveTo['local']);
+
         larupload_finalize_save($this->disk, $saveTo);
     }
 
