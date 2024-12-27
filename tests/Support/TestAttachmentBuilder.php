@@ -2,6 +2,10 @@
 
 namespace Mostafaznv\Larupload\Test\Support;
 
+use FFMpeg\Format\Audio\Aac;
+use FFMpeg\Format\Audio\Flac;
+use FFMpeg\Format\Audio\Mp3;
+use FFMpeg\Format\Audio\Wav;
 use FFMpeg\Format\Video\X264;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
@@ -81,6 +85,36 @@ class TestAttachmentBuilder
             ->withPortraitImage()
             ->withExactImage()
             ->withAutoImage();
+
+        return $this;
+    }
+
+    public function withMp3Audio(): self
+    {
+        $this->attachment = $this->attachment->audio('audio_mp3', new Mp3);
+
+        return $this;
+    }
+
+    public function withWavAudio(): self
+    {
+        $this->attachment = $this->attachment->audio('audio_wav', new Wav);
+
+        return $this;
+    }
+
+    public function withFlacAudio(): self
+    {
+        $this->attachment = $this->attachment->audio('audio_flac', new Flac);
+
+        return $this;
+    }
+
+    public function withAllAudios(): self
+    {
+        $this->withMp3Audio()
+            ->withWavAudio()
+            ->withFlacAudio();
 
         return $this;
     }
@@ -199,7 +233,7 @@ class TestAttachmentBuilder
 
     public function withAll(): self
     {
-        $this->withAllImages()->withAllVideosAndStreams();
+        $this->withAllImages()->withAllVideosAndStreams()->withAllAudios();
 
         return $this;
     }

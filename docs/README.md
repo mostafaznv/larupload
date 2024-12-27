@@ -32,6 +32,7 @@ Moreover, Larupload can calculate the dominant colors of videos and images, as w
 * Extract the width and height of the image
 * Extract width, height, and duration of the video
 * Extract the duration of the audio
+* Convert audio file formats
 * Extract dominant color from the image and video
 * Automatically create a cover image for video files
 * Possibility to upload a cover for every file

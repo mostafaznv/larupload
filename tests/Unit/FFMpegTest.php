@@ -1,12 +1,16 @@
 <?php
 
 use FFMpeg\Exception\RuntimeException as FFmpegRuntimeException;
+use FFMpeg\Format\Audio\Flac;
+use FFMpeg\Format\Audio\Mp3;
+use FFMpeg\Format\Audio\Wav;
 use FFMpeg\Format\Video\X264;
 use FFMpeg\Media\Audio;
 use FFMpeg\Media\Video;
 use Illuminate\Http\UploadedFile;
 use Imagine\Imagick\Imagine;
 use Mostafaznv\Larupload\DTOs\FFMpeg\FFMpegMeta;
+use Mostafaznv\Larupload\DTOs\Style\AudioStyle;
 use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Storage\FFMpeg\FFMpeg;
@@ -212,6 +216,138 @@ it('will throw exception during capture, if media is not a video', function() {
         saveTo: 'cover.jpg'
     );
 })->throws(Exception::class);
+
+it('can manipulate audios', function(AudioStyle $style, string $fileName, int $bitrate, string $codec) {
+    $path = get_larupload_save_path('local', $fileName)['local'];
+
+    expect(file_exists($path))->toBeFalse();
+
+    $ffmpeg = new FFMpeg(mp3(), 'local', 10);
+    $ffmpeg->audio($style, $fileName);
+
+    expect(file_exists($path))->toBeTrue();
+
+    $file = new UploadedFile($path, $fileName, null, null, true);
+    $audio = new FFMpeg($file, 'local', 10);
+    $meta = $audio->getMeta();
+
+
+    expect($meta->width)
+        ->toBeNull()
+        ->and($meta->height)
+        ->toBeNull()
+        ->and($meta->duration)
+        ->toBe(67)
+        ->and($audio->getMedia()->getStreams()->first()->isAudio())
+        ->toBeTrue()
+        ->and((int)$audio->getMedia()->getStreams()->first()->get('bit_rate'))
+        ->toBe($bitrate)
+        ->and($audio->getMedia()->getStreams()->first()->get('codec_type'))
+        ->toBe('audio')
+        ->and($audio->getMedia()->getStreams()->first()->get('codec_name'))
+        ->toBe($codec);
+
+    @unlink($path);
+
+})->with([
+    fn() => [
+        'style'     => AudioStyle::make('mp3', (new Mp3())->setAudioKiloBitrate(32)),
+        'file_name' => 'audio.mp3',
+        'bit_rate'  => 32000,
+        'codec'     => 'mp3'
+    ],
+    fn() => [
+        'style'     => AudioStyle::make('wav', new Wav()),
+        'file_name' => 'audio.wav',
+        'bit_rate'  => 705600,
+        'codec'     => 'pcm_s16le'
+    ],
+    fn() => [
+        'style'     => AudioStyle::make('wav', new Flac()),
+        'file_name' => 'audio.flac',
+        'bit_rate'  => 0,
+        'codec'     => 'flac'
+    ],
+]);
+
+
+it('can guess correct file extension based on audio-style', function(AudioStyle $style, string $fileName) {
+    $path = get_larupload_save_path('local', $fileName)['local'];
+
+    expect(file_exists($path))->toBeFalse();
+
+    $ffmpeg = new FFMpeg(mp3(), 'local', 10);
+    $ffmpeg->audio($style, 'audio.ext');
+
+    expect(file_exists($path))->toBeTrue();
+
+    @unlink($path);
+
+})->with([
+    fn() => [
+        'style'     => AudioStyle::make('mp3', new Mp3()),
+        'file_name' => 'audio.mp3',
+    ],
+    fn() => [
+        'style'     => AudioStyle::make('wav', new Wav()),
+        'file_name' => 'audio.wav',
+    ],
+    fn() => [
+        'style'     => AudioStyle::make('wav', new Flac()),
+        'file_name' => 'audio.flac',
+    ],
+]);
+
+it('can upload manipulated audios to remote disks', function() {
+    $disk = 's3';
+    Storage::fake($disk);
+
+    $ffmpeg = new FFMpeg(mp3(), $disk, 10);
+    $ffmpeg->audio(
+        style: AudioStyle::make('wav', new Wav()),
+        saveTo: 'audio.wav'
+    );
+
+    $files = Storage::disk($disk)->allFiles();
+
+    expect($files)
+        ->toBeArray()
+        ->toHaveCount(1)
+        ->toMatchArray([
+            'audio.wav'
+        ]);
+});
+
+it('can convert video to audio', function() {
+    $fileName = 'audio.mp3';
+    $path = get_larupload_save_path('local', $fileName)['local'];
+
+    $style = AudioStyle::make('mp3', new Mp3());
+
+    $ffmpeg = new FFMpeg(mp4(), 'local', 10);
+    $ffmpeg->audio($style, $fileName);
+
+    expect(file_exists($path))->toBeTrue();
+
+    $file = new UploadedFile($path, $fileName, null, null, true);
+    $audio = new FFMpeg($file, 'local', 10);
+    $meta = $audio->getMeta();
+
+    expect($meta->width)
+        ->toBeNull()
+        ->and($meta->height)
+        ->toBeNull()
+        ->and($meta->duration)
+        ->toBe(5)
+        ->and($audio->getMedia()->getStreams()->first()->isAudio())
+        ->toBeTrue()
+        ->and($audio->getMedia()->getStreams()->first()->get('codec_type'))
+        ->toBe('audio')
+        ->and($audio->getMedia()->getStreams()->first()->get('codec_name'))
+        ->toBe('mp3');
+
+    @unlink($path);
+});
 
 it('can manipulate videos', function(VideoStyle $style, int $width, int $height) {
     $fileName = 'video.mp4';

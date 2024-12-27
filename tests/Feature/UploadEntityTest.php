@@ -1,5 +1,7 @@
 <?php
 
+use FFMpeg\Format\Audio\Aac;
+use FFMpeg\Format\Audio\Wav;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
@@ -63,6 +65,21 @@ it('can return video registered styles', function() {
         ->and(array_keys($styles))
         ->toBe([
             'sd', 'hd'
+        ]);
+});
+
+it('can return audio registered styles', function() {
+    $this->attachment->audio('audio_wav', new Wav);
+    $this->attachment->audio('audio_aac', new Aac());
+
+    $styles = $this->attachment->getAudioStyles();
+
+    expect($styles)
+        ->toBeArray()
+        ->toHaveCount(2)
+        ->and(array_keys($styles))
+        ->toBe([
+            'audio_wav', 'audio_aac'
         ]);
 });
 

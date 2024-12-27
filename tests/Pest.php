@@ -109,6 +109,21 @@ function urlToVideo(string $url): FFMpegMeta
     return $ffmpeg->getMeta();
 }
 
+function urlToAudio(string $url): FFMpegMeta
+{
+    $baseUrl = url('/');
+    $url = str_replace($baseUrl, '', $url);
+    $path = public_path($url);
+
+    $fileName = pathinfo($path, PATHINFO_FILENAME);
+    $disk = config('larupload.disk');
+
+    $file = new UploadedFile($path, $fileName, null, null, true);
+    $ffmpeg = new FFMpeg($file, $disk, 10);
+
+    return $ffmpeg->getMeta();
+}
+
 function urlsToPath(AttachmentProxy $attachment, array $exclude = []): array
 {
     $paths = [];

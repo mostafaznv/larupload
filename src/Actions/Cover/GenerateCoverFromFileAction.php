@@ -14,6 +14,10 @@ class GenerateCoverFromFileAction
     private readonly string $fileName;
     private readonly mixed  $ffmpegCaptureFrame;
     private array           $output;
+    private array           $availableStyles = [
+        LaruploadFileType::VIDEO, LaruploadFileType::IMAGE
+    ];
+
 
     public function __construct(private readonly UploadedFile $file, private readonly CoverActionData $data)
     {
@@ -29,6 +33,10 @@ class GenerateCoverFromFileAction
 
     public function run(string $path): array
     {
+        if (!in_array($this->data->type, $this->availableStyles)) {
+            return $this->output;
+        }
+
         Storage::disk($this->data->disk)->makeDirectory($path);
 
         $format = $this->fileFormat();

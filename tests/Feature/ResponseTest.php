@@ -9,7 +9,9 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 use Illuminate\Support\Facades\Storage;
 
 $properties = [
-    'original', 'cover', 'stream', 'small_size', 'small', 'medium', 'landscape', 'portrait', 'exact', 'auto', 'meta'
+    'original', 'cover', 'stream', 'small_size', 'small', 'medium',
+    'audio_mp3', 'audio_wav', 'audio_flac',
+    'landscape', 'portrait', 'exact', 'auto', 'meta'
 ];
 
 it('will return larupload object in toArray function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {

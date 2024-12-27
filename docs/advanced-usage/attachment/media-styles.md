@@ -45,6 +45,43 @@ class Media extends Model
 
 
 
+
+
+### Audio Style
+
+<table><thead><tr><th width="103" data-type="number">Index</th><th width="99">Name</th><th width="196">Type</th><th data-type="checkbox">Required</th><th width="155">Default</th><th width="515">Description</th></tr></thead><tbody><tr><td>1</td><td>name</td><td>string</td><td>true</td><td>–</td><td>style name. examples: hq, lq, ...</td></tr><tr><td>2</td><td>format</td><td>Mp3|Aac|Wav|Flac</td><td>false</td><td>Mp3</td><td>the format of the converted audio file</td></tr></tbody></table>
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
+use Mostafaznv\Larupload\Storage\Attachment;
+use Mostafaznv\Larupload\Traits\Larupload;
+use FFMpeg\Format\Audio\Wav;
+
+class Media extends Model
+{
+    use Larupload;
+
+    public function attachments(): array
+    {
+        return [
+            Attachment::make('file')
+                ->audio('hq', new Wav())
+        ];
+    }
+}
+```
+
+
+
+
+
+
+
 ### Video Style
 
 <table><thead><tr><th width="103" data-type="number">Index</th><th width="99">Name</th><th width="196">Type</th><th data-type="checkbox">Required</th><th width="155">Default</th><th width="515">Description</th></tr></thead><tbody><tr><td>1</td><td>name</td><td>string</td><td>true</td><td>–</td><td>style name. examples: thumbnail, small, ...</td></tr><tr><td>2</td><td>width</td><td>?int</td><td>false</td><td>null</td><td>width of the manipulated video</td></tr><tr><td>3</td><td>height</td><td>?int</td><td>false</td><td>null</td><td>height of the manipulated video</td></tr><tr><td>4</td><td>mode</td><td>LaruploadMediaStyle</td><td>false</td><td>SCALE_HEIGHT</td><td>this argument specifies how Larupload should manipulate the uploaded video and can take on any of the following values: <code>FIT</code>, <code>AUTO</code>, <code>SCALE_WIDTH</code>, <code>SCALE_HEIGHT</code>, <code>CROP</code></td></tr><tr><td>5</td><td>format</td><td>X264</td><td>false</td><td>new X264</td><td>by default, the encoding format for video is <code>X264</code>. However, users can specify additional options for this format, including adjusting the <code>kilobitrate</code> for both <code>audio</code> and <code>video</code>. This allows for more precise configuration and optimization of the user's encoding preferences.</td></tr><tr><td>6</td><td>padding</td><td>bool</td><td>false</td><td>false</td><td>If set to <code>true</code>, padding will be applied to the video using a black color in order to fit the given dimensions.</td></tr></tbody></table>

@@ -72,10 +72,12 @@ if (!function_exists('get_larupload_save_path')) {
      *
      * @param string $disk
      * @param string $saveTo
+     * @param string|null $extension
      * @return array
      */
-    function get_larupload_save_path(string $disk, string $saveTo): array
+    function get_larupload_save_path(string $disk, string $saveTo, ?string $extension = null): array
     {
+        $saveTo = larupload_style_path($saveTo, $extension);
         $permanent = \Illuminate\Support\Facades\Storage::disk($disk)->path($saveTo);
         list($path, $name) = split_larupload_path($saveTo);
 
@@ -184,6 +186,26 @@ if (!function_exists('file_is_valid')) {
         }
 
         return true;
+    }
+}
+
+if (!function_exists('larupload_style_path')) {
+    /**
+     * Change path extension
+     *
+     * @param string $path
+     * @param string|null $extension
+     * @return string
+     */
+    function larupload_style_path(string $path, ?string $extension): string
+    {
+        if ($extension) {
+            $info = pathinfo($path);
+
+            return $info['dirname'] . DIRECTORY_SEPARATOR . $info['filename'] . '.' . $extension;
+        }
+
+        return $path;
     }
 }
 

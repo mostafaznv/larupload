@@ -14,12 +14,14 @@ use FFMpeg\Media\Video;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Mostafaznv\Larupload\DTOs\FFMpeg\FFMpegMeta;
+use Mostafaznv\Larupload\DTOs\Style\AudioStyle;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Storage\Image;
 use Psr\Log\LoggerInterface;
+
 
 class FFMpeg
 {
@@ -120,6 +122,15 @@ class FFMpeg
         larupload_finalize_save($this->disk, $saveTo);
 
         return $dominantColor;
+    }
+
+    public function audio(AudioStyle $style, string $saveTo): void
+    {
+        $saveTo = get_larupload_save_path($this->disk, $saveTo, $style->extension());
+
+        $this->media->save($style->format, $saveTo['local']);
+
+        larupload_finalize_save($this->disk, $saveTo);
     }
 
     public function manipulate(VideoStyle $style, string $saveTo): void
