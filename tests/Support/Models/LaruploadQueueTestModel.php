@@ -24,6 +24,7 @@ class LaruploadQueueTestModel extends Model
         return TestAttachmentBuilder::make($this->mode)
             ->withLandscapeVideo()
             ->with480pStream()
+            ->withWavAudio()
             ->toArray();
     }
 }

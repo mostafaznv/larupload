@@ -43,7 +43,8 @@ trait RetrieveAttachment
         $allStyles = array_merge(
             $staticStyles,
             array_keys($this->imageStyles),
-            array_keys($this->videoStyles)
+            array_keys($this->videoStyles),
+            array_keys($this->audioStyles)
         );
 
         foreach ($allStyles as $style) {

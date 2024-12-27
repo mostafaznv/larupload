@@ -45,6 +45,13 @@ trait TestAttachments
         );
     }
 
+    public function withAllAudios(): array
+    {
+        return $this->setAttachments(
+            TestAttachmentBuilder::make($this->mode)->withAllAudios()->toArray()
+        );
+    }
+
     public function withStreams(): array
     {
         return $this->setAttachments(

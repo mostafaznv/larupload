@@ -54,6 +54,29 @@ trait StyleAttachment
                 }
 
                 break;
+
+            case LaruploadFileType::AUDIO:
+                if ($this->ffmpegQueue) {
+                    if ($this->driverIsNotLocal()) {
+                        $this->uploadOriginalFile($id, $this->localDisk);
+                    }
+
+                    if ($model instanceof Model) {
+                        $this->initializeFFMpegQueue(
+                            $model->id, $model->getMorphClass(), $standalone
+                        );
+                    }
+                    else {
+                        $this->initializeFFMpegQueue(
+                            $id, $model, $standalone
+                        );
+                    }
+                }
+                else {
+                    $this->handleAudioStyles($id);
+                }
+
+                break;
         }
     }
 
@@ -83,6 +106,22 @@ trait StyleAttachment
     }
 
     /**
+     * Handle styles for audios
+     *
+     * @param $id
+     */
+    protected function handleAudioStyles($id): void
+    {
+        foreach ($this->audioStyles as $name => $style) {
+            $path = $this->getBasePath($id, $name);
+            Storage::disk($this->disk)->makeDirectory($path);
+            $saveTo = "$path/{$this->output['name']}";
+
+            $this->ffmpeg()->audio($style, $saveTo);
+        }
+    }
+
+    /**
      * Prepare style path
      * this function will use to prepare full path of given style to generate url/download response
      *
@@ -97,7 +136,7 @@ trait StyleAttachment
             Larupload::STREAM_FOLDER
         ];
 
-        if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->imageStyles) or array_key_exists($style, $this->videoStyles))) {
+        if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->imageStyles) or array_key_exists($style, $this->videoStyles) or array_key_exists($style, $this->audioStyles))) {
             $name = $style == Larupload::COVER_FOLDER
                 ? $this->output['cover']
                 : $this->output['name'];
@@ -117,7 +156,8 @@ trait StyleAttachment
                 return null;
             }
             else if ($name and $this->styleHasFile($style)) {
-                $name = FixExceptionNamesAction::make($name, $style)->run();
+
+                $name = FixExceptionNamesAction::make($name, $style, $this->getStyle($style))->run();
                 $path = $this->getBasePath($this->id, $style);
 
                 return "$path/$name";

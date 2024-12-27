@@ -62,6 +62,21 @@ it('will download custom video styles', function(LaruploadHeavyTestModel|Laruplo
 
 })->with('models');
 
+it('will download custom audio styles', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withWavAudio()->toArray()
+    );
+
+    $model = save($model, mp3());
+    $attachment = $model->attachment('main_file');
+
+    expect($attachment->download('audio_wav'))
+        ->toBeInstanceOf(StreamedResponse::class)
+        ->getStatusCode()
+        ->toBe(200);
+
+})->with('models');
+
 it('will return null for styles that do not exist', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
     $attachment = $model->attachment('main_file');
