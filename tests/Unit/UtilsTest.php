@@ -231,3 +231,9 @@ it('will change path using the given extension', function() {
 
     expect($path)->toBe('path/to/file.wav');
 });
+
+it('trims the extra dot at the beginning of the path when dirname is null', function() {
+    $path = larupload_style_path('file.mp3', 'wav');
+
+    expect($path)->toBe('file.wav');
+});
