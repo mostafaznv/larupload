@@ -18,9 +18,11 @@ use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Illuminate\Support\Facades\Storage;
 
+
 beforeEach(function() {
     $this->ffmpeg = new FFMpeg(mp4(), 'local', 10);
 });
+
 
 it('will return an instance of ffmpeg', function() {
     $ffmpeg = new FFMpeg(mp4(), 'local', 10);
@@ -30,7 +32,7 @@ it('will return an instance of ffmpeg', function() {
     expect($ffmpeg->getMedia())->toBeInstanceOf(Audio::class);
 });
 
-it('will meta for video files', function() {
+it('will return meta for video files', function() {
     $ffmpeg = new FFMpeg(mp4(), 'local', 10);
     $meta = $ffmpeg->getMeta();
 
@@ -44,7 +46,7 @@ it('will meta for video files', function() {
         ->toBe(5);
 });
 
-it('will meta for audio files', function() {
+it('will return meta for audio files', function() {
     $ffmpeg = new FFMpeg(mp3(), 'local', 10);
     $meta = $ffmpeg->getMeta();
 

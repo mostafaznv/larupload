@@ -104,6 +104,87 @@ it('will generate video styles correctly', function(LaruploadHeavyTestModel|Laru
 
 })->with('models');
 
+it('will generate videos with custom video/audio formats', function() {
+    $model = new LaruploadHeavyTestModel;
+    $model->withAllCustomFormatVideos();
+    $model = save($model, mp4());
+
+    $attachment = $model->attachment('main_file');
+    $cover = urlToVideo($attachment->url('cover'));
+    $webm = urlToVideo($attachment->url('webm'));
+    $ogg = urlToVideo($attachment->url('ogg'));
+    $mp3 = urlToAudio($attachment->url('mp3'));
+    $wav = urlToAudio($attachment->url('wav'));
+    $flac = urlToAudio($attachment->url('flac'));
+
+    expect($attachment->url('cover'))
+        ->toBeTruthy()
+        ->toBeString()
+        ->toBeExists()
+        ->and($cover->width)
+        ->toBe(500)
+        ->and($cover->height)
+        ->toBe(500)
+        ->and($cover->duration)
+        ->toBe(0)
+        // web
+        ->and($attachment->url('webm'))
+        ->toBeTruthy()
+        ->toBeString()
+        ->toBeExists()
+        ->and($webm->width)
+        ->toBe(400)
+        ->and($webm->height)
+        ->toBe(224)
+        ->and($webm->duration)
+        ->toBe(5)
+        // ogg
+        ->and($attachment->url('ogg'))
+        ->toBeTruthy()
+        ->toBeString()
+        ->toBeExists()
+        ->and($ogg->width)
+        ->toBe(400)
+        ->and($ogg->height)
+        ->toBe(224)
+        ->and($ogg->duration)
+        ->toBe(5)
+        // mp3
+        ->and($attachment->url('mp3'))
+        ->toBeTruthy()
+        ->toBeString()
+        ->toBeExists()
+        ->and($mp3->width)
+        ->toBeNull()
+        ->and($mp3->height)
+        ->toBeNull()
+        ->and($mp3->duration)
+        ->toBe(5)
+        // wav
+        ->and($attachment->url('wav'))
+        ->toBeTruthy()
+        ->toBeString()
+        ->toBeExists()
+        ->and($wav->width)
+        ->toBeNull()
+        ->and($wav->height)
+        ->toBeNull()
+        ->and($wav->duration)
+        ->toBe(5)
+        // flac
+        ->and($attachment->url('flac'))
+        ->toBeTruthy()
+        ->toBeString()
+        ->toBeExists()
+        ->and($flac->width)
+        ->toBeNull()
+        ->and($flac->height)
+        ->toBeNull()
+        ->and($flac->duration)
+        ->toBe(5);
+
+});
+
 it('will generate stream correctly', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model->withStreams();
     $model = save($model, mp4());
@@ -237,7 +318,7 @@ it('will generate stream in standalone mode correctly', function() {
         ->stream(
             name: '720p',
             width: 1280,
-            height:  720,
+            height: 720,
             format: (new X264)
                 ->setKiloBitrate(1000)
                 ->setAudioKiloBitrate(64)

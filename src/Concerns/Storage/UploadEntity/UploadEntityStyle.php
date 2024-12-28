@@ -7,6 +7,8 @@ use FFMpeg\Format\Audio\Aac;
 use FFMpeg\Format\Audio\Flac;
 use FFMpeg\Format\Audio\Mp3;
 use FFMpeg\Format\Audio\Wav;
+use FFMpeg\Format\Video\Ogg;
+use FFMpeg\Format\Video\WebM;
 use FFMpeg\Format\Video\X264;
 use Mostafaznv\Larupload\DTOs\Style\AudioStyle;
 use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
@@ -78,7 +80,7 @@ trait UploadEntityStyle
         return $this;
     }
 
-    public function video(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, X264 $format = new X264, bool $padding = false): UploadEntities
+    public function video(string $name, ?int $width = null, ?int $height = null, LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT, X264|WebM|Ogg|Mp3|Aac|Wav|Flac $format = new X264, bool $padding = false): UploadEntities
     {
         $this->videoStyles[$name] = VideoStyle::make($name, $width, $height, $mode, $format, $padding);
 

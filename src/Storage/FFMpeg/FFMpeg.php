@@ -85,6 +85,11 @@ class FFMpeg
                 // @codeCoverageIgnoreEnd
             }
 
+            // in some formats like webm, duration is not available in streams, so we should get it from format
+            if (!isset($meta['duration'])) {
+                $meta['duration'] = $this->media->getFormat()->get('duration', 0);
+            }
+
             $this->meta = FFMpegMeta::make(
                 width: $meta['width'] ?? null,
                 height: $meta['height'] ?? null,
@@ -135,7 +140,7 @@ class FFMpeg
 
     public function manipulate(VideoStyle $style, string $saveTo): void
     {
-        $saveTo = get_larupload_save_path($this->disk, $saveTo);
+        $saveTo = get_larupload_save_path($this->disk, $saveTo, $style->extension());
 
         $style->mode->ffmpegResizeFilter()
             ? $this->resize($style)
