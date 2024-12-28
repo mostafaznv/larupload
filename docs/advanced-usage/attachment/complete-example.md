@@ -5,6 +5,9 @@
 
 namespace App\Models;
 
+use FFMpeg\Format\Audio\Flac;
+use FFMpeg\Format\Audio\Mp3;
+use FFMpeg\Format\Audio\Wav;
 use FFMpeg\Format\Video\X264;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,6 +19,7 @@ use Mostafaznv\Larupload\Enums\LaruploadStyleMode;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\Larupload;
+
 
 class Media extends Model
 {
@@ -51,6 +55,7 @@ class Media extends Model
                 ->video('thumbnail', 250, 250, LaruploadMediaStyle::AUTO)
                 ->video('crop_mode', 1100, 1100, LaruploadMediaStyle::CROP)
                 ->video('portrait_mode', 1000, 1000, LaruploadMediaStyle::SCALE_WIDTH)
+                ->video(name: 'mp3', format: new Mp3)
                 ->video(
                     name: 'auto',
                     width: 300,

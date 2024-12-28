@@ -25,6 +25,7 @@ Moreover, Larupload can calculate the dominant colors of videos and images, as w
 * Upload with 2 different strategies: ORM-based and Standalone
 * Use different drivers
 * Ability to resize/crop photos and videos
+* Ability to convert video files into custom video or audio formats
 * Ability to create multiple sizes of videos and images
 * Ability to create HTTP Live Streaming (HLS) from video sources
 * Ability to hide the real ID of model records by using different ID formats (ULID, UUID and ...)
