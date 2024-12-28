@@ -2,8 +2,13 @@
 
 namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
+use FFMpeg\Format\Audio\Aac;
+use FFMpeg\Format\Audio\Flac;
+use FFMpeg\Format\Audio\Mp3;
+use FFMpeg\Format\Audio\Wav;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\DTOs\Style\AudioStyle;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Actions\FixExceptionNamesAction;
@@ -90,9 +95,20 @@ trait StyleAttachment
         foreach ($this->videoStyles as $name => $style) {
             $path = $this->getBasePath($id, $name);
             Storage::disk($this->disk)->makeDirectory($path);
+
             $saveTo = "$path/{$this->output['name']}";
 
-            $this->ffmpeg()->manipulate($style, $saveTo);
+
+            if ($style->isAudioFormat()) {
+                $this->ffmpeg(null, $style)->audio(
+                    style: AudioStyle::make($style->name, $style->format),
+                    saveTo: $saveTo
+                );
+
+                continue;
+            }
+
+            $this->ffmpeg(null, $style)->manipulate($style, $saveTo);
         }
 
         if (count($this->streams)) {
@@ -156,7 +172,6 @@ trait StyleAttachment
                 return null;
             }
             else if ($name and $this->styleHasFile($style)) {
-
                 $name = FixExceptionNamesAction::make($name, $style, $this->getStyle($style))->run();
                 $path = $this->getBasePath($this->id, $style);
 

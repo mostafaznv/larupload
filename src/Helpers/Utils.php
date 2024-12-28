@@ -201,8 +201,9 @@ if (!function_exists('larupload_style_path')) {
     {
         if ($extension) {
             $info = pathinfo($path);
+            $path = $info['dirname'] . DIRECTORY_SEPARATOR . $info['filename'] . '.' . $extension;
 
-            return $info['dirname'] . DIRECTORY_SEPARATOR . $info['filename'] . '.' . $extension;
+            return ltrim($path, './');
         }
 
         return $path;

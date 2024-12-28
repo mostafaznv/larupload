@@ -45,6 +45,13 @@ trait TestAttachments
         );
     }
 
+    public function withAllCustomFormatVideos(): array
+    {
+        return $this->setAttachments(
+            TestAttachmentBuilder::make($this->mode)->withAllCustomFormatVideos()->toArray()
+        );
+    }
+
     public function withAllAudios(): array
     {
         return $this->setAttachments(
