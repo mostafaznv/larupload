@@ -144,7 +144,17 @@ function urlsToPath(AttachmentProxy $attachment, array $exclude = []): array
 
 function macroColumns(LaruploadMode $mode): array
 {
-    $table = new Blueprint('uploads');
+    $version = (int)explode('.', app()->version())[0];
+    $table = 'uploads';
+
+    if ($version >= 12) {
+        $table = new Blueprint(app('db')->connection(), $table);
+    }
+    else {
+        $table = new Blueprint($table);
+    }
+
+
     $table->upload('file', $mode);
 
     $columns = [];
