@@ -25,7 +25,7 @@ class Blueprint
             $table->string("{$name}_file_id", 36)->nullable();
 
             if (config('larupload.store-original-file-name', false)) {
-                $table->string("{$name}_file_original_name", 85)->nullable()->index();
+                $table->string("{$name}_file_original_name", 255)->nullable()->index();
             }
 
             $table->unsignedInteger("{$name}_file_size")->nullable()->index();

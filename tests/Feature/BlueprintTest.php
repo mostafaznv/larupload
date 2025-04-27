@@ -180,7 +180,7 @@ it('will create file_original_name column in heavy mode', function() {
         ->and($columns['file_file_original_name'])
         ->toBeArray()
         ->toHaveKey('type', 'string')
-        ->toHaveKey('length', 85)
+        ->toHaveKey('length', 255)
         ->toHaveKey('nullable', true);
 });
 
