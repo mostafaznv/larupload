@@ -91,7 +91,7 @@ class ProcessFFMpeg implements ShouldQueue
      * @param string|null $message
      * @return int
      */
-    protected function updateStatus(bool $status, bool $isStarted, string $message = null): int
+    protected function updateStatus(bool $status, bool $isStarted, ?string $message = null): int
     {
         $dateColumn = $isStarted ? 'started_at' : 'finished_at';
 

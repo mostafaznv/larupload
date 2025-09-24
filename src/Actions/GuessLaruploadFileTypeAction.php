@@ -31,7 +31,7 @@ class GuessLaruploadFileTypeAction
         return $this->mimeToType($this->file->getMimeType()) === LaruploadFileType::IMAGE;
     }
 
-    private function mimeToType(string $mime = null): LaruploadFileType
+    private function mimeToType(?string $mime = null): LaruploadFileType
     {
         if (str_contains($mime, 'image/')) {
             return LaruploadFileType::IMAGE;

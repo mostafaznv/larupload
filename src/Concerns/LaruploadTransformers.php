@@ -47,7 +47,7 @@ trait LaruploadTransformers
      * @param string|null $name
      * @return object|null
      */
-    public function getAttachments(string $name = null): object|null
+    public function getAttachments(?string $name = null): object|null
     {
         if ($name) {
             if ($attachment = $this->getAttachment($name)) {

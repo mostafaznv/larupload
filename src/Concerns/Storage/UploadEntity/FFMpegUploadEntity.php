@@ -29,7 +29,7 @@ trait FFMpegUploadEntity
     protected int $ffmpegMaxQueueNum;
 
 
-    protected function ffmpeg(UploadedFile $file = null, AudioStyle|VideoStyle|null $style = null): FFMpeg
+    protected function ffmpeg(?UploadedFile $file = null, AudioStyle|VideoStyle|null $style = null): FFMpeg
     {
         $force = false;
 

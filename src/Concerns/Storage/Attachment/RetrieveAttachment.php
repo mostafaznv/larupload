@@ -16,7 +16,7 @@ trait RetrieveAttachment
      * @param string|null $key
      * @return object|string|integer|null
      */
-    public function meta(string $key = null): object|int|string|null
+    public function meta(?string $key = null): object|int|string|null
     {
         if ($key) {
             $meta = $this->output;
