@@ -21,7 +21,7 @@ trait StandaloneLaruploadCallables
     /**
      * @internal
      */
-    public function meta(string $key = null): object|int|string|null
+    public function meta(?string $key = null): object|int|string|null
     {
         if ($this->internalFunctionIsCallable) {
             return parent::meta($key);

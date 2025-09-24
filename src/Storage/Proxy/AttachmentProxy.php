@@ -27,7 +27,7 @@ class AttachmentProxy
         return new AttachmentCover($this->attachment);
     }
 
-    public function meta(string $key = null): object|int|string|null
+    public function meta(?string $key = null): object|int|string|null
     {
         return $this->attachment->meta($key);
     }

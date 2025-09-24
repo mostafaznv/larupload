@@ -99,7 +99,7 @@ trait BaseUploadEntity
      * @param string|null $folder
      * @return string
      */
-    protected function getBasePath(string $id, string $folder = null): string
+    protected function getBasePath(string $id, ?string $folder = null): string
     {
         $path = $this->mode == LaruploadMode::STANDALONE ? "$this->folder/$this->nameKebab" : "$this->folder/$id/$this->nameKebab";
         $path = trim($path, '/');
