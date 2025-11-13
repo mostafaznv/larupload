@@ -21,6 +21,7 @@ $upload = Larupload::init('path')
             ->namingMethod(LaruploadNamingMethod::HASH_FILE)
             ->image('thumbnail', 1000, 750, LaruploadMediaStyle::CROP)
             ->video('thumbnail', 1000, 750, LaruploadMediaStyle::CROP)
+            ->audio('wav', new Wav())
             ->stream(
                 name: '480p',
                 width: 640,

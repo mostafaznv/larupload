@@ -2,11 +2,11 @@
 
 namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
-
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
 use Mostafaznv\Larupload\Actions\OptimizeImageAction;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
+
 
 trait AttachmentActions
 {

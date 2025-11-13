@@ -2,6 +2,11 @@
 
 namespace Mostafaznv\Larupload\Test\Support;
 
+use FFMpeg\Format\Audio\Flac;
+use FFMpeg\Format\Audio\Mp3;
+use FFMpeg\Format\Audio\Wav;
+use FFMpeg\Format\Video\Ogg;
+use FFMpeg\Format\Video\WebM;
 use FFMpeg\Format\Video\X264;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
@@ -85,6 +90,36 @@ class TestAttachmentBuilder
         return $this;
     }
 
+    public function withMp3Audio(): self
+    {
+        $this->attachment = $this->attachment->audio('audio_mp3', new Mp3);
+
+        return $this;
+    }
+
+    public function withWavAudio(): self
+    {
+        $this->attachment = $this->attachment->audio('audio_wav', new Wav);
+
+        return $this;
+    }
+
+    public function withFlacAudio(): self
+    {
+        $this->attachment = $this->attachment->audio('audio_flac', new Flac);
+
+        return $this;
+    }
+
+    public function withAllAudios(): self
+    {
+        $this->withMp3Audio()
+            ->withWavAudio()
+            ->withFlacAudio();
+
+        return $this;
+    }
+
     public function withSmallSizeVideo(): self
     {
         $this->attachment = $this->attachment->video('small_size', 200, 200, LaruploadMediaStyle::CROP);
@@ -142,6 +177,58 @@ class TestAttachmentBuilder
         return $this;
     }
 
+    public function withWebmVideo(): self
+    {
+        $this->attachment = $this->attachment->video(
+            name: 'webm',
+            width: 400,
+            format: new WebM
+        );
+
+        return $this;
+    }
+
+    public function withOggVideo(): self
+    {
+        $this->attachment = $this->attachment->video(
+            name: 'ogg',
+            width: 400,
+            format: new Ogg
+        );
+
+        return $this;
+    }
+
+    public function withMp3Video(): self
+    {
+        $this->attachment = $this->attachment->video(
+            name: 'mp3',
+            format: new Mp3
+        );
+
+        return $this;
+    }
+
+    public function withWavVideo(): self
+    {
+        $this->attachment = $this->attachment->video(
+            name: 'wav',
+            format: new Wav
+        );
+
+        return $this;
+    }
+
+    public function withFlacVideo(): self
+    {
+        $this->attachment = $this->attachment->video(
+            name: 'flac',
+            format: new Flac
+        );
+
+        return $this;
+    }
+
     public function withAllVideos(): self
     {
         $this->withSmallSizeVideo()
@@ -151,6 +238,17 @@ class TestAttachmentBuilder
             ->withPortraitVideo()
             ->withExactVideo()
             ->withAutoVideo();
+
+        return $this;
+    }
+
+    public function withAllCustomFormatVideos(): self
+    {
+        $this->withOggVideo()
+            ->withMp3Video()
+            ->withWavVideo()
+            ->withWebmVideo()
+            ->withFlacVideo();
 
         return $this;
     }
@@ -199,7 +297,7 @@ class TestAttachmentBuilder
 
     public function withAll(): self
     {
-        $this->withAllImages()->withAllVideosAndStreams();
+        $this->withAllImages()->withAllVideosAndStreams()->withAllAudios();
 
         return $this;
     }

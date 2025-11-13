@@ -1,4 +1,6 @@
 .DS_Store
 vendor
 .idea
+.phpunit.cache
+coverage.xml
 composer.lock

@@ -29,6 +29,7 @@ The following columns are created in `HEAVY` mode:&#x20;
 
 * `file_name`
 * `file_id`
+* `file_original_name`
 * `file_size`
 * `file_type`
 * `file_mime_type`
@@ -48,7 +49,7 @@ All fields created in `HEAVY` mode are nullable.
 {% endhint %}
 
 {% hint style="info" %}
-`file_size`, `file_type`, and `file_duration` columns have an index.
+`file_original_name, file_size`, `file_type`, and `file_duration` columns have an index.
 {% endhint %}
 
 

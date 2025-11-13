@@ -85,6 +85,45 @@ it('can generate save path', function() {
         ]);
 });
 
+it('can generate save path with custom extension', function() {
+    $path = 'path/to/file.png';
+    $newPath = 'path/to/file.jpg';
+    $localPath = config('filesystems.disks.local.root');
+
+    $result = get_larupload_save_path('local', $path, 'jpg');
+
+    expect($result)
+        ->toBeArray()
+        ->toHaveCount(5)
+        ->toMatchArray([
+            'path'      => 'path/to',
+            'name'      => 'file.jpg',
+            'temp'      => null,
+            'local'     => $localPath . '/' . $newPath,
+            'permanent' => $localPath . '/' . $newPath,
+        ]);
+
+
+    $carbon = Carbon::createFromFormat('Y-m-d H:i:s', '1990-09-20 07:10:48');
+    $time = $carbon->unix();
+    testTime()->freeze($carbon);
+
+    $result = get_larupload_save_path('s3', $path, 'jpg');
+
+    $tempPath = larupload_temp_dir();
+
+    expect($result)
+        ->toBeArray()
+        ->toHaveCount(5)
+        ->toMatchArray([
+            'path'      => 'path/to',
+            'name'      => 'file.jpg',
+            'temp'      => $tempPath . "/$time-file.jpg",
+            'local'     => $tempPath . "/$time-file.jpg",
+            'permanent' => $newPath,
+        ]);
+});
+
 it('can upload file to remote disks', function() {
     $driver = 's3';
     $file = pdf();
@@ -171,3 +210,30 @@ it('can check if instance of uploaded-file is valid or not', function() {
 
     file_is_valid(png(2), 'file', 'cover');
 })->throws(RuntimeException::class);
+
+
+it('will return path unchanged if extension is null', function() {
+    $original = 'path/to/file.mp3';
+    $path = larupload_style_path($original, null);
+
+    expect($path)->toBe($original);
+});
+
+it('will return path unchanged if extension is an empty string', function() {
+    $original = 'path/to/file.mp3';
+    $path = larupload_style_path($original, '');
+
+    expect($path)->toBe($original);
+});
+
+it('will change path using the given extension', function() {
+    $path = larupload_style_path('path/to/file.mp3', 'wav');
+
+    expect($path)->toBe('path/to/file.wav');
+});
+
+it('trims the extra dot at the beginning of the path when dirname is null', function() {
+    $path = larupload_style_path('file.mp3', 'wav');
+
+    expect($path)->toBe('file.wav');
+});

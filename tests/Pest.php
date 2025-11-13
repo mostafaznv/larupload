@@ -18,7 +18,7 @@ use Mostafaznv\Larupload\Test\TestCase;
 uses(TestCase::class)
     ->beforeEach(function() {
         $this->metaKeys = [
-            'name', 'id', 'size', 'type', 'mime_type', 'width', 'height',
+            'name', 'id', 'original_name', 'size', 'type', 'mime_type', 'width', 'height',
             'duration', 'dominant_color', 'format', 'cover'
         ];
     })
@@ -109,6 +109,21 @@ function urlToVideo(string $url): FFMpegMeta
     return $ffmpeg->getMeta();
 }
 
+function urlToAudio(string $url): FFMpegMeta
+{
+    $baseUrl = url('/');
+    $url = str_replace($baseUrl, '', $url);
+    $path = public_path($url);
+
+    $fileName = pathinfo($path, PATHINFO_FILENAME);
+    $disk = config('larupload.disk');
+
+    $file = new UploadedFile($path, $fileName, null, null, true);
+    $ffmpeg = new FFMpeg($file, $disk, 10);
+
+    return $ffmpeg->getMeta();
+}
+
 function urlsToPath(AttachmentProxy $attachment, array $exclude = []): array
 {
     $paths = [];
@@ -129,7 +144,17 @@ function urlsToPath(AttachmentProxy $attachment, array $exclude = []): array
 
 function macroColumns(LaruploadMode $mode): array
 {
-    $table = new Blueprint('uploads');
+    $version = (int)explode('.', app()->version())[0];
+    $table = 'uploads';
+
+    if ($version >= 12) {
+        $table = new Blueprint(app('db')->connection(), $table);
+    }
+    else {
+        $table = new Blueprint($table);
+    }
+
+
     $table->upload('file', $mode);
 
     $columns = [];

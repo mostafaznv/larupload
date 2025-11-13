@@ -21,6 +21,10 @@ trait BaseAttachment
         $this->output['size'] = $this->file->getSize();
         $this->output['type'] = $this->type->name;
         $this->output['mime_type'] = $this->file->getMimeType();
+
+        if ($this->storeOriginalFileName) {
+            $this->output['original_name'] = $this->file->getClientOriginalName();
+        }
     }
 
     protected function setMediaDetails(): void
@@ -56,6 +60,10 @@ trait BaseAttachment
     {
         if ($this->mode === LaruploadMode::HEAVY) {
             foreach ($this->output as $key => $value) {
+                if ($key == 'original_name' and !$this->storeOriginalFileName) {
+                    continue;
+                }
+
                 $model->{"{$this->name}_file_$key"} = $value;
             }
         }

@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Actions;
 
 use Illuminate\Support\Str;
+use Mostafaznv\Larupload\DTOs\Style\Style;
 use Mostafaznv\Larupload\Larupload;
 
 /**
@@ -15,23 +16,30 @@ class FixExceptionNamesAction
 {
     public function __construct(
         private readonly string $name,
-        private readonly string $style
+        private readonly string $styleName,
+        private readonly ?Style $style = null,
     ) {}
 
-    public static function make(string $name, string $style): self
+    public static function make(string $name, string $styleName, ?Style $style = null): self
     {
-        return new self($name, $style);
+        return new self($name, $styleName, $style);
     }
 
 
     public function run(): string
     {
-        if (!in_array($this->style, [Larupload::ORIGINAL_FOLDER, Larupload::COVER_FOLDER])) {
-            if (Str::endsWith($this->name, 'svg')) {
-                return str_replace('svg', 'jpg', $this->name);
+        $name = $this->name;
+
+        if ($this->style) {
+            $name = larupload_style_path($name, $this->style->extension());
+        }
+
+        if (!in_array($this->styleName, [Larupload::ORIGINAL_FOLDER, Larupload::COVER_FOLDER])) {
+            if (Str::endsWith($name, 'svg')) {
+                return str_replace('svg', 'jpg', $name);
             }
         }
 
-        return $this->name;
+        return $name;
     }
 }

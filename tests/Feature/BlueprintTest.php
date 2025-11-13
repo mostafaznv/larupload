@@ -101,7 +101,10 @@ it('will create all columns in heavy mode', function() {
         ->toBeArray()
         ->toHaveKey('type', 'string')
         ->toHaveKey('length', 85)
-        ->toHaveKey('nullable', true);
+        ->toHaveKey('nullable', true)
+        //
+        ->and($columns)
+        ->not->toHaveKey('file_file_original_name');
 
 });
 
@@ -131,7 +134,7 @@ it('will create all columns in light mode', function() {
 
 
 it('will drop upload column in heavy mode', function() {
-    $table = 'upload_heavy';
+    $table = 'without_store_original_name_column';
     $builder = $this->app['db']->connection()->getSchemaBuilder();
 
     $builder->table($table, function(Blueprint $table) {
@@ -164,4 +167,77 @@ it('will drop upload column in light mode', function() {
         ->toMatchArray([
             'id', 'created_at', 'updated_at'
         ]);
+});
+
+
+it('will create file_original_name column in heavy mode', function() {
+    config()->set('larupload.store-original-file-name', true);
+
+    $columns = macroColumns(LaruploadMode::HEAVY);
+
+    expect($columns)
+        ->toHaveKey('file_file_original_name')
+        ->and($columns['file_file_original_name'])
+        ->toBeArray()
+        ->toHaveKey('type', 'string')
+        ->toHaveKey('length', 255)
+        ->toHaveKey('nullable', true);
+});
+
+it('will drop upload file_original_name column in heavy mode', function() {
+    config()->set('larupload.store-original-file-name', true);
+
+    $table = 'heavy';
+
+    $this->app['db']->connection()
+        ->getSchemaBuilder()
+        ->create($table, function(Blueprint $table) {
+            $table->id();
+            $table->upload('main_file', LaruploadMode::HEAVY);
+            $table->timestamps();
+        });
+
+
+    $builder = $this->app['db']->connection()->getSchemaBuilder();
+
+
+    $builder->table($table, function(Blueprint $table) {
+        $table->dropUpload('main_file', LaruploadMode::HEAVY);
+    });
+
+    $columns = $builder->getColumnListing($table);
+
+    expect($columns)
+        ->toBeArray()
+        ->toHaveCount(3)
+        ->toMatchArray([
+            'id', 'created_at', 'updated_at'
+        ]);
+});
+
+it('will add file_original_name column to existing tables', function() {
+    $table = 'heavy';
+    $column = 'main_file_file_original_name';
+
+    $this->app['db']->connection()
+        ->getSchemaBuilder()
+        ->create($table, function(Blueprint $table) {
+            $table->id();
+            $table->upload('main_file', LaruploadMode::HEAVY);
+            $table->timestamps();
+        });
+
+
+    $builder = $this->app['db']->connection()->getSchemaBuilder();
+    $columns = $builder->getColumnListing($table);
+
+    expect(in_array($column, $columns))->toBeFalse();
+
+    $builder->table($table, function(Blueprint $table) {
+        $table->laruploadAddOriginalName('main_file');
+    });
+
+    $columns = $builder->getColumnListing($table);
+
+    expect(in_array($column, $columns))->toBeTrue();
 });

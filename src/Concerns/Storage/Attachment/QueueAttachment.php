@@ -2,15 +2,16 @@
 
 namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
-
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
 use Mostafaznv\Larupload\Larupload;
+
 
 trait QueueAttachment
 {
@@ -22,7 +23,12 @@ trait QueueAttachment
         $this->file = $this->prepareFileForFFMpegProcess();
         $this->type = GuessLaruploadFileTypeAction::make($this->file)->calc();
 
-        $this->handleVideoStyles($this->id);
+        if ($this->type == LaruploadFileType::VIDEO) {
+            $this->handleVideoStyles($this->id);
+        }
+        else if ($this->type == LaruploadFileType::AUDIO) {
+            $this->handleAudioStyles($this->id);
+        }
 
         if ($this->driverIsNotLocal() and $isLastOne) {
             Storage::disk($this->localDisk)->deleteDirectory(

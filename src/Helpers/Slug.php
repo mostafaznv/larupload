@@ -15,7 +15,7 @@ class Slug
      *
      * @param string|null $lang
      */
-    public function __construct(string $lang = null)
+    public function __construct(?string $lang = null)
     {
         $this->setLang($lang);
     }
@@ -26,7 +26,7 @@ class Slug
      * @param string|null $lang
      * @return Slug
      */
-    public static function make(string $lang = null): Slug
+    public static function make(?string $lang = null): Slug
     {
         return new static($lang);
     }
@@ -37,7 +37,7 @@ class Slug
      * @param string|null $lang
      * @return void
      */
-    protected function setLang(string $lang = null): void
+    protected function setLang(?string $lang = null): void
     {
         if ($lang) {
             $this->lang = $lang;

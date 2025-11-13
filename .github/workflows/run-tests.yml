@@ -1,36 +1,95 @@
-name: "Run Tests"
+name: Run Tests
 
-on: [push, pull_request]
+on:
+  - push
+  - pull_request
 
 jobs:
   tests:
     runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php: [8.1, 8.2, 8.3]
-        laravel: [10.*]
+        php: [8.3, 8.4]
+        laravel: ['12.*']
+        imagemagick: [7.1.1-32]
+        imagick: [3.7.0]
         coverage: [none]
         dependency-version: [prefer-stable]
         include:
-          - laravel: 10.*
-            testbench: 8.*
+          - laravel: 12.*
+            testbench: 10.*
 
     name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
 
     steps:
-      - name: Update apt
-        run: sudo apt-get update --fix-missing
-
-      - name: Install ffmpeg
-        run: sudo apt-get install ffmpeg
-
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, sqlite3, pdo_sqlite, bcmath, fileinfo, gd, xdebug
+          tools: composer:v2
+          ini-values: xdebug.mode="coverage"
+          coverage: xdebug
+
+      - name: Install ffmpeg
+        run: sudo apt-get install -y ffmpeg
+
+      - name: Prepare environment for Imagemagick
+        run: |
+          sudo apt-get -y remove imagemagick imagemagick-6-common libmagic-dev
+          sudo apt-get update --fix-missing
+          sudo apt-get install -y libjpeg-dev libgif-dev libtiff-dev libpng-dev libwebp-dev libavif-dev libheif-dev
+          sudo apt-get install -y libmagickwand-dev
+
+      - name: Cache ImageMagick
+        uses: actions/cache@v4
+        id: cache-imagemagick
+        with:
+          path: /home/runner/im/imagemagick-${{ matrix.imagemagick }}
+          key: ${{ runner.os }}-ImageMagick-${{ matrix.imagemagick }}-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-ImageMagick-${{ matrix.imagemagick }}-
+
+      - name: Check ImageMagick cache exists
+        uses: andstor/file-existence-action@v3
+        id: cache-imagemagick-exists
+        with:
+          files: /home/runner/im/imagemagick-${{ matrix.imagemagick }}
+
+      - name: Install ImageMagick
+        run: |
+          curl -o /tmp/ImageMagick.tar.xz -sL https://imagemagick.org/archive/releases/ImageMagick-${{ matrix.imagemagick }}.tar.xz
+          (
+            cd /tmp || exit 1
+            tar xf ImageMagick.tar.xz
+            cd ImageMagick-${{ matrix.imagemagick }}
+            sudo ./configure --prefix=/home/runner/im/imagemagick-${{ matrix.imagemagick }}
+            sudo make -j$(nproc)
+            sudo make install
+          )
+
+      - name: Install PHP ImageMagick extension
+        run: |
+          curl -o /tmp/imagick.tgz -sL http://pecl.php.net/get/imagick-${{ matrix.imagick }}.tgz
+          (
+            cd /tmp || exit 1
+            tar -xzf imagick.tgz
+            cd imagick-${{ matrix.imagick }}
+            phpize
+            sudo ./configure --with-imagick=/home/runner/im/imagemagick-${{ matrix.imagemagick }}
+            sudo make -j$(nproc)
+            sudo make install
+          )
+          sudo bash -c 'echo "extension=imagick.so" >> /etc/php/${{ matrix.php }}/cli/php.ini'
+          php --ri imagick;
+
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.composer/cache/files
           key: dependencies-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
@@ -39,24 +98,21 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y jpegoptim pngquant gifsicle optipng libjpeg-progs webp
-          sudo npm install -g svgo
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, sqlite3, pdo_sqlite, bcmath, fileinfo, gd, imagick, xdebug
-          tools: composer:v2
-          ini-values: xdebug.mode="coverage"
-          coverage: xdebug
-
-      - name: Fix Imagick Policy
-        run: sudo sed -i 's/none/read|write/g' /etc/ImageMagick-6/policy.xml
+          npm install -g svgo
 
       - name: Install dependencies
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
+
+      - name: GD Version
+        run: php -r 'var_dump(gd_info());'
+
+      - name: Imagick Version
+        run: php -r 'var_dump(Imagick::getVersion());'
+
+      - name: Supported Imagick Formats
+        run: php -r 'var_dump(Imagick::queryFormats());'
 
       - name: Execute tests
         run: composer test:ci

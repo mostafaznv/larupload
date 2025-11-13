@@ -10,7 +10,7 @@ use Mostafaznv\Larupload\Actions\OptimizeImageAction;
 
 trait BaseStandaloneLarupload
 {
-    public function upload(UploadedFile $file, UploadedFile $cover = null): object
+    public function upload(UploadedFile $file, ?UploadedFile $cover = null): object
     {
         $this->internalFunctionIsCallable = true;
 
@@ -47,7 +47,7 @@ trait BaseStandaloneLarupload
         return false;
     }
 
-    private function updateMeta(object $urls = null): void
+    private function updateMeta(?object $urls = null): void
     {
         if (is_null($urls)) {
             $urls = $this->urls();

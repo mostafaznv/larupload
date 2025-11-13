@@ -99,7 +99,7 @@ class Image
     /**
      * Retrieve dominant color from image file.
      */
-    public function getDominantColor($file = null): ?string
+    public function getDominantColor(UploadedFile|string|null $file = null): ?string
     {
         if (is_null($file)) {
             $file = $this->file;
@@ -149,7 +149,7 @@ class Image
      *   the new dimensions are both equal since at this point we'll have a square
      *   image being resized to a square).
      */
-    private function resizeAuto(int $width = null, int $height = null): void
+    private function resizeAuto(?int $width = null, ?int $height = null): void
     {
         $originalWidth = $this->image->width();
         $originalHeight = $this->image->height();

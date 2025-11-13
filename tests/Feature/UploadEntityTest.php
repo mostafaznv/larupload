@@ -1,5 +1,7 @@
 <?php
 
+use FFMpeg\Format\Audio\Aac;
+use FFMpeg\Format\Audio\Wav;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
@@ -63,6 +65,21 @@ it('can return video registered styles', function() {
         ->and(array_keys($styles))
         ->toBe([
             'sd', 'hd'
+        ]);
+});
+
+it('can return audio registered styles', function() {
+    $this->attachment->audio('audio_wav', new Wav);
+    $this->attachment->audio('audio_aac', new Aac());
+
+    $styles = $this->attachment->getAudioStyles();
+
+    expect($styles)
+        ->toBeArray()
+        ->toHaveCount(2)
+        ->and(array_keys($styles))
+        ->toBe([
+            'audio_wav', 'audio_aac'
         ]);
 });
 
@@ -168,4 +185,20 @@ it('can change secure-ids property', function() {
     $id = $attachment->meta('id');
 
     expect(Str::isUlid($id))->toBeTrue();
+});
+
+it('can change store-original-file-name property', function() {
+    $this->model->setAttachments([
+        $this->attachment->storeOriginalFileName(true)
+    ]);
+
+
+    $model = save($this->model, jpg());
+
+    $attachment = $model->attachment('main_file');
+    $originalName = $attachment->meta('original_name');
+
+    $name = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['original'];
+
+    expect($originalName)->toBe($name);
 });

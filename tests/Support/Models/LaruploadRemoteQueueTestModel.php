@@ -23,6 +23,7 @@ class LaruploadRemoteQueueTestModel extends Model
     {
         return TestAttachmentBuilder::make($this->mode, 's3')
             ->withLandscapeVideo()
+            ->withWavAudio()
             ->with480pStream()
             ->toArray();
     }

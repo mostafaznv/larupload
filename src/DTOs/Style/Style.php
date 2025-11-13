@@ -4,6 +4,7 @@ namespace Mostafaznv\Larupload\DTOs\Style;
 
 use Exception;
 
+
 abstract class Style
 {
     public function __construct(
@@ -15,6 +16,11 @@ abstract class Style
         $this->validate();
     }
 
+
+    public function extension(): ?string
+    {
+        return null;
+    }
 
     private function validate(): void
     {

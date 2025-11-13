@@ -16,7 +16,7 @@ trait RetrieveAttachment
      * @param string|null $key
      * @return object|string|integer|null
      */
-    public function meta(string $key = null): object|int|string|null
+    public function meta(?string $key = null): object|int|string|null
     {
         if ($key) {
             $meta = $this->output;
@@ -43,7 +43,8 @@ trait RetrieveAttachment
         $allStyles = array_merge(
             $staticStyles,
             array_keys($this->imageStyles),
-            array_keys($this->videoStyles)
+            array_keys($this->videoStyles),
+            array_keys($this->audioStyles)
         );
 
         foreach ($allStyles as $style) {

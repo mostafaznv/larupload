@@ -9,7 +9,9 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 use Illuminate\Support\Facades\Storage;
 
 $properties = [
-    'original', 'cover', 'stream', 'small_size', 'small', 'medium', 'landscape', 'portrait', 'exact', 'auto', 'meta'
+    'original', 'cover', 'stream', 'small_size', 'small', 'medium',
+    'audio_mp3', 'audio_wav', 'audio_flac',
+    'landscape', 'portrait', 'exact', 'auto', 'meta'
 ];
 
 it('will return larupload object in toArray function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
@@ -55,9 +57,9 @@ it('will return meta properties camelCase', function(LaruploadHeavyTestModel|Lar
 
     expect($model->attachment('main_file')->meta())
         ->toBeObject()
-        ->toBeObject()
         ->toHaveProperty('mimeType', $details['mime_type'])
-        ->toHaveProperty('dominantColor', $details['color']);
+        ->toHaveProperty('dominantColor', $details['color'])
+        ->toHaveProperty('originalName', null);
 
 })->with('models');
 
@@ -80,7 +82,8 @@ it('will return meta properties camelCase in standalone mode', function() {
         ->toBeObject()
         ->toBeObject()
         ->toHaveProperty('mimeType', $details['mime_type'])
-        ->toHaveProperty('dominantColor', $details['color']);
+        ->toHaveProperty('dominantColor', $details['color'])
+        ->toHaveProperty('originalName', null);
 
 });
 

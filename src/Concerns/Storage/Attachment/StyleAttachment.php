@@ -2,8 +2,13 @@
 
 namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
+use FFMpeg\Format\Audio\Aac;
+use FFMpeg\Format\Audio\Flac;
+use FFMpeg\Format\Audio\Mp3;
+use FFMpeg\Format\Audio\Wav;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\DTOs\Style\AudioStyle;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Actions\FixExceptionNamesAction;
@@ -54,6 +59,29 @@ trait StyleAttachment
                 }
 
                 break;
+
+            case LaruploadFileType::AUDIO:
+                if ($this->ffmpegQueue) {
+                    if ($this->driverIsNotLocal()) {
+                        $this->uploadOriginalFile($id, $this->localDisk);
+                    }
+
+                    if ($model instanceof Model) {
+                        $this->initializeFFMpegQueue(
+                            $model->id, $model->getMorphClass(), $standalone
+                        );
+                    }
+                    else {
+                        $this->initializeFFMpegQueue(
+                            $id, $model, $standalone
+                        );
+                    }
+                }
+                else {
+                    $this->handleAudioStyles($id);
+                }
+
+                break;
         }
     }
 
@@ -67,9 +95,20 @@ trait StyleAttachment
         foreach ($this->videoStyles as $name => $style) {
             $path = $this->getBasePath($id, $name);
             Storage::disk($this->disk)->makeDirectory($path);
+
             $saveTo = "$path/{$this->output['name']}";
 
-            $this->ffmpeg()->manipulate($style, $saveTo);
+
+            if ($style->isAudioFormat()) {
+                $this->ffmpeg(null, $style)->audio(
+                    style: AudioStyle::make($style->name, $style->format),
+                    saveTo: $saveTo
+                );
+
+                continue;
+            }
+
+            $this->ffmpeg(null, $style)->manipulate($style, $saveTo);
         }
 
         if (count($this->streams)) {
@@ -79,6 +118,22 @@ trait StyleAttachment
             Storage::disk($this->disk)->makeDirectory($path);
 
             $this->ffmpeg()->stream($this->streams, $path, $fileName);
+        }
+    }
+
+    /**
+     * Handle styles for audios
+     *
+     * @param $id
+     */
+    protected function handleAudioStyles($id): void
+    {
+        foreach ($this->audioStyles as $name => $style) {
+            $path = $this->getBasePath($id, $name);
+            Storage::disk($this->disk)->makeDirectory($path);
+            $saveTo = "$path/{$this->output['name']}";
+
+            $this->ffmpeg()->audio($style, $saveTo);
         }
     }
 
@@ -97,7 +152,7 @@ trait StyleAttachment
             Larupload::STREAM_FOLDER
         ];
 
-        if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->imageStyles) or array_key_exists($style, $this->videoStyles))) {
+        if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->imageStyles) or array_key_exists($style, $this->videoStyles) or array_key_exists($style, $this->audioStyles))) {
             $name = $style == Larupload::COVER_FOLDER
                 ? $this->output['cover']
                 : $this->output['name'];
@@ -117,7 +172,7 @@ trait StyleAttachment
                 return null;
             }
             else if ($name and $this->styleHasFile($style)) {
-                $name = FixExceptionNamesAction::make($name, $style)->run();
+                $name = FixExceptionNamesAction::make($name, $style, $this->getStyle($style))->run();
                 $path = $this->getBasePath($this->id, $style);
 
                 return "$path/$name";

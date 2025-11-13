@@ -136,7 +136,7 @@ it('will work with light mode', function () {
         ->toBeExists();
 });
 
-it('will work with ffmpeg class', function () {
+it('will work with ffmpeg class [video]', function () {
     config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
 
     $model = LaruploadTestModels::HEAVY->instance();
@@ -165,5 +165,30 @@ it('will work with ffmpeg class', function () {
         ->and($attachment->url('landscape'))
         ->toContain($id)
         ->toBeExists();
+});
 
+it('will work with ffmpeg class [audio]', function () {
+    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
+
+    $model = LaruploadTestModels::HEAVY->instance();
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withWavAudio()->toArray()
+    );
+
+    $model = save($model, mp3());
+
+    $attachment = $model->attachment('main_file');
+    $id = $attachment->meta('id');
+
+    expect(Str::isUlid($id))->toBeTrue()
+        ->and($attachment->url())
+        ->toContain($id)
+        ->toBeExists()
+        //
+        ->and($attachment->url('cover'))
+        ->toBeNull()
+        //
+        ->and($attachment->url('audio_wav'))
+        ->toContain($id)
+        ->toBeExists();
 });

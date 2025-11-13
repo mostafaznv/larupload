@@ -26,21 +26,22 @@ class UploadController extends Controller
 ```
 
 {% code title="Output" %}
-```
+```json
 {
     "original": "http://larupload.site/storage/uploader/original/a3ac7ddabb263c2d00b73e8177d15c8d.mp4",
     "meta": {
-        "name": "a3ac7ddabb263c2d00b73e8177d15c8d.mp4"
-        "id": "125940123"
-        "size": 383631
-        "type": "video"
-        "width": 560
-        "height": 320
-        "duration": 5
-        "format": "mp4"
-        "cover": "66ad2a5ebfe7ea349c8b861399c060d8.jpeg"
-        "mime_type": "video/mp4"
-        "dominant_color": "#e5d2d4"
+        "name": "a3ac7ddabb263c2d00b73e8177d15c8d.mp4",
+        "id": "125940123",
+        "original_name": "video.mp4",
+        "size": 383631,
+        "type": "video",
+        "width": 560,
+        "height": 320,
+        "duration": 5,
+        "format": "mp4",
+        "cover": "66ad2a5ebfe7ea349c8b861399c060d8.jpeg",
+        "mime_type": "video/mp4",
+        "dominant_color": "#e5d2d4",
     }
 }
 ```
