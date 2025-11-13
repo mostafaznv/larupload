@@ -1,6 +1,6 @@
 <?php
 
-use Hashids\Hashids;
+use Sqids\Sqids;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
@@ -59,8 +59,8 @@ it('will hide ids using uuid method', function () {
         ->toBeExists();
 });
 
-it('will hide ids using hashid method', function () {
-    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::HASHID);
+it('will hide ids using sqid method', function () {
+    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::SQID);
 
     $model = LaruploadTestModels::HEAVY->instance();
     $model->setAttachments(
@@ -70,9 +70,9 @@ it('will hide ids using hashid method', function () {
     $model = save($model, jpg());
     $attachment = $model->attachment('main_file');
     $id = $attachment->meta('id');
-    $hashIds = new Hashids(config('app.key'), 20);
+    $sqids = new Sqids(minLength: 20);
 
-    expect($hashIds->decode($id))->toBe([1])
+    expect($sqids->decode($id))->toBe([1])
         ->and($attachment->url())
         ->toContain($id)
         ->toBeExists()
