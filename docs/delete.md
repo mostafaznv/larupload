@@ -3,7 +3,7 @@
 There are two ways to delete files using Larupload:
 
 * Delete by `detach` function
-* Delete by assigning `LARUPLOAD_NULL` to file property
+* Delete by assigning `false` to file property
 
 {% tabs %}
 {% tab title="Detach" %}
@@ -16,9 +16,9 @@ $upload->save();
 ```
 {% endtab %}
 
-{% tab title="LARUPLOAD_NULL" %}
+{% tab title="false" %}
 ```
-$upload->file = LARUPLOAD_NULL;
+$upload->file = false;
 $upload->save();
 ```
 {% endtab %}

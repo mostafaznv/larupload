@@ -100,7 +100,7 @@ it('will download original file when secure-ids is enabled', function(LaruploadH
 
 })->with('models');
 
-it('will return null download response, if file is set and the value is LARUPLOAD_NULL', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will return null download response, if file is set and the value is `false`', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
     $attachment = $model->attachment('main_file');
 
@@ -108,7 +108,7 @@ it('will return null download response, if file is set and the value is LARUPLOA
         ->getStatusCode()
         ->toBe(200);
 
-    $model->main_file = LARUPLOAD_NULL;
+    $model->main_file = false;
     $attachment = $model->attachment('main_file');
 
     expect($attachment->download())->toBeNull();

@@ -10,19 +10,8 @@ use Mostafaznv\Larupload\UploadEntities;
 
 trait UploadEntityProperties
 {
-    /**
-     * File object
-     *
-     * @var UploadedFile|mixed
-     */
-    protected mixed $file;
-
-    /**
-     * Cover Object
-     *
-     * @var UploadedFile|mixed
-     */
-    protected mixed $cover;
+    protected UploadedFile|false $file;
+    protected UploadedFile|null|false $cover;
 
     /**
      * Model ID / Secure ID

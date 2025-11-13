@@ -12,14 +12,14 @@ class AttachmentProxy
 {
     public function __construct(private readonly Attachment $attachment) {}
 
-    public function attach(mixed $file, ?UploadedFile $cover = null): bool
+    public function attach(UploadedFile|false $file, ?UploadedFile $cover = null): void
     {
-        return $this->attachment->attach($file, $cover);
+        $this->attachment->attach($file, $cover);
     }
 
-    public function detach(): bool
+    public function detach(): void
     {
-        return $this->attachment->detach();
+        $this->attachment->detach();
     }
 
     public function cover(): AttachmentCover

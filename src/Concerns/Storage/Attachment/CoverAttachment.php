@@ -30,7 +30,7 @@ trait CoverAttachment
     {
         if ($this->output['type']) {
             $this->uploaded = false;
-            $this->cover = LARUPLOAD_NULL;
+            $this->cover = false;
             $this->type = LaruploadFileType::from($this->output['type']);
 
             return true;

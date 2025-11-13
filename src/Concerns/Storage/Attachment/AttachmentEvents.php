@@ -15,7 +15,7 @@ trait AttachmentEvents
         $this->uploaded = true;
 
         if (isset($this->file)) {
-            if ($this->file == LARUPLOAD_NULL) {
+            if ($this->file === false) {
                 $this->clean($this->id);
             }
             else {

@@ -7,8 +7,6 @@ use Mostafaznv\Larupload\Storage\Proxy\AttachmentProxy;
 
 trait BaseLarupload
 {
-    protected static string $laruploadNull;
-
     private bool $hideLaruploadColumns;
 
     /**
@@ -25,15 +23,6 @@ trait BaseLarupload
 
         foreach ($this->attachments as $attachment) {
             $attachment->folder($table);
-        }
-    }
-
-    public static function bootLarupload(): void
-    {
-        static::$laruploadNull = crc32(time());
-
-        if (!defined('LARUPLOAD_NULL')) {
-            define('LARUPLOAD_NULL', static::$laruploadNull);
         }
     }
 

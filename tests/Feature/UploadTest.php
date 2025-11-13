@@ -167,14 +167,13 @@ it('will upload with attach function', function(LaruploadHeavyTestModel|Laruploa
     $model = $model::class;
 
     $model = new $model;
-    $attached = $model->attachment('main_file')->attach(jpg());
+    $model->attachment('main_file')->attach(jpg());
     $model->save();
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
     $attachment = $model->attachment('main_file');
 
-    expect($attached)->toBeTrue()
-        ->and($attachment->url())
+    expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
@@ -190,15 +189,6 @@ it('will upload with attach function', function(LaruploadHeavyTestModel|Laruploa
         ->toHaveProperty('height', $details['height'])
         ->toHaveProperty('dominant_color', $details['color'])
         ->toHaveProperty('duration', null);
-
-})->with('models');
-
-it('will returns false if attached item is not a file', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
-    $model = $model::class;
-    $model = new $model;
-    $attached = $model->attachment('main_file')->attach('is a string');
-
-    expect($attached)->toBeFalse();
 
 })->with('models');
 

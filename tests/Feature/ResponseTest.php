@@ -116,13 +116,13 @@ it('will return null for cover in urls method, if generateCover property is disa
 
 })->with('models');
 
-it('will return null url, if file is set and the value is LARUPLOAD_NULL', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
+it('will return null url, if file is set and the value is `false`', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
     $model = save($model, jpg());
 
     $url = $model->attachment('main_file')->url();
     expect($url)->toBeTruthy();
 
-    $model->main_file = LARUPLOAD_NULL;
+    $model->main_file = false;
     $url = $model->attachment('main_file')->url();
 
 

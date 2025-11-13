@@ -30,7 +30,7 @@ trait UploadEntityResponse
 
     protected function storageUrl(string $path): ?string
     {
-        if (isset($this->file) and $this->file == LARUPLOAD_NULL) {
+        if (isset($this->file) and $this->file === false) {
             return null;
         }
 
@@ -51,7 +51,7 @@ trait UploadEntityResponse
 
     protected function storageDownload(string $path): StreamedResponse|RedirectResponse|null
     {
-        if (isset($this->file) and $this->file == LARUPLOAD_NULL) {
+        if (isset($this->file) and $this->file === false) {
             return null;
         }
 

@@ -42,7 +42,7 @@ class SetCoverAction
 
     private function shouldDeleteCover(): bool
     {
-        return isset($this->cover) and $this->cover == LARUPLOAD_NULL;
+        return isset($this->cover) and $this->cover === false;
     }
 
     private function shouldUploadCover(): bool
