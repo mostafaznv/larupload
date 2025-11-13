@@ -55,6 +55,7 @@ return [
     | - ULID
     | - UUID
     | - SQID (to use this method, you must install the sqids/sqids package)
+    | - HASHID (to use this method, you must install the hashids/hashids package)
     | - NONE (use real IDs)
     */
 

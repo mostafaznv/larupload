@@ -32,6 +32,7 @@ class GenerateFileIdAction
             LaruploadSecureIdsMethod::ULID   => Str::ulid()->toBase32(),
             LaruploadSecureIdsMethod::UUID   => Str::uuid()->toString(),
             LaruploadSecureIdsMethod::SQID   => $this->sqid(),
+            LaruploadSecureIdsMethod::HASHID => $this->hashid(),
             default                          => $this->model->id,
         };
     }
@@ -50,5 +51,13 @@ class GenerateFileIdAction
         $sqids = new \Sqids\Sqids(minLength: 20);
 
         return $sqids->encode([$this->model->id]);
+    }
+
+    private function hashid(): string
+    {
+        $salt = config('app.key');
+        $hashids = new \Hashids\Hashids($salt, 20);
+
+        return $hashids->encode($this->model->id);
     }
 }

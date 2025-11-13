@@ -1,5 +1,6 @@
 <?php
 
+use Hashids\Hashids;
 use Sqids\Sqids;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Illuminate\Support\Str;
@@ -73,6 +74,33 @@ it('will hide ids using sqid method', function () {
     $sqids = new Sqids(minLength: 20);
 
     expect($sqids->decode($id))->toBe([1])
+        ->and($attachment->url())
+        ->toContain($id)
+        ->toBeExists()
+        //
+        ->and($attachment->url('cover'))
+        ->toContain($id)
+        ->toBeExists()
+        //
+        ->and($attachment->url('landscape'))
+        ->toContain($id)
+        ->toBeExists();
+});
+
+it('will hide ids using hashid method', function () {
+    config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::HASHID);
+
+    $model = LaruploadTestModels::HEAVY->instance();
+    $model->setAttachments(
+        TestAttachmentBuilder::make($model->mode)->withLandscapeImage()->toArray()
+    );
+
+    $model = save($model, jpg());
+    $attachment = $model->attachment('main_file');
+    $id = $attachment->meta('id');
+    $hashIds = new Hashids(config('app.key'), 20);
+
+    expect($hashIds->decode($id))->toBe([1])
         ->and($attachment->url())
         ->toContain($id)
         ->toBeExists()
