@@ -19,7 +19,6 @@
         "ffmpeg",
         "m3u8",
         "laravel",
-        "laravel 8",
         "mostafaznv"
     ],
     "license": "MIT",
@@ -35,23 +34,24 @@
         }
     ],
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
-        "php": "^8.1",
+        "php": "^8.3",
         "ext-json": "*",
         "ext-pdo": "*",
         "imagine/imagine": "^1.3",
         "intervention/image": "^3.1.0",
         "ksubileau/color-thief-php": "^2.0",
-        "laravel/framework": "^10.4.1|^11.0|^12.0",
+        "laravel/framework": "^12.0",
         "php-ffmpeg/php-ffmpeg": "^1.1",
         "spatie/image-optimizer": "^1.6"
     },
     "require-dev": {
         "hashids/hashids": "^5.0",
         "league/flysystem-aws-s3-v3": "^3.0",
-        "orchestra/testbench": "^8.0.11|^9.0|^10.0",
-        "pestphp/pest": "^2.2|^3.7",
-        "pestphp/pest-plugin-laravel": "^2.0|^3.1",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^3.7|^4.1",
+        "pestphp/pest-plugin-laravel": "^3.1|^4.0",
         "spatie/pest-plugin-test-time": "^2.0"
     },
     "autoload": {
