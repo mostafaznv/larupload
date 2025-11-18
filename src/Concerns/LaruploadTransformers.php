@@ -128,7 +128,7 @@ trait LaruploadTransformers
 
                 unset($array["{$name}_file_name"]);
 
-                if ($attachment->getMode() === LaruploadMode::HEAVY) {
+                if ($attachment->mode === LaruploadMode::HEAVY) {
                     unset($array["{$name}_file_id"]);
                     unset($array["{$name}_file_original_name"]);
                     unset($array["{$name}_file_size"]);

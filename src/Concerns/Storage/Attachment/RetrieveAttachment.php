@@ -2,20 +2,17 @@
 
 namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
-
+use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\Actions\FixExceptionNamesAction;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
 use stdClass;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+
 trait RetrieveAttachment
 {
-    /**
-     * Get metadata as an array or object
-     *
-     * @param string|null $key
-     * @return object|string|integer|null
-     */
     public function meta(?string $key = null): object|int|string|null
     {
         if ($key) {
@@ -31,11 +28,6 @@ trait RetrieveAttachment
         return $this->outputToObject();
     }
 
-    /**
-     * Get url for all styles (original, cover and ...) of current entity
-     *
-     * @return object
-     */
     public function urls(): object
     {
         $styles = new stdClass();
@@ -67,36 +59,91 @@ trait RetrieveAttachment
         return $styles;
     }
 
-    /**
-     * Generate URL for attached file
-     * Remember, if you are using the local driver, all files that should be publicly accessible should be placed in the storage/app/public directory. Furthermore, you should create a symbolic link at public/storage which points to the  storage/app/public directory
-     *
-     * @param string $style
-     * @return null|string
-     */
     public function url(string $style = Larupload::ORIGINAL_FOLDER): ?string
     {
+        if (isset($this->file) and $this->file === false) {
+            return null;
+        }
+
         $path = $this->prepareStylePath($style);
 
         if ($path) {
-            return $this->storageUrl($path);
+            if (disk_driver_is_local($this->disk)) {
+                $url = Storage::disk($this->disk)->url($path);
+
+                return url($url);
+            }
+
+            $baseUrl = config("filesystems.disks.$this->disk.url");
+
+            if ($baseUrl) {
+                return "$baseUrl/$path";
+            }
+
+            return $path;
         }
 
         return null;
     }
 
-    /**
-     * Download attached file
-     *
-     * @param string $style
-     * @return RedirectResponse|StreamedResponse|null
-     */
     public function download(string $style = Larupload::ORIGINAL_FOLDER): StreamedResponse|RedirectResponse|null
     {
+        if (isset($this->file) and $this->file === false) {
+            return null;
+        }
+
         $path = $this->prepareStylePath($style);
 
         if ($path) {
-            return $this->storageDownload($path);
+            if (disk_driver_is_local($this->disk)) {
+                return Storage::disk($this->disk)->download($path);
+            }
+
+            $baseUrl = config("filesystems.disks.$this->disk.url");
+
+            if ($baseUrl) {
+                return redirect("$baseUrl/$path");
+            }
+
+            return null;
+        }
+
+        return null;
+    }
+
+    private function prepareStylePath(string $style): ?string
+    {
+        $staticStyles = [
+            Larupload::ORIGINAL_FOLDER,
+            Larupload::COVER_FOLDER,
+            Larupload::STREAM_FOLDER
+        ];
+
+        if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->imageStyles) or array_key_exists($style, $this->videoStyles) or array_key_exists($style, $this->audioStyles))) {
+            $name = $style == Larupload::COVER_FOLDER
+                ? $this->output['cover']
+                : $this->output['name'];
+
+            $type = $this->output['type']
+                ? LaruploadFileType::from($this->output['type'])
+                : null;
+
+            if ($name and $style == Larupload::STREAM_FOLDER) {
+                if ($type === LaruploadFileType::VIDEO) {
+                    $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
+                    $path = larupload_relative_path($this, $this->id, $style);
+
+                    return "$path/$name";
+                }
+
+                return null;
+            }
+            else if ($name and $this->styleHasFile($style)) {
+                $name = FixExceptionNamesAction::make($name, $style, $this->getStyle($style))->run();
+                $path = larupload_relative_path($this, $this->id, $style);
+
+                return "$path/$name";
+            }
         }
 
         return null;

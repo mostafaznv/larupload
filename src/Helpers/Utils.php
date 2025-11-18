@@ -210,4 +210,28 @@ if (!function_exists('larupload_style_path')) {
     }
 }
 
+if (!function_exists('larupload_relative_path')) {
+    /**
+     * Generate relative path string
+     *
+     * @param \Mostafaznv\Larupload\Storage\Attachment $attachment
+     * @param string $id
+     * @param string|null $folder
+     * @return string
+     */
+    function larupload_relative_path(\Mostafaznv\Larupload\Storage\Attachment $attachment, string $id, ?string $folder = null): string
+    {
+        $path = $attachment->mode == \Mostafaznv\Larupload\Enums\LaruploadMode::STANDALONE ? "$attachment->folder/$attachment->nameKebab" : "$attachment->folder/$id/$attachment->nameKebab";
+        $path = trim($path, '/');
+
+        if ($folder) {
+            $folder = strtolower(str_replace('_', '-', trim($folder)));
+
+            return "$path/$folder";
+        }
+
+        return $path;
+    }
+}
+
 

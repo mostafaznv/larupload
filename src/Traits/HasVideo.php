@@ -1,35 +1,20 @@
 <?php
 
-namespace Mostafaznv\Larupload\Concerns\Storage\UploadEntity;
-
+namespace Mostafaznv\Larupload\Traits;
 
 use FFMpeg\Media\Audio;
 use FFMpeg\Media\Video;
-use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\DTOs\Style\AudioStyle;
-use Mostafaznv\Larupload\DTOs\Style\Style;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Storage\FFMpeg\FFMpeg;
 
-trait FFMpegUploadEntity
+
+trait HasVideo
 {
-    /**
-     * FFMpeg instance
-     */
     protected FFMpeg $ffmpeg;
 
-    /**
-     * Specify whether the FFMPEG process should run through the queue or not.
-     */
-    protected bool $ffmpegQueue;
 
-    /**
-     * Specify max FFMPEG processes should run at the same time.
-     */
-    protected int $ffmpegMaxQueueNum;
-
-
-    protected function ffmpeg(?UploadedFile $file = null, AudioStyle|VideoStyle|null $style = null): FFMpeg
+    protected function ffmpeg(AudioStyle|VideoStyle|null $style = null): FFMpeg
     {
         $force = false;
 
@@ -49,8 +34,8 @@ trait FFMpegUploadEntity
         }
 
 
-        if (!isset($this->ffmpeg) or $file or $force) {
-            $this->ffmpeg = new FFMpeg($this->file, $this->disk, $this->dominantColorQuality);
+        if (!isset($this->ffmpeg) or $force) {
+            $this->ffmpeg = new FFMpeg($this->attachment->file, $this->attachment->disk, $this->attachment->dominantColorQuality);
         }
 
         return $this->ffmpeg;

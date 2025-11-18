@@ -28,12 +28,12 @@ it('can change generate-cover property', function() {
 
 it('can get latest status of generate-cover property', function() {
     $this->attachment->generateCover(false);
-    $status = $this->attachment->getGenerateCoverStatus();
+    $status = $this->attachment->generateCover;
 
     expect($status)->toBeFalse();
 
     $this->attachment->generateCover(true);
-    $status = $this->attachment->getGenerateCoverStatus();
+    $status = $this->attachment->generateCover;
 
     expect($status)->toBeTrue();
 });
@@ -42,7 +42,7 @@ it('can return image registered styles', function() {
     $this->attachment->image('thumb', 400, 400);
     $this->attachment->image('retina', 800, 800);
 
-    $styles = $this->attachment->getImageStyles();
+    $styles = $this->attachment->imageStyles;
 
     expect($styles)
         ->toBeArray()
@@ -57,7 +57,7 @@ it('can return video registered styles', function() {
     $this->attachment->video('sd', 400, 400);
     $this->attachment->video('hd', 800, 800);
 
-    $styles = $this->attachment->getVideoStyles();
+    $styles = $this->attachment->videoStyles;
 
     expect($styles)
         ->toBeArray()
@@ -72,7 +72,7 @@ it('can return audio registered styles', function() {
     $this->attachment->audio('audio_wav', new Wav);
     $this->attachment->audio('audio_aac', new Aac());
 
-    $styles = $this->attachment->getAudioStyles();
+    $styles = $this->attachment->audioStyles;
 
     expect($styles)
         ->toBeArray()

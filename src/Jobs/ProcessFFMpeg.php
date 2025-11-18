@@ -12,6 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
+use Mostafaznv\Larupload\Actions\Queue\HandleFFMpegQueueAction;
 use Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished;
 use Mostafaznv\Larupload\Larupload;
 
@@ -20,10 +21,10 @@ class ProcessFFMpeg implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected int       $queueId;
-    protected int       $id;
-    protected string    $name;
-    protected string    $model;
+    protected int        $queueId;
+    protected int        $id;
+    protected string     $name;
+    protected string     $model;
     protected ?Larupload $standalone = null;
 
 
@@ -51,7 +52,8 @@ class ProcessFFMpeg implements ShouldQueue
 
         try {
             if ($this->standalone) {
-                $this->standalone->handleFFMpegQueue(
+                resolve(HandleFFMpegQueueAction::class)->execute(
+                    attachment: $this->standalone,
                     isLastOne: $this->availableQueues() === 1,
                     standalone: true
                 );
@@ -76,7 +78,7 @@ class ProcessFFMpeg implements ShouldQueue
 
             $this->updateStatus(true, false);
         }
-        catch (FileNotFoundException | Exception $e) {
+        catch (FileNotFoundException|Exception $e) {
             $this->updateStatus(false, false, $e->getMessage());
 
             throw new Exception($e->getMessage());

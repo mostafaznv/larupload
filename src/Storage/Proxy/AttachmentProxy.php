@@ -3,10 +3,12 @@
 namespace Mostafaznv\Larupload\Storage\Proxy;
 
 use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\Actions\Queue\HandleFFMpegQueueAction;
 use Mostafaznv\Larupload\Larupload;
 use Illuminate\Http\RedirectResponse;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+
 
 class AttachmentProxy
 {
@@ -49,6 +51,6 @@ class AttachmentProxy
 
     public function handleFFMpegQueue(bool $isLastOne = false): void
     {
-        $this->attachment->handleFFMpegQueue($isLastOne);
+        resolve(HandleFFMpegQueueAction::class)->execute($this->attachment, $isLastOne);
     }
 }

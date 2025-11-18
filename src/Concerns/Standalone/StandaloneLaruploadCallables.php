@@ -2,7 +2,9 @@
 
 namespace Mostafaznv\Larupload\Concerns\Standalone;
 
+use Mostafaznv\Larupload\Actions\Queue\HandleFFMpegQueueAction;
 use Mostafaznv\Larupload\Larupload;
+
 
 trait StandaloneLaruploadCallables
 {
@@ -48,7 +50,7 @@ trait StandaloneLaruploadCallables
     public function handleFFMpegQueue(bool $isLastOne = false, bool $standalone = false): void
     {
         if ($this->internalFunctionIsCallable) {
-            parent::handleFFMpegQueue($isLastOne, $standalone);
+            resolve(HandleFFMpegQueueAction::class)->execute($this, $isLastOne, $standalone);
         }
         else {
             $this->internalException();

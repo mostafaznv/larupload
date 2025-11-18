@@ -2,12 +2,12 @@
 
 namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
-
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Actions\Cover\SetCoverAction;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
+
 
 trait CoverAttachment
 {
@@ -39,16 +39,9 @@ trait CoverAttachment
         return false;
     }
 
-
-    /**
-     * Set cover photo
-     * Generate cover photo automatically from photos and videos, if cover file was null
-     *
-     * @param $id
-     */
-    protected function setCover($id): void
+    public function setCover($id): void
     {
-        $path = $this->getBasePath($id, Larupload::COVER_FOLDER);
+        $path = larupload_relative_path($this, $id, Larupload::COVER_FOLDER);
         $data = CoverActionData::make(
             disk: $this->disk,
             namingMethod: $this->namingMethod,
