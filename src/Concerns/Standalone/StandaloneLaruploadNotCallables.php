@@ -10,6 +10,7 @@ use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\UploadEntities;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+
 trait StandaloneLaruploadNotCallables
 {
     /**
@@ -22,21 +23,6 @@ trait StandaloneLaruploadNotCallables
         $self->internalException();
     }
 
-    /**
-     * @internal
-     */
-    public function saved(Model $model): Model
-    {
-        $this->internalException();
-    }
-
-    /**
-     * @internal
-     */
-    public function deleted(): void
-    {
-        $this->internalException();
-    }
 
     /**
      * @internal

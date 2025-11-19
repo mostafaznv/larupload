@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Concerns\Standalone;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Larupload;
 
+
 trait BootStandaloneLarupload
 {
     protected bool $internalFunctionIsCallable = false;
@@ -14,7 +15,6 @@ trait BootStandaloneLarupload
     {
         parent::__construct($name, LaruploadMode::STANDALONE);
     }
-
 
     public static function init(string $name): Larupload
     {

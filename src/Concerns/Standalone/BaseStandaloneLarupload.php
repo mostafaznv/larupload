@@ -38,37 +38,4 @@ trait BaseStandaloneLarupload
 
         return false;
     }
-
-    private function updateMeta(?object $urls = null): void
-    {
-        if (is_null($urls)) {
-            $urls = $this->urls();
-        }
-
-        $metaPath = larupload_relative_path($this, $this->id) . '/.meta';
-        Storage::disk($this->disk)->put($metaPath, json_encode($urls), 'private');
-    }
-
-    /**
-     * Check if .meta file exists
-     *
-     * @return bool
-     */
-    private function metaExists(): bool
-    {
-        $metaPath = larupload_relative_path($this, $this->id) . '/.meta';
-
-        if (Storage::disk($this->disk)->exists($metaPath)) {
-            $meta = Storage::disk($this->disk)->get($metaPath);
-            $meta = json_decode($meta);
-
-            foreach ($meta->meta as $key => $value) {
-                $this->output[$key] = $value;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
 }
