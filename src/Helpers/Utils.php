@@ -15,7 +15,7 @@ if (!function_exists('enum_to_names')) {
 
 if (!function_exists('disk_driver_is_local')) {
     /**
-     * Check if given driver is local
+     * Check if the given driver is local
      *
      * @param string $disk
      * @return bool
@@ -28,7 +28,7 @@ if (!function_exists('disk_driver_is_local')) {
 
 if (!function_exists('larupload_temp_dir')) {
     /**
-     * Get temp directory
+     * Get the temp directory
      *
      * @return string
      */
@@ -52,7 +52,7 @@ if (!function_exists('larupload_temp_dir')) {
 
 if (!function_exists('split_larupload_path')) {
     /**
-     * Extract name from path
+     * Extract name from the path
      *
      * @param string $dir
      * @return array
@@ -68,7 +68,7 @@ if (!function_exists('split_larupload_path')) {
 
 if (!function_exists('get_larupload_save_path')) {
     /**
-     * Get save to path
+     * Get the save path
      *
      * @param string $disk
      * @param string $saveTo
@@ -102,7 +102,7 @@ if (!function_exists('get_larupload_save_path')) {
 
 if (!function_exists('larupload_finalize_save')) {
     /**
-     * Upload local files/folders to remote server, if driver was not local
+     * Upload local files/folders to a remote server if the driver was not local
      *
      * @param string $disk
      * @param array $saveTo
@@ -153,7 +153,7 @@ if (!function_exists('larupload_finalize_save')) {
 
 if (!function_exists('file_has_value')) {
     /**
-     * Check file is set and has value
+     * Check file is set and has a value
      *
      * @param mixed $file
      * @return bool
@@ -166,7 +166,7 @@ if (!function_exists('file_has_value')) {
 
 if (!function_exists('file_is_valid')) {
     /**
-     * Throw exception if file is not valid
+     * Throw exception if the file is not valid
      *
      * @param mixed $file
      * @param string $name

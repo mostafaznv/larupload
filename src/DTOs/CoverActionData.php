@@ -7,6 +7,7 @@ use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 
+
 class CoverActionData
 {
     public function __construct(

@@ -26,23 +26,12 @@ use Psr\Log\LoggerInterface;
 class FFMpeg
 {
     private readonly UploadedFile $file;
+    private readonly string       $disk;
+    private readonly int          $dominantColorQuality;
+    private FFMpegMeta            $meta;
+    private Video|Audio           $media;
 
-    private readonly string $disk;
-
-    private readonly int $dominantColorQuality;
-
-    private FFMpegMeta $meta;
-
-    private Video|Audio $media;
-
-
-    /**
-     * Default scale size
-     * we use this value if width and height both were undefined
-     *
-     * @var integer
-     */
-    private const DEFAULT_SCALE = 850;
+    private const int DEFAULT_SCALE = 850;
 
 
     public function __construct(UploadedFile $file, string $disk, int $dominantColorQuality)

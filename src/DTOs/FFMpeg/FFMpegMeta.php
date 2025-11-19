@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\DTOs\FFMpeg;
 
+
 class FFMpegMeta
 {
     public bool $isLandscape;

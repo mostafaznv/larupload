@@ -10,9 +10,10 @@ use Mostafaznv\Larupload\Storage\Attachment;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
-class AttachmentProxy
+readonly class AttachmentProxy
 {
-    public function __construct(private readonly Attachment $attachment) {}
+    public function __construct(private Attachment $attachment) {}
+
 
     public function attach(UploadedFile|false $file, ?UploadedFile $cover = null): void
     {

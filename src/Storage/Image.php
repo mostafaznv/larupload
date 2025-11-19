@@ -15,17 +15,13 @@ use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
 
 
-class Image
+readonly class Image
 {
-    protected readonly UploadedFile $file;
-
-    protected readonly ImageInterface $image;
-
-    protected readonly string $disk;
-
-    protected readonly bool $driverIsLocal;
-
-    protected readonly int $dominantColorQuality;
+    protected UploadedFile   $file;
+    protected ImageInterface $image;
+    protected string         $disk;
+    protected bool           $driverIsLocal;
+    protected int            $dominantColorQuality;
 
 
     public function __construct(UploadedFile $file, string $disk, LaruploadImageLibrary $library, int $dominantColorQuality = 10)
@@ -96,9 +92,6 @@ class Image
         return true;
     }
 
-    /**
-     * Retrieve dominant color from image file.
-     */
     public function getDominantColor(UploadedFile|string|null $file = null): ?string
     {
         if (is_null($file)) {
@@ -127,7 +120,7 @@ class Image
                 }
             }
         }
-        // @codeCoverageIgnoreStart
+            // @codeCoverageIgnoreStart
         catch (Exception) {
             // do nothing
         }
@@ -136,15 +129,13 @@ class Image
         return null;
     }
 
-
     /**
-     * Resize an image as closely as possible to a given
-     * width and height while still maintaining aspect ratio.
+     * Automatically pick a resize strategy that best preserves the aspect ratio.
      *
      * This method is really just a proxy to other resize methods:
      * — If the current image is wider, we'll resize landscape.
-     * — If the current image is taller, we'll resize portrait.
-     * — If the image is as tall as it is wide (it's a square) then we'll
+     * — If the current image is taller, we'll resize a portrait.
+     * — If the image is as tall as it is wide (it's a square), then we'll
      *   apply the same process using the new dimensions (we'll resize exact if
      *   the new dimensions are both equal since at this point we'll have a square
      *   image being resized to a square).
@@ -195,7 +186,7 @@ class Image
 
     /**
      * Landscape (width fixed)
-     * width given, height automatically selected to preserve aspect ratio
+     * width given, height automatically selected to preserve the aspect ratio
      */
     private function resizeLandscape(int $width): void
     {
@@ -206,7 +197,7 @@ class Image
 
     /**
      * Portrait (height fixed)
-     * height given, width automatically selected to preserve aspect ratio
+     * height given, width automatically selected to preserve the aspect ratio
      */
     private function resizePortrait(int $height): void
     {
@@ -217,25 +208,23 @@ class Image
 
     /**
      * Resize an image to an exact width and height.
-     * does not preserve aspect ratio.
+     * Does not preserve the aspect ratio.
      */
     private function resizeExact(int $width, int $height): void
     {
         $this->image->resize($width, $height);
     }
 
-    /**
-     * Save image file
-     *
-     * @param string $path
-     * @return void
-     */
     private function save(string $path): void
     {
         $isSvg = $this->file->getExtension() === 'svg' || $this->file->getClientOriginalExtension() === 'svg';
 
-        $isSvg
-            ? $this->image->toPng()->save($path)
-            : $this->image->encode()->save($path);
+        if ($isSvg) {
+            $this->image->toPng()->save($path);
+            return;
+        }
+
+
+        $this->image->encode()->save($path);
     }
 }

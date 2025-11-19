@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Enums;
 
+
 enum LaruploadNamingMethod
 {
     case SLUG;

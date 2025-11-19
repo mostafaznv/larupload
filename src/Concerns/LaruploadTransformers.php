@@ -10,7 +10,7 @@ use Mostafaznv\Larupload\Storage\Attachment;
 
 trait LaruploadTransformers
 {
-    public function setAttribute(string $key, mixed $value): void
+    public function setAttribute($key, $value): void
     {
         if ($attachment = $this->getAttachment($key)) {
             $attachment->attach($value);
@@ -20,7 +20,7 @@ trait LaruploadTransformers
         }
     }
 
-    public function getAttribute(string $key): mixed
+    public function getAttribute($key): mixed
     {
         if ($attachment = $this->getAttachment($key)) {
             return new AttachmentProxy($attachment);

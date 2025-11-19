@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Enums;
 
+
 enum LaruploadSecureIdsMethod
 {
     case ULID;

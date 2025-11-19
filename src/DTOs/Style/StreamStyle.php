@@ -6,15 +6,16 @@ use Exception;
 use FFMpeg\Format\Video\X264;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 
-class StreamStyle
+
+readonly class StreamStyle
 {
     public function __construct(
-        public readonly string              $name,
-        public readonly int                 $width,
-        public readonly int                 $height,
-        public readonly X264                $format,
-        public readonly LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT,
-        public readonly bool                $padding = false
+        public string              $name,
+        public int                 $width,
+        public int                 $height,
+        public X264                $format,
+        public LaruploadMediaStyle $mode = LaruploadMediaStyle::SCALE_HEIGHT,
+        public bool                $padding = false
     ) {
         $this->validate();
     }
