@@ -9,6 +9,7 @@ use Mostafaznv\Larupload\DTOs\CoverActionData;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Storage\Image;
 
+
 class UploadCoverAction
 {
     private array $output;

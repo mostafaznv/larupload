@@ -8,11 +8,13 @@ use Spatie\ImageOptimizer\Optimizer;
 use Spatie\ImageOptimizer\OptimizerChain;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
 
-class OptimizeImageAction
-{
-    private readonly array $config;
 
-    public function __construct(private readonly UploadedFile $file)
+readonly class OptimizeImageAction
+{
+    private array $config;
+
+
+    public function __construct(private UploadedFile $file)
     {
         $this->config = config('larupload.optimize-image');
     }
@@ -48,7 +50,7 @@ class OptimizeImageAction
     private function optimizers(): array
     {
         return collect($this->config['optimizers'])
-            ->mapWithKeys(function(array $options, string $optimizerClass) {
+            ->mapWithKeys(function (array $options, string $optimizerClass) {
                 if (!is_a($optimizerClass, Optimizer::class, true)) {
                     $optimizerInterface = Optimizer::class;
 

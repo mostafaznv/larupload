@@ -7,12 +7,13 @@ use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
 
-class SetCoverAction
+
+readonly class SetCoverAction
 {
     public function __construct(
-        private readonly ?UploadedFile   $file,
-        private readonly mixed           $cover,
-        private readonly CoverActionData $data
+        private ?UploadedFile   $file,
+        private mixed           $cover,
+        private CoverActionData $data
     ) {}
 
     public static function make(?UploadedFile $file, mixed $cover, CoverActionData $data): static

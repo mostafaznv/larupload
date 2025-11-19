@@ -5,9 +5,10 @@ namespace Mostafaznv\Larupload\Actions;
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 
-class GuessLaruploadFileTypeAction
+
+readonly class GuessLaruploadFileTypeAction
 {
-    public function __construct(private readonly UploadedFile $file) {}
+    public function __construct(private UploadedFile $file) {}
 
     public static function make(UploadedFile $file): self
     {

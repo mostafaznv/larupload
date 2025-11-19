@@ -4,6 +4,7 @@ namespace Mostafaznv\Larupload\Actions\Cover;
 
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 
+
 class DeleteCoverAction
 {
     public function __construct(

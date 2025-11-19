@@ -7,12 +7,13 @@ use Illuminate\Support\Carbon;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Helpers\Slug;
 
-class SetFileNameAction
+
+readonly class SetFileNameAction
 {
     public function __construct(
-        private readonly UploadedFile          $file,
-        private readonly LaruploadNamingMethod $namingMethod,
-        private readonly ?string               $lang = null
+        private UploadedFile          $file,
+        private LaruploadNamingMethod $namingMethod,
+        private ?string               $lang = null
     ) {}
 
     public static function make(UploadedFile $file, LaruploadNamingMethod $namingMethod, ?string $lang = null): static

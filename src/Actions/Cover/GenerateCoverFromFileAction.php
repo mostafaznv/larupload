@@ -9,6 +9,7 @@ use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Storage\FFMpeg\FFMpeg;
 use Mostafaznv\Larupload\Storage\Image;
 
+
 class GenerateCoverFromFileAction
 {
     private readonly string $fileName;

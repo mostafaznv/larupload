@@ -7,13 +7,14 @@ use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 
-class GenerateFileIdAction
+
+readonly class GenerateFileIdAction
 {
     public function __construct(
-        private readonly ?Model                   $model,
-        private readonly LaruploadSecureIdsMethod $method,
-        private readonly LaruploadMode            $attachmentMode,
-        private readonly ?string                  $attachmentName
+        private ?Model                   $model,
+        private LaruploadSecureIdsMethod $method,
+        private LaruploadMode            $attachmentMode,
+        private ?string                  $attachmentName
     ) {}
 
     public static function make(?Model $model, LaruploadSecureIdsMethod $method, LaruploadMode $attachmentMode, string $attachmentName): self
