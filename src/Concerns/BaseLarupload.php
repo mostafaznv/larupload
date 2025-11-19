@@ -3,7 +3,7 @@
 namespace Mostafaznv\Larupload\Concerns;
 
 use Mostafaznv\Larupload\Storage\Attachment;
-use Mostafaznv\Larupload\Storage\Proxy\AttachmentProxy;
+
 
 trait BaseLarupload
 {
@@ -13,6 +13,7 @@ trait BaseLarupload
      * @var Attachment[]
      */
     private array $attachments = [];
+
 
     protected function initializeLarupload(): void
     {
@@ -27,7 +28,10 @@ trait BaseLarupload
     }
 
     /**
-     * Get the entities should upload into the model
+     * Get attachment definitions for this model.
+     *
+     * Each item must be an instance of Attachment and describes an uploadable
+     * field handled by the model.
      *
      * @return Attachment[]
      */
