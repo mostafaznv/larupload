@@ -3,12 +3,13 @@
 namespace Mostafaznv\Larupload\Actions;
 
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\DTOs\Style\Output;
 use Mostafaznv\Larupload\Storage\Attachment;
 
 
 class RetrieveStandaloneMetaFileAction
 {
-    public function __invoke(Attachment $attachment): ?array
+    public function __invoke(Attachment $attachment): ?Output
     {
         $metaPath = larupload_relative_path($attachment, $attachment->id) . '/.meta';
 
@@ -20,7 +21,7 @@ class RetrieveStandaloneMetaFileAction
                 $output = $attachment->output;
 
                 foreach ($meta->meta as $key => $value) {
-                    $output[$key] = $value;
+                    $output->set($key, $value);
                 }
 
                 return $output;

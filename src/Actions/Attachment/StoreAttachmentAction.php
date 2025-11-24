@@ -32,13 +32,13 @@ abstract class StoreAttachmentAction
     {
         $fileName = SetFileNameAction::make($this->attachment->file, $this->attachment->namingMethod, $this->attachment->lang)->generate();
 
-        $this->attachment->output['name'] = $fileName;
-        $this->attachment->output['original_name'] = $this->attachment->file->getClientOriginalName();
-        $this->attachment->output['id'] = $this->attachment->id;
-        $this->attachment->output['format'] = $this->attachment->file->getClientOriginalExtension();
-        $this->attachment->output['size'] = $this->attachment->file->getSize();
-        $this->attachment->output['type'] = $this->attachment->type->name;
-        $this->attachment->output['mime_type'] = $this->attachment->file->getMimeType();
+        $this->attachment->output->name = $fileName;
+        $this->attachment->output->originalName = $this->attachment->file->getClientOriginalName();
+        $this->attachment->output->id = $this->attachment->id;
+        $this->attachment->output->format = $this->attachment->file->getClientOriginalExtension();
+        $this->attachment->output->size = $this->attachment->file->getSize();
+        $this->attachment->output->type = $this->attachment->type;
+        $this->attachment->output->mimeType = $this->attachment->file->getMimeType();
     }
 
     protected function media(): void
@@ -48,9 +48,9 @@ abstract class StoreAttachmentAction
             case LaruploadFileType::AUDIO:
                 $meta = $this->ffmpeg()->getMeta();
 
-                $this->attachment->output['width'] = $meta->width;
-                $this->attachment->output['height'] = $meta->height;
-                $this->attachment->output['duration'] = $meta->duration;
+                $this->attachment->output->width = $meta->width;
+                $this->attachment->output->height = $meta->height;
+                $this->attachment->output->duration = $meta->duration;
 
                 break;
 
@@ -58,9 +58,9 @@ abstract class StoreAttachmentAction
                 $img = $this->img($this->attachment->file);
                 $meta = $img->getMeta();
 
-                $this->attachment->output['width'] = $meta['width'];
-                $this->attachment->output['height'] = $meta['height'];
-                $this->attachment->output['dominant_color'] = $this->attachment->dominantColor
+                $this->attachment->output->width = $meta['width'];
+                $this->attachment->output->height = $meta['height'];
+                $this->attachment->output->dominantColor = $this->attachment->dominantColor
                     ? $img->getDominantColor()
                     : null;
 
@@ -70,17 +70,9 @@ abstract class StoreAttachmentAction
 
     protected function setAttributes(Model $model): Model
     {
-        if ($this->attachment->mode === LaruploadMode::HEAVY) {
-            foreach ($this->attachment->output as $key => $value) {
-                $model->{"{$this->attachment->name}_file_$key"} = $value;
-            }
-        }
-        else {
-            $model->{"{$this->attachment->name}_file_name"} = $this->attachment->output['name'] ?? null;
-            $model->{"{$this->attachment->name}_file_meta"} = json_encode($this->attachment->output);
-        }
-
-        return $model;
+        return $this->attachment->output->save(
+            $model, $this->attachment->name, $this->attachment->mode
+        );
     }
 
     protected function uploadOriginalFile(string $id, ?string $disk = null): void
@@ -89,7 +81,7 @@ abstract class StoreAttachmentAction
             ->putFileAs(
                 path: larupload_relative_path($this->attachment, $id, Larupload::ORIGINAL_FOLDER),
                 file: $this->attachment->file,
-                name: $this->attachment->output['name']
+                name: $this->attachment->output->name
             );
     }
 

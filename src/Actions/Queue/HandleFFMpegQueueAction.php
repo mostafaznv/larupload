@@ -38,11 +38,11 @@ class HandleFFMpegQueueAction
     private function prepareFileForFFMpegProcess(Attachment $attachment): UploadedFile
     {
         $basePath = larupload_relative_path($attachment, $attachment->id, Larupload::ORIGINAL_FOLDER);
-        $path = $basePath . '/' . $attachment->output['name'];
+        $path = $basePath . '/' . $attachment->output->name;
         $disk = disk_driver_is_local($attachment->disk) ? $attachment->disk : $attachment->localDisk;
 
         $path = Storage::disk($disk)->path($path);
 
-        return new UploadedFile($path, $attachment->output['name'], null, null, true);
+        return new UploadedFile($path, $attachment->output->name, null, null, true);
     }
 }

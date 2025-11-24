@@ -5,7 +5,6 @@ namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Actions\Cover\SetCoverAction;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
-use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
 
 
@@ -15,10 +14,10 @@ trait CoverAttachment
     {
         file_is_valid($file, $this->name, 'cover');
 
-        if ($this->output['type']) {
+        if ($this->output->type) {
             $this->uploaded = false;
             $this->cover = $file;
-            $this->type = LaruploadFileType::from($this->output['type']);
+            $this->type = $this->output->type;
 
             return true;
         }
@@ -28,10 +27,10 @@ trait CoverAttachment
 
     public function detachCover(): bool
     {
-        if ($this->output['type']) {
+        if ($this->output->type) {
             $this->uploaded = false;
             $this->cover = false;
-            $this->type = LaruploadFileType::from($this->output['type']);
+            $this->type = $this->output->type;
 
             return true;
         }

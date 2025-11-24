@@ -39,7 +39,7 @@ class InitializeFFMpegQueueAction
             if (!disk_driver_is_local($attachment->disk)) {
                 $path = larupload_relative_path($attachment, $id, Larupload::ORIGINAL_FOLDER);
 
-                Storage::disk($attachment->localDisk)->putFileAs($path, $attachment->file, $attachment->output['name']);
+                Storage::disk($attachment->localDisk)->putFileAs($path, $attachment->file, $attachment->output->name);
             }
 
             $queueId = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->insertGetId([

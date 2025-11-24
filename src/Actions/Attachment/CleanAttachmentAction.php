@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Actions\Attachment;
 
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\DTOs\Style\Output;
 use Mostafaznv\Larupload\Storage\Attachment;
 
 
@@ -17,9 +18,7 @@ class CleanAttachmentAction
         $path = larupload_relative_path($attachment, $id);
         Storage::disk($attachment->disk)->deleteDirectory($path);
 
-        foreach ($attachment->output as $key => $value) {
-            $attachment->output[$key] = null;
-        }
+        $attachment->output = Output::make();
 
         return $attachment;
     }

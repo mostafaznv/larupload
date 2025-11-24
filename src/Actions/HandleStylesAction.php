@@ -32,7 +32,7 @@ class HandleStylesAction
             case LaruploadFileType::IMAGE:
                 foreach ($this->attachment->imageStyles as $name => $style) {
                     $path = larupload_relative_path($this->attachment, $id, $name);
-                    $saveTo = $path . '/' . FixExceptionNamesAction::make($this->attachment->output['name'], $name)->run();
+                    $saveTo = $path . '/' . FixExceptionNamesAction::make($this->attachment->output->name, $name)->run();
 
                     Storage::disk($this->attachment->disk)->makeDirectory($path);
                     $this->img($this->attachment->file)->resize($saveTo, $style);
@@ -94,7 +94,7 @@ class HandleStylesAction
             $path = larupload_relative_path($this->attachment, $id, $name);
             Storage::disk($this->attachment->disk)->makeDirectory($path);
 
-            $saveTo = "$path/{$this->attachment->output['name']}";
+            $saveTo = "$path/{$this->attachment->output->name}";
 
 
             if ($style->isAudioFormat()) {
@@ -110,7 +110,7 @@ class HandleStylesAction
         }
 
         if (count($this->attachment->streams)) {
-            $fileName = pathinfo($this->attachment->output['name'], PATHINFO_FILENAME) . '.m3u8';
+            $fileName = pathinfo($this->attachment->output->name, PATHINFO_FILENAME) . '.m3u8';
 
             $path = larupload_relative_path($this->attachment, $id, Larupload::STREAM_FOLDER);
             Storage::disk($this->attachment->disk)->makeDirectory($path);
@@ -124,7 +124,7 @@ class HandleStylesAction
         foreach ($this->attachment->audioStyles as $name => $style) {
             $path = larupload_relative_path($this->attachment, $id, $name);
             Storage::disk($this->attachment->disk)->makeDirectory($path);
-            $saveTo = "$path/{$this->attachment->output['name']}";
+            $saveTo = "$path/{$this->attachment->output->name}";
 
             $this->ffmpeg()->audio($style, $saveTo);
         }
@@ -136,7 +136,7 @@ class HandleStylesAction
             ->putFileAs(
                 path: larupload_relative_path($this->attachment, $id, Larupload::ORIGINAL_FOLDER),
                 file: $this->attachment->file,
-                name: $this->attachment->output['name']
+                name: $this->attachment->output->name
             );
     }
 

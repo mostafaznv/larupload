@@ -6,18 +6,14 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\SetFileNameAction;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
+use Mostafaznv\Larupload\DTOs\Style\Output;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Storage\Image;
 
 
 class UploadCoverAction
 {
-    private array $output;
-
-    public function __construct(private readonly UploadedFile $cover, private readonly CoverActionData $data)
-    {
-        $this->output = $this->data->output;
-    }
+    public function __construct(private readonly UploadedFile $cover, private readonly CoverActionData $data) {}
 
     public static function make(UploadedFile $cover, CoverActionData $data): static
     {
@@ -25,7 +21,7 @@ class UploadCoverAction
     }
 
 
-    public function run(string $path): array
+    public function run(string $path): Output
     {
         Storage::disk($this->data->disk)->makeDirectory($path);
 
@@ -36,14 +32,14 @@ class UploadCoverAction
         $result = $img->resize($saveTo, $this->data->style);
 
         if ($result) {
-            $this->output['cover'] = $name;
+            $this->data->output->cover = $name;
 
             if ($this->data->type != LaruploadFileType::IMAGE) {
-                $this->output['dominant_color'] = $this->data->withDominantColor ? $img->getDominantColor() : null;
+                $this->data->output->dominantColor = $this->data->withDominantColor ? $img->getDominantColor() : null;
             }
         }
 
-        return $this->output;
+        return $this->data->output;
     }
 
     private function img(): Image

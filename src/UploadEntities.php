@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Actions\GenerateFileIdAction;
 use Mostafaznv\Larupload\DTOs\Style\AudioStyle;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
+use Mostafaznv\Larupload\DTOs\Style\Output;
 use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
 use Mostafaznv\Larupload\DTOs\Style\Style;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
@@ -88,23 +89,8 @@ class UploadEntities
 
     /**
      * Output array to save in the database
-     *
-     * @var array
      */
-    public array $output = [
-        'id'             => null,
-        'name'           => null,
-        'original_name'  => null,
-        'size'           => null,
-        'type'           => null,
-        'mime_type'      => null,
-        'width'          => null,
-        'height'         => null,
-        'duration'       => null,
-        'dominant_color' => null,
-        'format'         => null,
-        'cover'          => null,
-    ];
+    public Output $output;
 
 
     public function __construct(string $name, LaruploadMode $mode)
@@ -131,6 +117,8 @@ class UploadEntities
         $this->optimizeImage = $config['optimize-image']['enable'] ?? false;
         $this->ffmpegQueue = $config['ffmpeg']['queue'];
         $this->ffmpegMaxQueueNum = $config['ffmpeg']['max-queue-num'];
+
+        $this->output = Output::make();
     }
 
     public static function make(string $name, LaruploadMode $mode = LaruploadMode::HEAVY): self
@@ -284,20 +272,7 @@ class UploadEntities
     {
         $this->id = GenerateFileIdAction::make($model, $this->secureIdsMethod, $this->mode, $this->name)->run();
 
-        if ($this->mode === LaruploadMode::HEAVY) {
-            foreach ($this->output as $key => $value) {
-                $this->output[$key] = $model->{"{$this->name}_file_$key"};
-            }
-        }
-        else {
-            $meta = json_decode($model->{"{$this->name}_file_meta"}, true);
-
-            if (is_array($meta)) {
-                foreach ($meta as $key => $value) {
-                    $this->output[$key] = $value;
-                }
-            }
-        }
+        $this->output = Output::fromModel($model, $this->name, $this->mode);
     }
 
     protected function nameStyle($name): string
@@ -305,26 +280,9 @@ class UploadEntities
         return $this->camelCaseResponse ? Str::camel($name) : $name;
     }
 
-    protected function outputToObject(): object
-    {
-        $output = (object)$this->output;
-
-        if ($this->camelCaseResponse) {
-            $output->mimeType = $output->mime_type;
-            $output->dominantColor = $output->dominant_color;
-            $output->originalName = $output->original_name;
-
-            unset($output->mime_type);
-            unset($output->dominant_color);
-            unset($output->original_name);
-        }
-
-        return $output;
-    }
-
     protected function getStyle(string $style): ?Style
     {
-        $type = $this->output['type'];
+        $type = $this->output->type->name;
         $types = [
             LaruploadFileType::VIDEO->name,
             LaruploadFileType::AUDIO->name,

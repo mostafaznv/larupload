@@ -16,16 +16,10 @@ trait RetrieveAttachment
     public function meta(?string $key = null): object|int|string|null
     {
         if ($key) {
-            $meta = $this->output;
-
-            if (array_key_exists($key, $meta)) {
-                return $meta[$key];
-            }
-
-            return null;
+            return $this->output->get($key);
         }
 
-        return $this->outputToObject();
+        return $this->output->toObject($this->camelCaseResponse);
     }
 
     public function urls(): object
@@ -121,15 +115,12 @@ trait RetrieveAttachment
 
         if (isset($this->id) and (in_array($style, $staticStyles) or array_key_exists($style, $this->imageStyles) or array_key_exists($style, $this->videoStyles) or array_key_exists($style, $this->audioStyles))) {
             $name = $style == Larupload::COVER_FOLDER
-                ? $this->output['cover']
-                : $this->output['name'];
+                ? $this->output->cover
+                : $this->output->name;
 
-            $type = $this->output['type']
-                ? LaruploadFileType::from($this->output['type'])
-                : null;
 
             if ($name and $style == Larupload::STREAM_FOLDER) {
-                if ($type === LaruploadFileType::VIDEO) {
+                if ($this->output->type === LaruploadFileType::VIDEO) {
                     $name = pathinfo($name, PATHINFO_FILENAME) . '.m3u8';
                     $path = larupload_relative_path($this, $this->id, $style);
 

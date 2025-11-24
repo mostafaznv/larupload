@@ -6,6 +6,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
+use Mostafaznv\Larupload\DTOs\Style\Output;
 
 
 readonly class SetCoverAction
@@ -22,7 +23,7 @@ readonly class SetCoverAction
     }
 
 
-    public function run(string $path): array
+    public function run(string $path): Output
     {
         Storage::disk($this->data->disk)->deleteDirectory($path);
 

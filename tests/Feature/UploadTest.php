@@ -267,6 +267,7 @@ it('will upload video in standalone mode', function() {
 });
 
 it('will upload using create method of model', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    /** @var LaruploadHeavyTestModel|LaruploadLightTestModel $model */
     $model = $model::class;
     $model = $model::create([
         'main_file' => jpg(),
