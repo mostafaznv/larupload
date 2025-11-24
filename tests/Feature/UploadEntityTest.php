@@ -189,7 +189,7 @@ it('can change secure-ids property', function() {
 
 it('can change store-original-file-name property', function() {
     $this->model->setAttachments([
-        $this->attachment->storeOriginalFileName(true)
+        $this->attachment
     ]);
 
 

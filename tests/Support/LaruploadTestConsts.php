@@ -32,8 +32,9 @@ class LaruploadTestConsts
             'mime_type' => 'image/jpeg',
             'color'     => '#f4c00a',
             'name'      => [
-                'hash' => '9e55cf595703eaa109025073caed65a4.jpg',
-                'slug' => 'تیم-بارسلونا',
+                'original' => 'تیم بارسلونا.jpeg',
+                'hash'     => '9e55cf595703eaa109025073caed65a4.jpg',
+                'slug'     => 'تیم-بارسلونا',
             ]
         ],
 

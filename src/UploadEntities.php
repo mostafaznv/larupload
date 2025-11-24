@@ -69,8 +69,6 @@ class UploadEntities
     public bool $keepOldFiles;
     public bool $preserveFiles;
 
-    public bool $storeOriginalFileName;
-
     public array $imageStyles = [];
     public array $videoStyles = [];
     public array $audioStyles = [];
@@ -130,8 +128,6 @@ class UploadEntities
         $this->dominantColorQuality = $config['dominant-color-quality'];
         $this->keepOldFiles = $config['keep-old-files'];
         $this->preserveFiles = $config['preserve-files'];
-        // todo - remove it and store original file name by default in the next major version
-        $this->storeOriginalFileName = $config['store-original-file-name'] ?? false;
         $this->optimizeImage = $config['optimize-image']['enable'] ?? false;
         $this->ffmpegQueue = $config['ffmpeg']['queue'];
         $this->ffmpegMaxQueueNum = $config['ffmpeg']['max-queue-num'];
@@ -240,13 +236,6 @@ class UploadEntities
     public function preserveFiles(bool $status): self
     {
         $this->preserveFiles = $status;
-
-        return $this;
-    }
-
-    public function storeOriginalFileName(bool $status): self
-    {
-        $this->storeOriginalFileName = $status;
 
         return $this;
     }

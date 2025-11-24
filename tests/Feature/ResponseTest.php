@@ -59,7 +59,7 @@ it('will return meta properties camelCase', function(LaruploadHeavyTestModel|Lar
         ->toBeObject()
         ->toHaveProperty('mimeType', $details['mime_type'])
         ->toHaveProperty('dominantColor', $details['color'])
-        ->toHaveProperty('originalName', null);
+        ->toHaveProperty('originalName', $details['name']['original']);
 
 })->with('models');
 
@@ -83,7 +83,7 @@ it('will return meta properties camelCase in standalone mode', function() {
         ->toBeObject()
         ->toHaveProperty('mimeType', $details['mime_type'])
         ->toHaveProperty('dominantColor', $details['color'])
-        ->toHaveProperty('originalName', null);
+        ->toHaveProperty('originalName', $details['name']['original']);
 
 });
 

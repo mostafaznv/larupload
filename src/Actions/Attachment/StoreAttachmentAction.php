@@ -33,15 +33,12 @@ abstract class StoreAttachmentAction
         $fileName = SetFileNameAction::make($this->attachment->file, $this->attachment->namingMethod, $this->attachment->lang)->generate();
 
         $this->attachment->output['name'] = $fileName;
+        $this->attachment->output['original_name'] = $this->attachment->file->getClientOriginalName();
         $this->attachment->output['id'] = $this->attachment->id;
         $this->attachment->output['format'] = $this->attachment->file->getClientOriginalExtension();
         $this->attachment->output['size'] = $this->attachment->file->getSize();
         $this->attachment->output['type'] = $this->attachment->type->name;
         $this->attachment->output['mime_type'] = $this->attachment->file->getMimeType();
-
-        if ($this->attachment->storeOriginalFileName) {
-            $this->attachment->output['original_name'] = $this->attachment->file->getClientOriginalName();
-        }
     }
 
     protected function media(): void
@@ -75,10 +72,6 @@ abstract class StoreAttachmentAction
     {
         if ($this->attachment->mode === LaruploadMode::HEAVY) {
             foreach ($this->attachment->output as $key => $value) {
-                if ($key == 'original_name' and !$this->attachment->storeOriginalFileName) {
-                    continue;
-                }
-
                 $model->{"{$this->attachment->name}_file_$key"} = $value;
             }
         }

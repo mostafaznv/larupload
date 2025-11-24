@@ -11,7 +11,7 @@ it('will update attachment successfully', function (LaruploadHeavyTestModel|Laru
     $model->withAllImages();
 
     $model->setAttachments([
-        $model->withAllAttachments()[0]->storeOriginalFileName(true)
+        $model->withAllAttachments()[0]
     ]);
 
 
