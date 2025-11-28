@@ -225,7 +225,8 @@ if (!function_exists('larupload_relative_path')) {
         $path = trim($path, '/');
 
         if ($folder) {
-            $folder = strtolower(str_replace('_', '-', trim($folder)));
+            $folder = trim($folder, " \t\n\r\0\x0B/");
+            $folder = strtolower(str_replace('_', '-', $folder));
 
             return "$path/$folder";
         }

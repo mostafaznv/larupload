@@ -2,9 +2,11 @@
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\Enums\LaruploadMode;
+use Mostafaznv\Larupload\Storage\Attachment;
 use function Spatie\PestPluginTestTime\testTime;
 
-it('will convert enum values to array', function() {
+it('will convert enum values to array', function () {
     enum TestEnum
     {
         case CASE1;
@@ -18,7 +20,7 @@ it('will convert enum values to array', function() {
         ->toMatchArray(['CASE1', 'CASE2']);
 });
 
-it('can check if driver is local or not', function() {
+it('can check if driver is local or not', function () {
     $result = disk_driver_is_local('local');
     expect($result)->toBeTrue();
 
@@ -29,13 +31,13 @@ it('can check if driver is local or not', function() {
     expect($result)->toBeFalse();
 });
 
-it('can find temp dir', function() {
+it('can find temp dir', function () {
     $result = larupload_temp_dir();
 
     expect(is_dir($result))->toBeTrue();
 });
 
-it('can split path', function() {
+it('can split path', function () {
     $result = split_larupload_path('/path/to/folder/file.png');
 
     expect($result)
@@ -47,7 +49,7 @@ it('can split path', function() {
         ]);
 });
 
-it('can generate save path', function() {
+it('can generate save path', function () {
     $path = 'path/to/file.png';
     $localPath = config('filesystems.disks.local.root');
 
@@ -85,7 +87,7 @@ it('can generate save path', function() {
         ]);
 });
 
-it('can generate save path with custom extension', function() {
+it('can generate save path with custom extension', function () {
     $path = 'path/to/file.png';
     $newPath = 'path/to/file.jpg';
     $localPath = config('filesystems.disks.local.root');
@@ -124,7 +126,7 @@ it('can generate save path with custom extension', function() {
         ]);
 });
 
-it('can upload file to remote disks', function() {
+it('can upload file to remote disks', function () {
     $driver = 's3';
     $file = pdf();
     $path = 'path/to/' . $file->getClientOriginalName();
@@ -148,7 +150,7 @@ it('can upload file to remote disks', function() {
         ->toBeFalse();
 });
 
-it('can upload folder to remote disks', function() {
+it('can upload folder to remote disks', function () {
     $driver = 's3';
     $path = 'path/to/hls';
 
@@ -190,7 +192,7 @@ it('can upload folder to remote disks', function() {
         ->toBeFalse();
 });
 
-it('can check if file is set and is an instance of uploaded-file', function() {
+it('can check if file is set and is an instance of uploaded-file', function () {
     $res = file_has_value('file');
     expect($res)->toBeFalse();
 
@@ -201,7 +203,7 @@ it('can check if file is set and is an instance of uploaded-file', function() {
     expect($res)->toBeTrue();
 });
 
-it('can check if instance of uploaded-file is valid or not', function() {
+it('can check if instance of uploaded-file is valid or not', function () {
     $res = file_is_valid(null, 'file', 'cover');
     expect($res)->toBeTrue();
 
@@ -212,28 +214,91 @@ it('can check if instance of uploaded-file is valid or not', function() {
 })->throws(RuntimeException::class);
 
 
-it('will return path unchanged if extension is null', function() {
+# larupload-style-path
+it('will return path unchanged if extension is null', function () {
     $original = 'path/to/file.mp3';
     $path = larupload_style_path($original, null);
 
     expect($path)->toBe($original);
 });
 
-it('will return path unchanged if extension is an empty string', function() {
+it('will return path unchanged if extension is an empty string', function () {
     $original = 'path/to/file.mp3';
     $path = larupload_style_path($original, '');
 
     expect($path)->toBe($original);
 });
 
-it('will change path using the given extension', function() {
+it('will change path using the given extension', function () {
     $path = larupload_style_path('path/to/file.mp3', 'wav');
 
     expect($path)->toBe('path/to/file.wav');
 });
 
-it('trims the extra dot at the beginning of the path when dirname is null', function() {
+it('trims the extra dot at the beginning of the path when dirname is null', function () {
     $path = larupload_style_path('file.mp3', 'wav');
 
     expect($path)->toBe('file.wav');
+});
+
+
+# larupload-relative-path
+it('generates relative path in standalone mode without folder', function () {
+    $attachment = Attachment::make('example_file', LaruploadMode::STANDALONE);
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+
+    $result = larupload_relative_path($attachment, '123');
+
+    expect($result)->toBe('uploads/example-file');
+});
+
+it('generates relative path in standalone mode with folder', function () {
+    $attachment = Attachment::make('example_file', LaruploadMode::STANDALONE);
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+
+    $result = larupload_relative_path($attachment, '123', 'custom_folder');
+
+    expect($result)->toBe('uploads/example-file/custom-folder');
+});
+
+it('generates relative path in non-standalone mode without folder', function () {
+    $attachment = Attachment::make('example_file');
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+
+    $result = larupload_relative_path($attachment, '123');
+
+    expect($result)->toBe('uploads/123/example-file');
+});
+
+it('generates relative path in non-standalone mode with folder', function () {
+    $attachment = Attachment::make('example_file');
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+
+    $result = larupload_relative_path($attachment, '123', 'custom_folder');
+
+    expect($result)->toBe('uploads/123/example-file/custom-folder');
+});
+
+it('trims slashes from folder and path', function () {
+    $attachment = Attachment::make('example_file');
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file/';
+
+    $result = larupload_relative_path($attachment, '123');
+
+    expect($result)->toBe('uploads/123/example-file');
+});
+
+it('trims slashes from folder and path with folder', function () {
+    $attachment = Attachment::make('example_file');
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file/';
+
+    $result = larupload_relative_path($attachment, '123', 'folder/');
+
+    expect($result)->toBe('uploads/123/example-file/folder');
 });
