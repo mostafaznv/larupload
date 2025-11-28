@@ -10,8 +10,6 @@ use Mostafaznv\Larupload\Enums\LaruploadMode;
 
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - remove meta-data from file
-
     public function boot(): void
     {
         $this->loadTranslationsFrom(__DIR__ . '/../translations', 'larupload');
