@@ -58,8 +58,8 @@ abstract class StoreAttachmentAction
                 $img = $this->img($this->attachment->file);
                 $meta = $img->getMeta();
 
-                $this->attachment->output->width = $meta['width'];
-                $this->attachment->output->height = $meta['height'];
+                $this->attachment->output->width = $meta->width;
+                $this->attachment->output->height = $meta->height;
                 $this->attachment->output->dominantColor = $this->attachment->dominantColor
                     ? $img->getDominantColor()
                     : null;

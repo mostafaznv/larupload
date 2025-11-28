@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\DTOs\Image\ImageMeta;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
@@ -30,8 +31,8 @@ function resize(UploadedFile $file, LaruploadImageLibrary $library, int $width =
     $meta = $image->getMeta();
 
     expect($meta)
-        ->toHaveKey('width', $width)
-        ->toHaveKey('height', $height);
+        ->toHaveProperty('width', $width)
+        ->toHaveProperty('height', $height);
 }
 
 function dominant(UploadedFile $file, LaruploadImageLibrary $library, string $expected) {
@@ -45,9 +46,9 @@ it('can get meta of image file', function() {
     $meta = $this->image->getMeta();
 
     expect($meta)
-        ->toBeArray()
-        ->toHaveKey('width', 1077)
-        ->toHaveKey('height', 791);
+        ->toBeInstanceOf(ImageMeta::class)
+        ->toHaveProperty('width', 1077)
+        ->toHaveProperty('height', 791);
 });
 
 it('can resize image file', function(UploadedFile $file, ImageStyle $style, int $width, int $height) {
@@ -66,8 +67,8 @@ it('can resize image file', function(UploadedFile $file, ImageStyle $style, int 
 
 
     expect($meta)
-        ->toHaveKey('width', $width)
-        ->toHaveKey('height', $height);
+        ->toHaveProperty('width', $width)
+        ->toHaveProperty('height', $height);
 
 })->with([
     fn() => [

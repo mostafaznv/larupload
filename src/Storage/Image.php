@@ -7,7 +7,7 @@ use Exception;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\Interfaces\ImageInterface;
 use Intervention\Image\ImageManager;
-use JetBrains\PhpStorm\ArrayShape;
+use Mostafaznv\Larupload\DTOs\Image\ImageMeta;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
@@ -42,13 +42,12 @@ readonly class Image
     }
 
 
-    #[ArrayShape(['width' => 'int', 'height' => 'int'])]
-    public function getMeta(): array
+    public function getMeta(): ImageMeta
     {
-        return [
-            'width'  => $this->image->width(),
-            'height' => $this->image->height(),
-        ];
+        return ImageMeta::make(
+            $this->image->width(),
+            $this->image->height(),
+        );
     }
 
     public function resize(string $saveTo, ImageStyle $style): bool
