@@ -9,13 +9,9 @@ use Mostafaznv\Larupload\Storage\Attachment;
 
 class CleanAttachmentAction
 {
-    public function __invoke(Attachment $attachment, string|int|null $id = null): Attachment
+    public function __invoke(Attachment $attachment): Attachment
     {
-        if (is_null($id)) {
-            $id = $attachment->id;
-        }
-
-        $path = larupload_relative_path($attachment, $id);
+        $path = larupload_relative_path($attachment, $attachment->id);
         Storage::disk($attachment->disk)->deleteDirectory($path);
 
         $attachment->output = Output::make();
