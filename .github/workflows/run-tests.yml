@@ -15,7 +15,7 @@ jobs:
         php: [8.3, 8.4, 8.5]
         laravel: ['12.*']
         imagemagick: [7.1.1-32]
-        imagick: [3.7.0]
+        imagick: [3.8.1]
         coverage: [none]
         dependency-version: [prefer-stable]
         include:
