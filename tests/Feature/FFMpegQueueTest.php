@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Bus;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished;
+use Mostafaznv\Larupload\Exceptions\FFMpegQueueMaxNumExceededException;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Models\LaruploadFFMpegQueue;
@@ -543,4 +543,4 @@ it('will throw exception if max-queue-num exceeds', function() {
     save($model, mp3());
     save($model, mp3());
 
-})->throws(HttpResponseException::class);
+})->throws(FFMpegQueueMaxNumExceededException::class, 'larupload queue limitation exceeded.');

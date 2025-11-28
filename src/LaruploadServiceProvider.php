@@ -7,9 +7,9 @@ use Illuminate\Support\ServiceProvider;
 use Mostafaznv\Larupload\Database\Schema\Blueprint;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 
+
 class LaruploadServiceProvider extends ServiceProvider
 {
-    // TODO - throw a custom exception when ffmpeg queue exceeds the limit
     // TODO - remove meta-data from file
 
     public function boot(): void
@@ -32,15 +32,15 @@ class LaruploadServiceProvider extends ServiceProvider
 
     protected function registerMacros(): void
     {
-        BlueprintIlluminate::macro('upload', function(string $name, LaruploadMode $mode = LaruploadMode::HEAVY) {
+        BlueprintIlluminate::macro('upload', function (string $name, LaruploadMode $mode = LaruploadMode::HEAVY) {
             Blueprint::columns($this, $name, $mode);
         });
 
-        BlueprintIlluminate::macro('dropUpload', function(string $name, LaruploadMode $mode = LaruploadMode::HEAVY) {
+        BlueprintIlluminate::macro('dropUpload', function (string $name, LaruploadMode $mode = LaruploadMode::HEAVY) {
             Blueprint::dropColumns($this, $name, $mode);
         });
 
-        BlueprintIlluminate::macro('laruploadAddOriginalName', function(string $name) {
+        BlueprintIlluminate::macro('laruploadAddOriginalName', function (string $name) {
             Blueprint::addOriginalName($this, $name);
         });
     }

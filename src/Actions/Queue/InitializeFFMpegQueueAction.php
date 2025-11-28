@@ -2,10 +2,9 @@
 
 namespace Mostafaznv\Larupload\Actions\Queue;
 
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\URL;
+use Mostafaznv\Larupload\Exceptions\FFMpegQueueMaxNumExceededException;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Storage\Attachment;
@@ -17,7 +16,6 @@ class InitializeFFMpegQueueAction
     {
         $flag = false;
         $maxQueueNum = $attachment->ffmpegMaxQueueNum;
-
 
 
         if ($maxQueueNum == 0) {
@@ -63,9 +61,7 @@ class InitializeFFMpegQueueAction
             ProcessFFMpeg::dispatch($queueId, $id, $attachment->name, $class, $serializedClass);
         }
         else {
-            throw new HttpResponseException(redirect(URL::previous())->withErrors([
-                'ffmpeg_queue_max_num' => trans('larupload::messages.max-queue-num-exceeded')
-            ]));
+            throw new FFMpegQueueMaxNumExceededException;
         }
     }
 }
