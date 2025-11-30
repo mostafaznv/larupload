@@ -8,7 +8,6 @@ use Mostafaznv\Larupload\Actions\Cover\SetCoverAction;
 use Mostafaznv\Larupload\Actions\SetFileNameAction;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
-use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\HasImage;
