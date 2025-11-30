@@ -17,7 +17,6 @@ class SaveAttachmentAction extends StoreAttachmentAction
         if (isset($this->attachment->file)) {
             if ($this->attachment->file === false) {
                 $this->clean();
-
             }
             else {
                 if (!$this->attachment->keepOldFiles) {
