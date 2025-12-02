@@ -44,7 +44,6 @@ it('wont process not white-listed file types', function (LaruploadFileType $type
 
 
     # action
-    //$data = $this->generate($type);
     $data = ($this->generate)($type);
     $output = GenerateCoverFromFileAction::make(png(), $data)->run('cover');
     $files = Storage::disk($this->disk)->allFiles();
