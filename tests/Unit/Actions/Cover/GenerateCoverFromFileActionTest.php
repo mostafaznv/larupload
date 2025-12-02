@@ -38,13 +38,6 @@ beforeEach(function () {
     };
 });
 
-/**
- * image:
- *  svg: png
- *  other: keep
- *
- */
-
 
 it('wont process not white-listed file types', function (LaruploadFileType $type) {
     # before
@@ -107,6 +100,10 @@ it('can calculate dominant color during generating cover from videos', function 
     expect($output->dominantColor)->toMatch(LaruploadTestConsts::HEX_REGEX);
 });
 
+/*
+ * svg -> png
+ * other -> keep
+ */
 it('can generate cover from image', function (UploadedFile $file, $name) {
     # before
     $files = Storage::disk($this->disk)->allFiles();
