@@ -17,14 +17,12 @@ beforeEach(function () {
 
     Storage::fake($this->disk);
 
-    $this->imageStyle = ImageStyle::make('small', 200, 200, LaruploadMediaStyle::CROP);
-
     $this->generate = function (LaruploadFileType $type, bool $withDominantColor = false, string $format = 'png') {
         return CoverActionData::make(
             disk: $this->disk,
             namingMethod: LaruploadNamingMethod::HASH_FILE,
             lang: 'en',
-            style: $this->imageStyle,
+            style: ImageStyle::make('small', 200, 200, LaruploadMediaStyle::CROP),
             type: $type,
             generateCover: true,
             withDominantColor: $withDominantColor,
