@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\UploadedFile;
-use Mostafaznv\Larupload\Actions\Cover\GenerateCoverFromFileAction;
 use Mostafaznv\Larupload\Actions\Cover\SetCoverAction;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
