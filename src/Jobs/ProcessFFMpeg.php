@@ -15,17 +15,18 @@ use Illuminate\Support\Facades\DB;
 use Mostafaznv\Larupload\Actions\Queue\HandleFFMpegQueueAction;
 use Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished;
 use Mostafaznv\Larupload\Larupload;
+use Mostafaznv\Larupload\Storage\Attachment;
 
 
 class ProcessFFMpeg implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected int        $queueId;
-    protected int        $id;
-    protected string     $name;
-    protected string     $model;
-    protected ?Larupload $standalone = null;
+    protected int         $queueId;
+    protected int         $id;
+    protected string      $name;
+    protected string      $model;
+    protected ?Attachment $standalone = null;
 
 
     public function __construct(int $queueId, int $id, string $name, string $model, ?string $standalone = null)
