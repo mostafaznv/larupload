@@ -11,9 +11,9 @@ use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Storage\Image;
 
 
-class UploadCoverAction
+readonly class UploadCoverAction
 {
-    public function __construct(private readonly UploadedFile $cover, private readonly CoverActionData $data) {}
+    public function __construct(private UploadedFile $cover, private CoverActionData $data) {}
 
     public static function make(UploadedFile $cover, CoverActionData $data): static
     {
