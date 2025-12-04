@@ -1,0 +1,96 @@
+<?php
+
+use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
+use Mostafaznv\Larupload\Enums\LaruploadFileType;
+
+
+it('returns null if the file is not valid', function () {
+    $file = new UploadedFile(mp3()->getRealPath(), 'audio.mp3', null, 2, true);
+    expect($file->isValid())->toBeFalse();
+
+
+    $res = GuessLaruploadFileTypeAction::make($file)->calc();
+    expect($res)->toBeNull();
+});
+
+it('returns correct file type for valid image file', function (UploadedFile $file) {
+    $res = GuessLaruploadFileTypeAction::make($file)->calc();
+    expect($res)->toBe(LaruploadFileType::IMAGE);
+
+})->with([
+    fn() => png(),
+    fn() => jpg(),
+    fn() => jpg(true),
+    fn() => webp(),
+    fn() => svg(),
+    fn() => gif(),
+]);
+
+it('returns correct file type for valid video file', function () {
+    $res = GuessLaruploadFileTypeAction::make(mp4())->calc();
+
+    expect($res)->toBe(LaruploadFileType::VIDEO);
+});
+
+it('returns correct file type for valid audio file', function () {
+    $res = GuessLaruploadFileTypeAction::make(mp3())->calc();
+
+    expect($res)->toBe(LaruploadFileType::AUDIO);
+});
+
+it('returns correct file type for valid document file', function (string $mimeType) {
+    $file = Mockery::mock(UploadedFile::class);
+    $file->shouldReceive('isValid')->andReturn(true);
+    $file->shouldReceive('getMimeType')->andReturn($mimeType);
+
+    $res = GuessLaruploadFileTypeAction::make($file)->calc();
+
+    expect($res)->toBe(LaruploadFileType::DOCUMENT);
+
+})->with([
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/rtf',
+    'application/xhtml+xml',
+    'text/xml',
+    'application/msword',
+]);
+
+it('returns correct file type for valid compressed file', function (string $mimeType) {
+    $file = Mockery::mock(UploadedFile::class);
+    $file->shouldReceive('isValid')->andReturn(true);
+    $file->shouldReceive('getMimeType')->andReturn($mimeType);
+
+    $res = GuessLaruploadFileTypeAction::make($file)->calc();
+
+    expect($res)->toBe(LaruploadFileType::COMPRESSED);
+
+})->with([
+    'application/zip',
+    'application/x-tar',
+    'application/x-compress',
+    'application/x-bzip-compressed-tar',
+]);
+
+it('returns generic file type for unknown mime type', function () {
+    $file = Mockery::mock(UploadedFile::class);
+    $file->shouldReceive('isValid')->andReturn(true);
+    $file->shouldReceive('getMimeType')->andReturn('application/x-unknown');
+
+    $res = GuessLaruploadFileTypeAction::make($file)->calc();
+
+    expect($res)->toBe(LaruploadFileType::FILE);
+});
+
+it('identifies image file correctly', function () {
+    $res = GuessLaruploadFileTypeAction::make(png())->isImage();
+
+    expect($res)->toBeTrue();
+});
+
+it('does not identify non-image file as image', function () {
+    $res = GuessLaruploadFileTypeAction::make(mp3())->isImage();
+
+    expect($res)->toBeFalse();
+});
