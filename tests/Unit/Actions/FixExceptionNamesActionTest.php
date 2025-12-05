@@ -2,6 +2,7 @@
 
 use FFMpeg\Format\Video\WebM;
 use Mostafaznv\Larupload\Actions\FixExceptionNamesAction;
+use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
 use Mostafaznv\Larupload\DTOs\Style\VideoStyle;
 use Mostafaznv\Larupload\Larupload;
 
@@ -19,16 +20,25 @@ it('appends style extension when style is provided', function () {
     expect($res)->toBe('example.webm');
 });
 
-it('replaces svg with jpg when style name is not original or cover', function () {
-    $res = FixExceptionNamesAction::make('example.svg', 'custom-style')->run();
+it('wont change file extension if style doesnt have custom extension', function() {
+    $path = 'path/to/file.png';
+    $style = ImageStyle::make('custom-style', 100, 100);
+    $res = FixExceptionNamesAction::make($path, $style->name, $style)->run();
 
-    expect($res)->toBe('example.jpg');
+    expect($res)->toBe($path);
+});
+
+
+it('replaces svg with jpg when style name is not original or cover', function () {
+    $res = FixExceptionNamesAction::make('path/to/file.svg', 'custom-style')->run();
+
+    expect($res)->toBe('path/to/file.jpg');
 });
 
 it('does not replace svg with jpg when style name is cover/original', function (string $folder) {
-    $res = FixExceptionNamesAction::make('example.svg', $folder)->run();
+    $res = FixExceptionNamesAction::make('path/to/file.svg', $folder)->run();
 
-    expect($res)->toBe('example.svg');
+    expect($res)->toBe('path/to/file.svg');
 
 })->with([
     Larupload::ORIGINAL_FOLDER,
