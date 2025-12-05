@@ -14,15 +14,15 @@ it('optimizes image successfully', function (UploadedFile $file) {
 
 
     # action
-    $res = OptimizeImageAction::make($file)->process();
+    $optimized = OptimizeImageAction::make($file)->process();
 
 
     # test
-    expect($res->getRealPath())
+    expect($optimized->getRealPath())
         ->toBe($realPath)
-        ->and($res->getClientOriginalName())
+        ->and($optimized->getClientOriginalName())
         ->toBe($name)
-        ->and($res->getSize())
+        ->and($optimized->getSize())
         ->toBeLessThan($size);
 
 })->with([
@@ -35,10 +35,10 @@ it('optimizes image successfully', function (UploadedFile $file) {
 ]);
 
 it('throws exception for invalid optimizer classes', function () {
-    config()->set('larupload.optimize-image', [
-        'timeout'    => 10,
-        'optimizers' => [
-            'InvalidOptimizerClass' => []
+    config()->set('larupload.optimize-image.optimizers', [
+        'InvalidOptimizerClass' => [
+            '-m85',
+            '--force',
         ]
     ]);
 
