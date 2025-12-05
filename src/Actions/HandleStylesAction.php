@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\Queue\InitializeFFMpegQueueAction;
 use Mostafaznv\Larupload\DTOs\Style\AudioStyle;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
+use Mostafaznv\Larupload\Exceptions\FFMpegQueueMaxNumExceededException;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Traits\HasImage;
@@ -26,6 +27,9 @@ class HandleStylesAction
     }
 
 
+    /**
+     * @throws FFMpegQueueMaxNumExceededException
+     */
     public function run(string|int $id, Model|string $model, bool $standalone = false): void
     {
         switch ($this->attachment->type) {
@@ -42,9 +46,9 @@ class HandleStylesAction
 
             case LaruploadFileType::VIDEO:
                 if ($this->attachment->ffmpegQueue) {
-                    if ($this->driverIsNotLocal()) {
+                    /*if ($this->driverIsNotLocal()) {
                         $this->uploadOriginalFile($id, $this->attachment->localDisk);
-                    }
+                    }*/
 
                     if ($model instanceof Model) {
                         resolve(InitializeFFMpegQueueAction::class)(
@@ -65,9 +69,9 @@ class HandleStylesAction
 
             case LaruploadFileType::AUDIO:
                 if ($this->attachment->ffmpegQueue) {
-                    if ($this->driverIsNotLocal()) {
+                    /*if ($this->driverIsNotLocal()) {
                         $this->uploadOriginalFile($id, $this->attachment->localDisk);
-                    }
+                    }*/
 
                     if ($model instanceof Model) {
                         resolve(InitializeFFMpegQueueAction::class)(
@@ -130,7 +134,7 @@ class HandleStylesAction
         }
     }
 
-    protected function uploadOriginalFile(string $id, ?string $disk = null): void
+    /*protected function uploadOriginalFile(string $id, ?string $disk = null): void
     {
         Storage::disk($disk ?: $this->attachment->disk)
             ->putFileAs(
@@ -138,7 +142,7 @@ class HandleStylesAction
                 file: $this->attachment->file,
                 name: $this->attachment->output->name
             );
-    }
+    }*/
 
     protected function driverIsLocal(): bool
     {
