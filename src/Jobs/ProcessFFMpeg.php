@@ -86,6 +86,11 @@ class ProcessFFMpeg implements ShouldQueue
         }
     }
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     /**
      * Update LaruploadFFMpegQueue table
      *
