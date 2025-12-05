@@ -19,12 +19,12 @@ use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Illuminate\Support\Facades\Storage;
 
 
-beforeEach(function() {
+beforeEach(function () {
     $this->ffmpeg = new FFMpeg(mp4(), 'local', 10);
 });
 
 
-it('will return an instance of ffmpeg', function() {
+it('will return an instance of ffmpeg', function () {
     $ffmpeg = new FFMpeg(mp4(), 'local', 10);
     expect($ffmpeg->getMedia())->toBeInstanceOf(Video::class);
 
@@ -32,7 +32,7 @@ it('will return an instance of ffmpeg', function() {
     expect($ffmpeg->getMedia())->toBeInstanceOf(Audio::class);
 });
 
-it('will return meta for video files', function() {
+it('will return meta for video files', function () {
     $ffmpeg = new FFMpeg(mp4(), 'local', 10);
     $meta = $ffmpeg->getMeta();
 
@@ -46,7 +46,7 @@ it('will return meta for video files', function() {
         ->toBe(5);
 });
 
-it('will return meta for audio files', function() {
+it('will return meta for audio files', function () {
     $ffmpeg = new FFMpeg(mp3(), 'local', 10);
     $meta = $ffmpeg->getMeta();
 
@@ -60,7 +60,7 @@ it('will return meta for audio files', function() {
         ->toBe(67);
 });
 
-it('can set meta from outside', function() {
+it('can set meta from outside', function () {
     $this->ffmpeg->setMeta(
         FFMpegMeta::make(300, 200, 6)
     );
@@ -75,7 +75,7 @@ it('can set meta from outside', function() {
         ->toBe(6);
 });
 
-it('can capture screenshots from videos', function(int|null $fromSeconds, ImageStyle $style, int $width, int $height) {
+it('can capture screenshots from videos', function (int|null $fromSeconds, ImageStyle $style, int $width, int $height) {
     $fileName = 'cover.jpg';
     $path = get_larupload_save_path('local', $fileName)['local'];
 
@@ -97,43 +97,43 @@ it('can capture screenshots from videos', function(int|null $fromSeconds, ImageS
     @unlink($path);
 
 })->with([
-    fn() => [
+    'fit'          => fn() => [
         'fromSeconds' => 0,
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::FIT),
         'width'       => 400,
         'height'      => 300,
     ],
-    fn() => [
+    'auto-1'       => fn() => [
         'fromSeconds' => 1,
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::AUTO),
         'width'       => 400,
         'height'      => 226,
     ],
-    fn() => [
+    'scale-width'  => fn() => [
         'fromSeconds' => 2,
         'style'       => ImageStyle::make('cover', null, 300, LaruploadMediaStyle::SCALE_WIDTH),
         'width'       => 534,
         'height'      => 300,
     ],
-    fn() => [
+    'scale-height' => fn() => [
         'fromSeconds' => 3,
         'style'       => ImageStyle::make('cover', 400, null, LaruploadMediaStyle::SCALE_HEIGHT),
         'width'       => 400,
         'height'      => 226,
     ],
-    fn() => [
+    'crop-1'       => fn() => [
         'fromSeconds' => 4,
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::CROP),
         'width'       => 400,
         'height'      => 300,
     ],
-    fn() => [
+    'crop-2'       => fn() => [
         'fromSeconds' => 5,
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::CROP),
         'width'       => 400,
         'height'      => 300,
     ],
-    fn() => [
+    'crop-3'       => fn() => [
         'fromSeconds' => null, // center
         'style'       => ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::CROP),
         'width'       => 400,
@@ -141,7 +141,7 @@ it('can capture screenshots from videos', function(int|null $fromSeconds, ImageS
     ]
 ]);
 
-it('can upload captured screenshots to remote disks', function() {
+it('can upload captured screenshots to remote disks', function () {
     $disk = 's3';
     Storage::fake($disk);
 
@@ -162,7 +162,7 @@ it('can upload captured screenshots to remote disks', function() {
         ]);
 });
 
-it('wont capture screenshot if from second is wrong', function() {
+it('wont capture screenshot if from second is wrong', function () {
     $fileName = 'cover.jpg';
     $path = get_larupload_save_path('local', $fileName)['local'];
 
@@ -180,7 +180,7 @@ it('wont capture screenshot if from second is wrong', function() {
     expect(file_exists($path))->toBeFalse();
 });
 
-it('wont capture screenshot if save-to path is not exist', function() {
+it('wont capture screenshot if save-to path is not exist', function () {
     $fileName = 'not-exist/cover.jpg';
     $path = get_larupload_save_path('local', $fileName)['local'];
 
@@ -198,7 +198,7 @@ it('wont capture screenshot if save-to path is not exist', function() {
     expect(file_exists($path))->toBeFalse();
 });
 
-it('can guess dominant color during capturing process', function() {
+it('can guess dominant color during capturing process', function () {
     $color = $this->ffmpeg->capture(
         fromSeconds: 1,
         style: ImageStyle::make('cover', 400, 300, LaruploadMediaStyle::FIT),
@@ -209,7 +209,7 @@ it('can guess dominant color during capturing process', function() {
     expect($color)->toBeIn(['#7a4e2a', '#794e2a']);
 });
 
-it('will throw exception during capture, if media is not a video', function() {
+it('will throw exception during capture, if media is not a video', function () {
     $ffmpeg = new FFMpeg(mp3(), 'local', 10);
 
     $ffmpeg->capture(
@@ -219,7 +219,7 @@ it('will throw exception during capture, if media is not a video', function() {
     );
 })->throws(Exception::class);
 
-it('can manipulate audios', function(AudioStyle $style, string $fileName, int $bitrate, string $codec) {
+it('can manipulate audios', function (AudioStyle $style, string $fileName, int $bitrate, string $codec) {
     $path = get_larupload_save_path('local', $fileName)['local'];
 
     expect(file_exists($path))->toBeFalse();
@@ -252,20 +252,20 @@ it('can manipulate audios', function(AudioStyle $style, string $fileName, int $b
     @unlink($path);
 
 })->with([
-    fn() => [
+    'mp3'  => fn() => [
         'style'     => AudioStyle::make('mp3', (new Mp3())->setAudioKiloBitrate(32)),
         'file_name' => 'audio.mp3',
         'bit_rate'  => 32000,
         'codec'     => 'mp3'
     ],
-    fn() => [
+    'wav'  => fn() => [
         'style'     => AudioStyle::make('wav', new Wav()),
         'file_name' => 'audio.wav',
         'bit_rate'  => 705600,
         'codec'     => 'pcm_s16le'
     ],
-    fn() => [
-        'style'     => AudioStyle::make('wav', new Flac()),
+    'flac' => fn() => [
+        'style'     => AudioStyle::make('flac', new Flac()),
         'file_name' => 'audio.flac',
         'bit_rate'  => 0,
         'codec'     => 'flac'
@@ -273,7 +273,7 @@ it('can manipulate audios', function(AudioStyle $style, string $fileName, int $b
 ]);
 
 
-it('can guess correct file extension based on audio-style', function(AudioStyle $style, string $fileName) {
+it('can guess correct file extension based on audio-style', function (AudioStyle $style, string $fileName) {
     $path = get_larupload_save_path('local', $fileName)['local'];
 
     expect(file_exists($path))->toBeFalse();
@@ -286,21 +286,21 @@ it('can guess correct file extension based on audio-style', function(AudioStyle 
     @unlink($path);
 
 })->with([
-    fn() => [
+    'mp3'  => fn() => [
         'style'     => AudioStyle::make('mp3', new Mp3()),
         'file_name' => 'audio.mp3',
     ],
-    fn() => [
+    'wav'  => fn() => [
         'style'     => AudioStyle::make('wav', new Wav()),
         'file_name' => 'audio.wav',
     ],
-    fn() => [
-        'style'     => AudioStyle::make('wav', new Flac()),
+    'flac' => fn() => [
+        'style'     => AudioStyle::make('flac', new Flac()),
         'file_name' => 'audio.flac',
     ],
 ]);
 
-it('can upload manipulated audios to remote disks', function() {
+it('can upload manipulated audios to remote disks', function () {
     $disk = 's3';
     Storage::fake($disk);
 
@@ -320,7 +320,7 @@ it('can upload manipulated audios to remote disks', function() {
         ]);
 });
 
-it('can convert video to audio', function() {
+it('can convert video to audio', function () {
     $fileName = 'audio.mp3';
     $path = get_larupload_save_path('local', $fileName)['local'];
 
@@ -351,7 +351,7 @@ it('can convert video to audio', function() {
     @unlink($path);
 });
 
-it('can manipulate videos', function(VideoStyle $style, int $width, int $height) {
+it('can manipulate videos', function (VideoStyle $style, int $width, int $height) {
     $fileName = 'video.mp4';
     $path = get_larupload_save_path('local', $fileName)['local'];
 
@@ -373,39 +373,39 @@ it('can manipulate videos', function(VideoStyle $style, int $width, int $height)
     @unlink($path);
 
 })->with([
-    fn() => [
+    'fit'          => fn() => [
         'style'  => VideoStyle::make('fit', 400, 300, LaruploadMediaStyle::FIT),
         'width'  => 400,
         'height' => 300,
     ],
-    fn() => [
+    'auto'         => fn() => [
         'style'  => VideoStyle::make('auto', 400, 300, LaruploadMediaStyle::AUTO),
         'width'  => 400,
         'height' => 226,
     ],
-    fn() => [
+    'scale-width'  => fn() => [
         'style'  => VideoStyle::make('scale-width', null, 300, LaruploadMediaStyle::SCALE_WIDTH),
         'width'  => 534,
         'height' => 300,
     ],
-    fn() => [
+    'scale-height' => fn() => [
         'style'  => VideoStyle::make('scale-height', 400, null, LaruploadMediaStyle::SCALE_HEIGHT),
         'width'  => 400,
         'height' => 226,
     ],
-    fn() => [
+    'crop'         => fn() => [
         'style'  => VideoStyle::make('crop', 400, 300, LaruploadMediaStyle::CROP),
         'width'  => 400,
         'height' => 300,
     ],
-    fn() => [
+    'cover'        => fn() => [
         'style'  => VideoStyle::make('cover', 400, 300, LaruploadMediaStyle::SCALE_HEIGHT, new X264(), true),
         'width'  => 400,
         'height' => 300
     ]
 ]);
 
-it('can upload manipulated videos to remote disks', function() {
+it('can upload manipulated videos to remote disks', function () {
     $disk = 's3';
     Storage::fake($disk);
 
@@ -425,7 +425,7 @@ it('can upload manipulated videos to remote disks', function() {
         ]);
 });
 
-it('can stream videos', function() {
+it('can stream videos', function () {
     $fileName = 'stream.m3u8';
     $path = get_larupload_save_path('local', '')['local'];
     $folders = ['lq', 'mq'];
@@ -453,7 +453,7 @@ it('can stream videos', function() {
     }
 });
 
-it('can upload streams to remote disks', function() {
+it('can upload streams to remote disks', function () {
     $disk = 's3';
     Storage::fake($disk);
 
@@ -486,7 +486,7 @@ it('can upload streams to remote disks', function() {
         ]);
 });
 
-it('can clone itself', function() {
+it('can clone itself', function () {
     $cloned = $this->ffmpeg->clone();
     expect($cloned)->toBeInstanceOf(FFMpeg::class);
 
@@ -494,7 +494,7 @@ it('can clone itself', function() {
     expect($cloned)->toBeInstanceOf(FFMpeg::class);
 });
 
-it('will throw error on process timeout', function() {
+it('will throw error on process timeout', function () {
     config()->set('larupload.ffmpeg.timeout', 1);
     config()->set('larupload.ffmpeg.threads', 1);
 
@@ -511,7 +511,7 @@ it('will throw error on process timeout', function() {
 
 })->throws(FFmpegRuntimeException::class);
 
-it('wont fail if logging-channel is false', function() {
+it('wont fail if logging-channel is false', function () {
     config()->set('larupload.ffmpeg.log-channel', false);
 
     $ffmpeg = new FFMpeg(mp4(), 'local', 10);

@@ -26,12 +26,12 @@ it('optimizes image successfully', function (UploadedFile $file) {
         ->toBeLessThan($size);
 
 })->with([
-    fn() => jpg(),
-    fn() => jpg(true),
-    fn() => png(),
-    fn() => webp(),
-    fn() => svg(),
-    fn() => gif(),
+    'jpg'    => fn() => jpg(),
+    'jpg-fa' => fn() => jpg(true),
+    'png'    => fn() => png(),
+    'webp'   => fn() => webp(),
+    'svg'    => fn() => svg(),
+    'gif'    => fn() => gif(),
 ]);
 
 it('throws exception for invalid optimizer classes', function () {

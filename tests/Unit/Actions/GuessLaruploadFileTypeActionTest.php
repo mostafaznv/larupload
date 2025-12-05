@@ -19,12 +19,12 @@ it('returns correct file type for valid image file', function (UploadedFile $fil
     expect($res)->toBe(LaruploadFileType::IMAGE);
 
 })->with([
-    fn() => png(),
-    fn() => jpg(),
-    fn() => jpg(true),
-    fn() => webp(),
-    fn() => svg(),
-    fn() => gif(),
+    'png'    => fn() => png(),
+    'jpg'    => fn() => jpg(),
+    'jpg-fa' => fn() => jpg(true),
+    'webp'   => fn() => webp(),
+    'svg'    => fn() => svg(),
+    'gif'    => fn() => gif(),
 ]);
 
 it('returns correct file type for valid video file', function () {
@@ -95,7 +95,7 @@ it('does not identify non-image file as image', function () {
     expect($res)->toBeFalse();
 });
 
-it('can guess image type', function() {
+it('can guess image type', function () {
     $action = GuessLaruploadFileTypeAction::make(jpg());
 
     $result = $action->calc();
@@ -105,43 +105,43 @@ it('can guess image type', function() {
     expect($result)->toBeTrue();
 });
 
-it('can guess video type', function() {
+it('can guess video type', function () {
     $result = GuessLaruploadFileTypeAction::make(mp4())->calc();
 
     expect($result)->toBe(LaruploadFileType::VIDEO);
 });
 
-it('can guess audio type', function() {
+it('can guess audio type', function () {
     $result = GuessLaruploadFileTypeAction::make(mp3())->calc();
 
     expect($result)->toBe(LaruploadFileType::AUDIO);
 });
 
-it('can guess document type', function() {
+it('can guess document type', function () {
     $result = GuessLaruploadFileTypeAction::make(pdf())->calc();
 
     expect($result)->toBe(LaruploadFileType::DOCUMENT);
 });
 
-it('can guess compress type', function() {
+it('can guess compress type', function () {
     $result = GuessLaruploadFileTypeAction::make(zip())->calc();
 
     expect($result)->toBe(LaruploadFileType::COMPRESSED);
 });
 
-it('can guess other type', function() {
+it('can guess other type', function () {
     $result = GuessLaruploadFileTypeAction::make(php())->calc();
 
     expect($result)->toBe(LaruploadFileType::FILE);
 });
 
-it("can't guess file type if file is invalid", function() {
+it("can't guess file type if file is invalid", function () {
     $result = GuessLaruploadFileTypeAction::make(png(2))->calc();
 
     expect($result)->toBeNull();
 });
 
-it('all types of file are retrievable using enum', function(string $name, LaruploadFileType $enum) {
+it('all types of file are retrievable using enum', function (string $name, LaruploadFileType $enum) {
     $result = LaruploadFileType::from($name);
 
     expect($result)->toBe($enum);

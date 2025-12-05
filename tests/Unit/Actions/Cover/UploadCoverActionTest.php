@@ -147,12 +147,13 @@ it('can resize cover files', function (ImageStyle $style, int $width, int $heigh
         ->toHaveProperty('height', $height);
 
 })->with([
-    fn() => [
+    'scale-width' => fn() => [
         'style'  => ImageStyle::make('fit', null, 100, LaruploadMediaStyle::SCALE_WIDTH),
         'width'  => 136,
         'height' => 100
     ],
-    fn() => [
+
+    'scale-height' => fn() => [
         'style'  => ImageStyle::make('fit', 100, null, LaruploadMediaStyle::SCALE_HEIGHT),
         'width'  => 100,
         'height' => 73

@@ -125,10 +125,10 @@ it('can generate cover from image', function (UploadedFile $file, $name) {
         ]);
 
 })->with([
-    fn() => [png(), 'generated-cover.png'],
-    fn() => [jpg(), 'generated-cover.jpg'],
-    fn() => [webp(), 'generated-cover.webp'],
-    fn() => [svg(), 'generated-cover.png'], # svg converted to png
+    'png'  => fn() => [png(), 'generated-cover.png'],
+    'jpg'  => fn() => [jpg(), 'generated-cover.jpg'],
+    'webp' => fn() => [webp(), 'generated-cover.webp'],
+    'svg'  => fn() => [svg(), 'generated-cover.png'], # svg converted to png
 ]);
 
 it('wont calculate dominant color during generating cover from images', function () {
