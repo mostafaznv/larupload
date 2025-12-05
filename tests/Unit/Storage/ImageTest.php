@@ -9,11 +9,14 @@ use Mostafaznv\Larupload\Storage\Image;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
 
+
 beforeEach(function() {
     $this->image = new Image(jpg(), 'local', LaruploadImageLibrary::GD, 10);
 });
 
-function resize(UploadedFile $file, LaruploadImageLibrary $library, int $width = 100, int $height = 73) {
+
+function resize(UploadedFile $file, LaruploadImageLibrary $library, int $width = 100, int $height = 73): void
+{
     $disk = 'local';
     $saveTo = 'image.jpg';
     $path = Storage::disk($disk)->path($saveTo);
@@ -35,12 +38,14 @@ function resize(UploadedFile $file, LaruploadImageLibrary $library, int $width =
         ->toHaveProperty('height', $height);
 }
 
-function dominant(UploadedFile $file, LaruploadImageLibrary $library, string $expected) {
+function dominant(UploadedFile $file, LaruploadImageLibrary $library, string $expected): void
+{
     $image = new Image($file, 'local', $library, 10);
     $color = $image->getDominantColor();
 
     expect($color)->toBe($expected);
 }
+
 
 it('can get meta of image file', function() {
     $meta = $this->image->getMeta();
