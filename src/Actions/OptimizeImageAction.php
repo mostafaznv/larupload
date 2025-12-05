@@ -2,8 +2,8 @@
 
 namespace Mostafaznv\Larupload\Actions;
 
-use Exception;
 use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\Exceptions\InvalidImageOptimizerException;
 use Spatie\ImageOptimizer\Optimizer;
 use Spatie\ImageOptimizer\OptimizerChain;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
@@ -52,9 +52,7 @@ readonly class OptimizeImageAction
         return collect($this->config['optimizers'])
             ->mapWithKeys(function (array $options, string $optimizerClass) {
                 if (!is_a($optimizerClass, Optimizer::class, true)) {
-                    $optimizerInterface = Optimizer::class;
-
-                    throw new Exception("Configured optimizer `{$optimizerClass}` does not implement `{$optimizerInterface}`.");
+                    throw new InvalidImageOptimizerException($optimizerClass, Optimizer::class);
                 }
 
                 $newOptimizerClass = new $optimizerClass();

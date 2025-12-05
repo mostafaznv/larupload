@@ -1,6 +1,7 @@
 <?php
 
 use Mostafaznv\Larupload\Actions\OptimizeImageAction;
+use Mostafaznv\Larupload\Exceptions\InvalidImageOptimizerException;
 
 it('can optimize jpg', function() {
     $file = jpg();
@@ -52,5 +53,5 @@ it('will throw an exception if optimizer is not an instance of optimizer class',
 
     $file = jpg();
     OptimizeImageAction::make($file)->process();
-})->throws(Exception::class, 'Configured optimizer `Mostafaznv\Larupload\Actions\OptimizeImageAction` does not implement `Spatie\ImageOptimizer\Optimizer`.');
+})->throws(InvalidImageOptimizerException::class, 'Configured optimizer [Mostafaznv\Larupload\Actions\OptimizeImageAction] does not implement [Spatie\ImageOptimizer\Optimizer].');
 
