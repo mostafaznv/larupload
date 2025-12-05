@@ -20,7 +20,8 @@ class TestAttachmentBuilder
     {
         $this->attachment = Attachment::make('main_file', $mode)
             ->disk($disk)
-            ->withMeta($withMeta);
+            ->withMeta($withMeta)
+            ->dominantColor(false);
     }
 
     public static function make(LaruploadMode $mode, string $disk = 'local', bool $withMeta = true): self
@@ -28,6 +29,8 @@ class TestAttachmentBuilder
         return new static($mode, $disk, $withMeta);
     }
 
+
+    # image
     public function withSmallSizeImage(): self
     {
         $this->attachment = $this->attachment->image('small_size', 200, 200, LaruploadMediaStyle::CROP);
@@ -90,6 +93,8 @@ class TestAttachmentBuilder
         return $this;
     }
 
+
+    # audio
     public function withMp3Audio(): self
     {
         $this->attachment = $this->attachment->audio('audio_mp3', new Mp3);
@@ -120,6 +125,8 @@ class TestAttachmentBuilder
         return $this;
     }
 
+
+    # video
     public function withSmallSizeVideo(): self
     {
         $this->attachment = $this->attachment->video('small_size', 200, 200, LaruploadMediaStyle::CROP);
@@ -295,6 +302,8 @@ class TestAttachmentBuilder
         return $this;
     }
 
+
+    # generic
     public function withAll(): self
     {
         $this->withAllImages()->withAllVideosAndStreams()->withAllAudios();
@@ -310,5 +319,19 @@ class TestAttachmentBuilder
     public function toArray(): array
     {
         return [$this->toObject()];
+    }
+
+    public function calculateDominantColor(bool $status = true): self
+    {
+        $this->attachment = $this->attachment->dominantColor($status);
+
+        return $this;
+    }
+
+    public function dominantColorQuality(int $quality): self
+    {
+        $this->attachment = $this->attachment->dominantColorQuality($quality);
+
+        return $this;
     }
 }

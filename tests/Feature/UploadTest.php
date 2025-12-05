@@ -11,6 +11,7 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 
 it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model->withAllImages();
+    $model->withDominantColor();
     $model = save($model, jpg());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
@@ -37,6 +38,7 @@ it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|Laru
 
 it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model->withAllImages();
+    $model->withDominantColor();
     $model = save($model, webp());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['webp'];
@@ -63,6 +65,7 @@ it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|Lar
 
 it('will upload image successfully [png]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model->withAllImages();
+    $model->withDominantColor();
     $model = save($model, png());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['png'];
@@ -139,6 +142,7 @@ it('will upload audio successfully', function(LaruploadHeavyTestModel|LaruploadL
 
 it('will upload video successfully', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model->withAllVideos();
+    $model->withDominantColor();
     $model = save($model, mp4());
 
     $details = LaruploadTestConsts::VIDEO_DETAILS;
@@ -164,9 +168,9 @@ it('will upload video successfully', function(LaruploadHeavyTestModel|LaruploadL
 })->with('models');
 
 it('will upload with attach function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
-    $model = $model::class;
+    $model = $model->newModelInstance();
+    $model->withDominantColor();
 
-    $model = new $model;
     $model->attachment('main_file')->attach(jpg());
     $model->save();
 
@@ -290,7 +294,8 @@ it('will upload using create method of model', function(LaruploadHeavyTestModel|
         ->toHaveProperty('format', 'jpg')
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->toHaveProperty('dominant_color', $details['color'])
+        //->toHaveProperty('dominant_color', $details['color'])
+        ->toHaveProperty('dominant_color', null)
         ->toHaveProperty('duration', null);
 
 })->with('models');

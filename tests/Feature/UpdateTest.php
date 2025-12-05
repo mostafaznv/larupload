@@ -40,7 +40,7 @@ it('will update attachment successfully', function (LaruploadHeavyTestModel|Laru
         ->toHaveProperty('format', 'jpg')
         ->toHaveProperty('width', $jpg['width'])
         ->toHaveProperty('height', $jpg['height'])
-        ->toHaveProperty('dominant_color', $jpg['color']);
+        ->toHaveProperty('dominant_color', null);
 
     $model->attachment('main_file')->attach(webp(), jpg());
     $model->save();
@@ -79,7 +79,7 @@ it('will update attachment successfully', function (LaruploadHeavyTestModel|Laru
         ->toHaveProperty('format', 'webp')
         ->toHaveProperty('width', $webp['width'])
         ->toHaveProperty('height', $webp['height'])
-        ->toHaveProperty('dominant_color', $webp['color']);
+        ->toHaveProperty('dominant_color', null);
 
 })->with('models');
 
