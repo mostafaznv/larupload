@@ -7,10 +7,12 @@ use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
 
+
 beforeEach(function() {
     $this->model = LaruploadTestModels::HEAVY->instance();
     $this->attachment = Attachment::make('main_file')->disk('local');
 });
+
 
 it('can change generate-cover property', function() {
     $this->model->setAttachments([

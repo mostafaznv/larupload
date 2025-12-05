@@ -3,17 +3,16 @@
 use Illuminate\Support\Carbon;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
 use Mostafaznv\Larupload\Larupload;
+use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
-use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
-use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 use function Spatie\PestPluginTestTime\testTime;
 
 
-it('will upload file with correct filename [hash]', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload file with correct filename [hash]', function () {
     config()->set('larupload.naming-method', LaruploadNamingMethod::HASH_FILE);
 
-    $model = $model::class;
-    $model = save(new $model, jpg());
+    $model = LaruploadTestModels::HEAVY->instance();
+    $model = save($model, jpg());
 
     $fileName = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash'];
     $metaName = $model->attachment('main_file')->meta('name');
@@ -24,14 +23,13 @@ it('will upload file with correct filename [hash]', function (LaruploadHeavyTest
         ->toBe($fileName)
         ->and($metaOriginalName)
         ->toBe($originalName);
+});
 
-})->with('models');
-
-it('will upload file with correct filename [slug]', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload file with correct filename [slug]', function () {
     config()->set('larupload.naming-method', LaruploadNamingMethod::SLUG);
 
-    $model = $model::class;
-    $model = save(new $model, jpg());
+    $model = LaruploadTestModels::LIGHT->instance();
+    $model = save($model, jpg());
 
     $fileName = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['slug'];
     $metaName = $model->attachment('main_file')->meta('name');
@@ -42,26 +40,24 @@ it('will upload file with correct filename [slug]', function (LaruploadHeavyTest
         ->toContain($fileName)
         ->and($metaOriginalName)
         ->toBe($originalName);
+});
 
-})->with('models');
-
-it('can store original name of uploaded file', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
-    $model = $model::class;
-    $model = save(new $model, jpg());
+it('can store original name of uploaded file', function () {
+    $model = LaruploadTestModels::HEAVY->instance();
+    $model = save($model, jpg());
 
     $fileName = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['original'];
     $metaOriginalName = $model->attachment('main_file')->meta('original_name');
 
     expect($metaOriginalName)->toContain($fileName);
+});
 
-})->with('models');
-
-it('will upload file with utf-8 filename correctly', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload file with utf-8 filename correctly', function () {
     config()->set('larupload.lang', 'fa');
     config()->set('larupload.naming-method', LaruploadNamingMethod::SLUG);
 
-    $model = $model::class;
-    $model = save(new $model, jpg(true));
+    $model = LaruploadTestModels::LIGHT->instance();
+    $model = save($model, jpg(true));
 
     $fileName = LaruploadTestConsts::IMAGE_DETAILS['jpg-fa']['name']['slug'];
     $metaName = $model->attachment('main_file')->meta('name');
@@ -72,17 +68,16 @@ it('will upload file with utf-8 filename correctly', function (LaruploadHeavyTes
         ->toContain($fileName)
         ->and($metaOriginalName)
         ->toBe($originalName);
+});
 
-})->with('models');
-
-it('will upload file with correct filename [time]', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload file with correct filename [time]', function () {
     config()->set('larupload.naming-method', LaruploadNamingMethod::TIME);
 
     $carbon = Carbon::createFromFormat('Y-m-d H:i:s', '1990-09-20 07:10:48');
     testTime()->freeze($carbon);
 
-    $model = $model::class;
-    $model = save(new $model, jpg());
+    $model = LaruploadTestModels::HEAVY->instance();
+    $model = save($model, jpg());
 
     $fileName = $carbon->unix() . '.jpg';
     $metaName = $model->attachment('main_file')->meta('name');
@@ -93,8 +88,7 @@ it('will upload file with correct filename [time]', function (LaruploadHeavyTest
         ->toBe($fileName)
         ->and($metaOriginalName)
         ->toBe($originalName);
-
-})->with('models');
+});
 
 it('will upload file with correct filename [hash] in standalone mode', function () {
     $upload = Larupload::init('uploader')
