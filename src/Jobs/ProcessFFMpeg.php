@@ -44,11 +44,11 @@ class ProcessFFMpeg implements ShouldQueue
     /**
      * @throws Exception
      */
-    public function handle()
+    public function handle(): void
     {
         $this->updateStatus(false, true);
 
-        // we need to handle ffmpeg queue after model saved event
+        # we need to handle ffmpeg queue after the model saved event
         sleep(1);
 
         try {
