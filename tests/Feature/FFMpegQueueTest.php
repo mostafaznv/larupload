@@ -489,7 +489,7 @@ it('will fire an event when process is finished', function (UploadedFile $file) 
     'mp3' => fn() => mp3(),
 ]);
 
-it('will update queue record whit error message, when process failed', function (UploadedFile $file) {
+it('will update queue record with error message, when process failed', function (UploadedFile $file) {
     $model = LaruploadTestModels::QUEUE->instance();
     $model = save($model, $file);
     $queue = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->first();

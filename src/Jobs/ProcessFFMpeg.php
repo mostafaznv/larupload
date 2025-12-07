@@ -48,9 +48,6 @@ class ProcessFFMpeg implements ShouldQueue
     {
         $this->updateStatus(false, true);
 
-        # we need to handle ffmpeg queue after the model saved event
-        sleep(1);
-
         try {
             if ($this->standalone) {
                 resolve(HandleFFMpegQueueAction::class)->execute(
@@ -62,18 +59,13 @@ class ProcessFFMpeg implements ShouldQueue
             else {
                 /** @var Model $class */
                 $class = class_exists($this->model) ? $this->model : Relation::getMorphedModel($this->model);
-                $modelNotSaved = true;
+                $model = $class::query()->where('id', $this->id)->first();
 
-                while ($modelNotSaved) {
-                    $model = $class::query()->where('id', $this->id)->first();
-
-                    if ($model->{$this->name}->meta('name')) {
-                        $modelNotSaved = false;
-
-                        $model->{$this->name}->handleFFMpegQueue($this->availableQueues() === 1);
-                    }
-
-                    sleep(1);
+                if ($model->{$this->name}->meta('name')) {
+                    $model->{$this->name}->handleFFMpegQueue($this->availableQueues() === 1);
+                }
+                else {
+                    throw new FileNotFoundException;
                 }
             }
 

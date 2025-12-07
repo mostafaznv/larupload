@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\Attachment\SaveAttachmentAction;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
-use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
@@ -67,10 +66,7 @@ it('will clean the entire disk directory if file is false', function () {
     expect($files)->toBeEmpty();
 });
 
-it('will upload the original file, cover, and styles', function () {
-    # prepare
-    $this->attachment->image('small', 200, 200, LaruploadMediaStyle::CROP);
-
+it('will upload the original file and, cover', function () {
     # action
     $model = SaveAttachmentAction::make($this->attachment)->execute($this->model);
 
@@ -82,7 +78,6 @@ it('will upload the original file, cover, and styles', function () {
     $path = larupload_relative_path($this->attachment, $this->attachment->id);
     $original = $path . '/' . Larupload::ORIGINAL_FOLDER;
     $cover = $path . '/' . Larupload::COVER_FOLDER;
-    $small = $path . '/small';
 
     $hash = LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash'];
 
@@ -105,10 +100,9 @@ it('will upload the original file, cover, and styles', function () {
         # files
         ->and($files)
         ->toBeArray()
-        ->toHaveCount(3)
+        ->toHaveCount(2)
         ->toContain("$original/$hash")
-        ->toContain("$cover/$hash")
-        ->toContain("$small/$hash");
+        ->toContain("$cover/$hash");
 });
 
 it('will clean old files in the directory before uploading anything new', function () {

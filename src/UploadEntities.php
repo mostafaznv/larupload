@@ -79,7 +79,8 @@ class UploadEntities
     public bool   $ffmpegQueue;
     public int    $ffmpegMaxQueueNum;
 
-    public bool $uploaded = false;
+    public bool $uploaded            = false;
+    public bool $shouldProcessStyles = false;
 
     /**
      * Model ID / Secure ID
@@ -261,6 +262,11 @@ class UploadEntities
     public function isUploaded(): bool
     {
         return $this->uploaded;
+    }
+
+    public function shouldProcessStyles(): bool
+    {
+        return $this->shouldProcessStyles;
     }
 
     public function getName(bool $withNameStyle = false): string

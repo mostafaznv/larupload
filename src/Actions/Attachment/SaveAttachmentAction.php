@@ -4,7 +4,6 @@ namespace Mostafaznv\Larupload\Actions\Attachment;
 
 use Illuminate\Database\Eloquent\Model;
 use Mostafaznv\Larupload\Actions\GenerateFileIdAction;
-use Mostafaznv\Larupload\Actions\HandleStylesAction;
 
 
 class SaveAttachmentAction extends StoreAttachmentAction
@@ -19,6 +18,8 @@ class SaveAttachmentAction extends StoreAttachmentAction
                 $this->clean();
             }
             else {
+                $this->attachment->shouldProcessStyles = true;
+
                 if (!$this->attachment->keepOldFiles) {
                     $this->clean();
                 }
@@ -27,8 +28,6 @@ class SaveAttachmentAction extends StoreAttachmentAction
                 $this->media();
                 $this->uploadOriginalFile($this->attachment->id);
                 $this->setCover($this->attachment->id);
-
-                HandleStylesAction::make($this->attachment)->run($this->attachment->id, $model);
             }
 
             $model = $this->setAttributes($model);
