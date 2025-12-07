@@ -78,21 +78,6 @@ class Blueprint
         $table->dropColumn($columns);
     }
 
-    /**
-     * Add upload file_original_name column to the table
-     *
-     * @param BlueprintIlluminate $table
-     * @param string $name
-     * @param LaruploadMode $mode
-     */
-    public static function addOriginalName(BlueprintIlluminate $table, string $name): void
-    {
-        $table->string("{$name}_file_original_name", 85)
-            ->nullable()
-            ->index()
-            ->after("{$name}_file_id");
-    }
-
 
     /**
      * Get json column data type
