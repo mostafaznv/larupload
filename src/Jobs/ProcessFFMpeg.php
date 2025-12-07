@@ -61,11 +61,11 @@ class ProcessFFMpeg implements ShouldQueue
                 $class = class_exists($this->model) ? $this->model : Relation::getMorphedModel($this->model);
                 $model = $class::query()->where('id', $this->id)->first();
 
-                if ($model->{$this->name}->meta('name')) {
+                if ($model?->{$this->name}->meta('name')) {
                     $model->{$this->name}->handleFFMpegQueue($this->availableQueues() === 1);
                 }
                 else {
-                    throw new FileNotFoundException;
+                    throw new FileNotFoundException('File/Model not found for FFMpeg processing.');
                 }
             }
 

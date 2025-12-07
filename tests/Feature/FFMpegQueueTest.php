@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Models\LaruploadFFMpegQueue;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
+use Mostafaznv\Larupload\Test\Support\Models\LaruploadQueueTestModel;
 
 
 beforeEach(function () {
@@ -537,3 +538,19 @@ it('will throw exception if max-queue-num exceeds', function () {
     save($model, mp3());
 
 })->throws(FFMpegQueueMaxNumExceededException::class, 'larupload queue limitation exceeded.');
+
+it('will throw an exception if model/file does not exist', function () {
+    $model = LaruploadTestModels::QUEUE->instance();
+    $model = save($model, mp3());
+
+
+    LaruploadQueueTestModel::where('id', $model->id)->delete();
+
+
+    $queue = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->first();
+    $process = new ProcessFFMpeg($queue->id, $model->id, 'main_file', $model::class);
+    $process->handle();
+
+    expect(true)->toBeFalse();
+
+})->throws(Exception::class, 'File/Model not found for FFMpeg processing.');
