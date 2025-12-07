@@ -37,9 +37,5 @@ class LaruploadServiceProvider extends ServiceProvider
         BlueprintIlluminate::macro('dropUpload', function (string $name, LaruploadMode $mode = LaruploadMode::HEAVY) {
             Blueprint::dropColumns($this, $name, $mode);
         });
-
-        BlueprintIlluminate::macro('laruploadAddOriginalName', function (string $name) {
-            Blueprint::addOriginalName($this, $name);
-        });
     }
 }
