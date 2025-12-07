@@ -2,19 +2,20 @@
 
 use FFMpeg\Format\Audio\Aac;
 use FFMpeg\Format\Audio\Wav;
+use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
 
 
-beforeEach(function() {
+beforeEach(function () {
     $this->model = LaruploadTestModels::HEAVY->instance();
     $this->attachment = Attachment::make('main_file')->disk('local');
 });
 
 
-it('can change generate-cover property', function() {
+it('can change generate-cover property', function () {
     $this->model->setAttachments([
         $this->attachment->generateCover(false)
     ]);
@@ -28,7 +29,7 @@ it('can change generate-cover property', function() {
         ->toBeNull();
 });
 
-it('can get latest status of generate-cover property', function() {
+it('can get latest status of generate-cover property', function () {
     $this->attachment->generateCover(false);
     $status = $this->attachment->generateCover;
 
@@ -40,7 +41,7 @@ it('can get latest status of generate-cover property', function() {
     expect($status)->toBeTrue();
 });
 
-it('can return image registered styles', function() {
+it('can return image registered styles', function () {
     $this->attachment->image('thumb', 400, 400);
     $this->attachment->image('retina', 800, 800);
 
@@ -55,7 +56,7 @@ it('can return image registered styles', function() {
         ]);
 });
 
-it('can return video registered styles', function() {
+it('can return video registered styles', function () {
     $this->attachment->video('sd', 400, 400);
     $this->attachment->video('hd', 800, 800);
 
@@ -70,7 +71,7 @@ it('can return video registered styles', function() {
         ]);
 });
 
-it('can return audio registered styles', function() {
+it('can return audio registered styles', function () {
     $this->attachment->audio('audio_wav', new Wav);
     $this->attachment->audio('audio_aac', new Aac());
 
@@ -85,7 +86,7 @@ it('can return audio registered styles', function() {
         ]);
 });
 
-it('can change dominant-color property', function() {
+it('can change dominant-color property', function () {
     $this->model->setAttachments([
         $this->attachment->dominantColor(false)
     ]);
@@ -96,7 +97,7 @@ it('can change dominant-color property', function() {
     expect($meta)->toBeNull();
 });
 
-it('can change dominant-color-quality property', function() {
+it('can change dominant-color-quality property', function () {
     $this->model->setAttachments([
         $this->attachment->dominantColorQuality(50)
     ]);
@@ -107,7 +108,7 @@ it('can change dominant-color-quality property', function() {
     expect($color)->toBe('#262f48');
 });
 
-it('can change keep-old-files property', function() {
+it('can change keep-old-files property', function () {
     $this->model->setAttachments([
         $this->attachment
             ->keepOldFiles(true)
@@ -137,7 +138,7 @@ it('can change keep-old-files property', function() {
     }
 });
 
-it('can change preserve-file property', function() {
+it('can change preserve-file property', function () {
     $this->model->setAttachments([
         $this->attachment->preserveFiles(true)
     ]);
@@ -157,7 +158,7 @@ it('can change preserve-file property', function() {
     }
 });
 
-it('can change optimize image status', function() {
+it('can change optimize image status', function () {
     $this->model->setAttachments([
         $this->attachment->optimizeImage(true)
     ]);
@@ -175,7 +176,7 @@ it('can change optimize image status', function() {
         ->toBeLessThan($details['size']);
 });
 
-it('can change secure-ids property', function() {
+it('can change secure-ids property', function () {
     $this->model->setAttachments([
         $this->attachment->secureIdsMethod(LaruploadSecureIdsMethod::ULID)
     ]);
@@ -187,4 +188,34 @@ it('can change secure-ids property', function() {
     $id = $attachment->meta('id');
 
     expect(Str::isUlid($id))->toBeTrue();
+});
+
+it('can change image library property', function () {
+    # doesnt work
+    $this->model->setAttachments([
+        $this->attachment->imageProcessingLibrary(LaruploadImageLibrary::GD)
+    ]);
+
+    try {
+        save($this->model, svg());
+
+        expect(true)->toBeFalse();
+    }
+    catch (Exception $e) {
+        expect($e->getMessage())->toBe('Unable to decode input');
+    }
+
+
+    # works
+    $this->model->setAttachments([
+        $this->attachment->imageProcessingLibrary(LaruploadImageLibrary::IMAGICK)
+    ]);
+
+
+    $model = save($this->model, svg());
+
+    $attachment = $model->attachment('main_file');
+    $mimeType = $attachment->meta('mime_type');
+
+    expect($mimeType)->toBe(LaruploadTestConsts::IMAGE_DETAILS['svg']['mime_type']);
 });
