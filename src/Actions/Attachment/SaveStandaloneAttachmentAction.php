@@ -19,8 +19,7 @@ class SaveStandaloneAttachmentAction extends StoreAttachmentAction
         $this->uploadOriginalFile($this->attachment->id);
         $this->setCover($this->attachment->id);
 
-        $urls = $this->attachment->urls();
-        $this->updateMeta($this->attachment, $urls);
+        $urls = $this->updateMeta($this->attachment);
 
         HandleStylesAction::make($this->attachment)->run($this->attachment->id, Larupload::class, true);
 
