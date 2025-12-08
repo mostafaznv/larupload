@@ -142,7 +142,7 @@ class HandleStylesAction
                 file: $this->attachment->file,
                 name: $this->attachment->output->name
             );
-    }*/
+    }
 
     protected function driverIsLocal(): bool
     {
@@ -152,5 +152,5 @@ class HandleStylesAction
     protected function driverIsNotLocal(): bool
     {
         return !$this->driverIsLocal();
-    }
+    }*/
 }
