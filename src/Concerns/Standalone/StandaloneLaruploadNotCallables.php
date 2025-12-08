@@ -40,15 +40,24 @@ trait StandaloneLaruploadNotCallables
         $this->internalException();
     }
 
+    /**
+     * @internal
+     */
     public function secureIdsMethod(LaruploadSecureIdsMethod $method): self
+    {
+        $this->internalException();
+    }
+
+    /**
+     * @internal
+     */
+    public function handleFFMpegQueue(bool $isLastOne = false, bool $standalone = false): void
     {
         $this->internalException();
     }
 
     private function internalException()
     {
-        throw new Exception(
-            'This function is flagged as @internal and is not available on the standalone uploader.'
-        );
+        throw new Exception('This function is flagged as @internal and is not available on the standalone uploader.');
     }
 }
