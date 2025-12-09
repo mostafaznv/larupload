@@ -5,6 +5,7 @@ use FFMpeg\Format\Video\X264;
 use Mostafaznv\Larupload\Actions\Queue\HandleFFMpegQueueAction;
 use Mostafaznv\Larupload\DTOs\Style\Output;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
+use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Storage\Attachment;
 
@@ -96,9 +97,10 @@ it('handles audio file type and processes video styles', function () {
         ->toContain("$wav/audio.wav");
 });
 
-it('deletes local directory when disk is not local and is last file', function () {
+it('deletes local directory when disk is not local [unified attachment ids]', function (LaruploadSecureIdsMethod $method, bool $last, bool $result) {
     # prepare
     $this->attachment->disk = 's3';
+    $this->attachment->secureIdsMethod = $method;
     $path = larupload_relative_path($this->attachment, $this->attachment->id);
     $storage = Storage::disk('s3');
 
@@ -143,18 +145,147 @@ it('deletes local directory when disk is not local and is last file', function (
     $this->attachment->audioStyles = [];
     $this->attachment->audio('audio_wav3', new Wav);
 
-    $this->action->execute($this->attachment, true);
+    $this->action->execute($this->attachment, $last);
     $localFiles = $this->storage->allFiles();
     $remoteFiles = $storage->allFiles();
 
+    if ($result) {
+        expect($localFiles)
+            ->toHaveCount(0)
+            ->and($remoteFiles)
+            ->toHaveCount(3)
+            ->toContain("$path/audio-wav1/audio.wav")
+            ->toContain("$path/audio-wav2/audio.wav")
+            ->toContain("$path/audio-wav3/audio.wav");
+    }
+    else {
+        expect($localFiles)
+            ->toHaveCount(1)
+            ->toContain("$this->original/audio.mp3")
+            ->and($remoteFiles)
+            ->toHaveCount(3)
+            ->toContain("$path/audio-wav1/audio.wav")
+            ->toContain("$path/audio-wav2/audio.wav")
+            ->toContain("$path/audio-wav3/audio.wav");
+    }
+
+})->with([
+    'hashid-last'  => fn() => [
+        'method' => LaruploadSecureIdsMethod::HASHID,
+        'last'   => true,
+        'result' => true,
+    ],
+    'hashid-first' => fn() => [
+        'method' => LaruploadSecureIdsMethod::HASHID,
+        'last'   => false,
+        'result' => false,
+    ],
+    'sqid-last'    => fn() => [
+        'method' => LaruploadSecureIdsMethod::SQID,
+        'last'   => true,
+        'result' => true,
+    ],
+    'sqid-first'   => fn() => [
+        'method' => LaruploadSecureIdsMethod::SQID,
+        'last'   => false,
+        'result' => false,
+    ],
+    'none-last'    => fn() => [
+        'method' => LaruploadSecureIdsMethod::NONE,
+        'last'   => true,
+        'result' => true,
+    ],
+    'none-first'   => fn() => [
+        'method' => LaruploadSecureIdsMethod::NONE,
+        'last'   => false,
+        'result' => false,
+    ],
+]);
+
+it('deletes local directory when disk is not local [not-unified attachment ids]', function (LaruploadSecureIdsMethod $method, bool $last) {
+    # prepare
+    $localStorage = Storage::disk($this->disk);
+    $remoteStorage = Storage::disk('s3');
+
+    $attachment1 = Attachment::make('test_name1');
+    $attachment1->id = 'test-id';
+    $attachment1->folder = 'test-folder1';
+    $attachment1->nameKebab = 'test-name1';
+    $attachment1->disk = 's3';
+    $attachment1->localDisk = $this->disk;
+    $attachment1->secureIdsMethod = $method;
+    $attachment1->output = Output::make(name: 'audio.mp3');
+    $attachment1->audio('audio_wav', new Wav);
+
+    $attachment2 = Attachment::make('test_name2');
+    $attachment2->id = 'test-id';
+    $attachment2->folder = 'test-folder2';
+    $attachment2->nameKebab = 'test-name2';
+    $attachment2->disk = 's3';
+    $attachment2->localDisk = $this->disk;
+    $attachment2->secureIdsMethod = $method;
+    $attachment2->output = Output::make(name: 'audio.mp3');
+    $attachment2->audio('audio_wav', new Wav);
+
+    $path1 = larupload_relative_path($attachment1, $attachment1->id);
+    $path2 = larupload_relative_path($attachment2, $attachment2->id);
+    $original1 = $path1 . '/' . Larupload::ORIGINAL_FOLDER;
+    $original2 = $path2 . '/' . Larupload::ORIGINAL_FOLDER;
+
+    $localStorage->makeDirectory($original1);
+    $localStorage->makeDirectory($original2);
+
+    $localStorage->putFileAs($original1, mp3(), 'audio.mp3');
+    $localStorage->putFileAs($original2, mp3(), 'audio.mp3');
+
+
+    # before
+    $localFiles = $localStorage->allFiles();
+    $remoteFiles = $remoteStorage->allFiles();
+
     expect($localFiles)
-        ->toHaveCount(0)
+        ->toHaveCount(2)
+        ->toContain("$original1/audio.mp3")
+        ->toContain("$original2/audio.mp3")
         ->and($remoteFiles)
-        ->toHaveCount(3)
-        ->toContain("$path/audio-wav1/audio.wav")
-        ->toContain("$path/audio-wav2/audio.wav")
-        ->toContain("$path/audio-wav3/audio.wav");
-});
+        ->toHaveCount(0);
+
+
+    # action
+    $this->action->execute($attachment2, $last);
+
+
+    # test
+    $localFiles = $localStorage->allFiles();
+    $remoteFiles = $remoteStorage->allFiles();
+
+    expect($localFiles)
+        ->toHaveCount(1)
+        ->toContain("$original1/audio.mp3")
+        ->and($remoteFiles)
+        ->toHaveCount(1)
+        ->toContain("$path2/audio-wav/audio.wav");
+
+
+})->with([
+    'uuid-last'  => fn() => [
+        'method' => LaruploadSecureIdsMethod::UUID,
+        'last'   => true,
+    ],
+    'uuid-first' => fn() => [
+        'method' => LaruploadSecureIdsMethod::UUID,
+        'last'   => false,
+    ],
+    'ulid-last'  => fn() => [
+        'method' => LaruploadSecureIdsMethod::ULID,
+        'last'   => true,
+        'result' => true,
+    ],
+    'ulid-first' => fn() => [
+        'method' => LaruploadSecureIdsMethod::ULID,
+        'last'   => false,
+    ],
+]);
 
 it('deletes standalone directory when disk is not local', function () {
     # prepare

@@ -10,4 +10,12 @@ enum LaruploadSecureIdsMethod
     case SQID;
     case HASHID;
     case NONE;
+
+
+    public function hasUnifiedAttachments(): bool
+    {
+        return in_array($this, [
+            self::SQID, self::HASHID, self::NONE
+        ]);
+    }
 }

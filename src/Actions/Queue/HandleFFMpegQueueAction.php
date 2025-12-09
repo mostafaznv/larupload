@@ -28,7 +28,7 @@ class HandleFFMpegQueueAction
         }
 
 
-        if (!disk_driver_is_local($attachment->disk) and $isLastOne) {
+        if ($this->shouldDeleteLocalDirectory($attachment, $isLastOne)) {
             Storage::disk($attachment->localDisk)->deleteDirectory(
                 $standalone ? "$attachment->folder/$attachment->nameKebab" : "$attachment->folder/$attachment->id"
             );
@@ -44,5 +44,18 @@ class HandleFFMpegQueueAction
         $path = Storage::disk($disk)->path($path);
 
         return new UploadedFile($path, $attachment->output->name, null, null, true);
+    }
+
+    private function shouldDeleteLocalDirectory(Attachment $attachment, bool $isLastOne): bool
+    {
+        if (!disk_driver_is_local($attachment->disk)) {
+            if ($attachment->secureIdsMethod->hasUnifiedAttachments()) {
+                return $isLastOne;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }
