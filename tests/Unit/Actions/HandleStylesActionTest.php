@@ -229,7 +229,7 @@ it('keeps a local copy of original video file when queue is enabled and disk is 
     # test
     $localFiles = Storage::disk($this->attachment->localDisk)->allFiles();
     $remoteFiles = Storage::disk($this->attachment->disk)->allFiles();
-    $original = larupload_relative_path($this->attachment, $this->model->id, Larupload::ORIGINAL_FOLDER);
+    $original = larupload_relative_path($this->attachment, $this->attachment->id, Larupload::ORIGINAL_FOLDER);
 
 
     expect($remoteFiles)

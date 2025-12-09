@@ -113,7 +113,7 @@ it('saves file locally when disk is not local', function () {
     # test
     $localFiles = Storage::disk($this->attachment->localDisk)->allFiles();
     $remoteFiles = Storage::disk($this->attachment->disk)->allFiles();
-    $original = larupload_relative_path($this->attachment, 54, Larupload::ORIGINAL_FOLDER);
+    $original = larupload_relative_path($this->attachment, 'test-id', Larupload::ORIGINAL_FOLDER);
 
 
     expect($remoteFiles)
