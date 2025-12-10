@@ -4,6 +4,7 @@ namespace Mostafaznv\Larupload\Enums;
 
 use FFMpeg\Filters\Video\ResizeFilter;
 
+
 enum LaruploadMediaStyle
 {
     /**

@@ -20,4 +20,4 @@ The returned object contains URLs for all styles of the attachment, including th
 ```
 {% endcode %}
 
-\
+<br>

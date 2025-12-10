@@ -1,5 +1,19 @@
 # Migration
 
+#### From 2.3.4 to 3.0.0
+
+Starting from version 3.0.0, support for PHP 8.1 and 8.2 has been dropped, along with support for Laravel 10 and 11.
+
+Storing original file names in the database is now the default behavior and can no longer be disabled. If you are upgrading to version 3.0.0, you must add the original file name column to all tables that use Larupload columns before performing the upgrade. You can use the [macro](../advanced-usage/migrations/add-original-file-name-to-existing-tables.md) function available in ^2.2.\* to apply this change safely.
+
+In legacy versions, the `LARUPLOAD_NULL` constant was used to delete files. As of version 3.0.0, this is no longer supported. You should now use the [detach](../delete.md) method or assign [false](../delete.md) to your attachments.
+
+Finally, the behavior of the FFMpeg queue has been updated. Previously, an `HttpResponseException` was thrown when the queue limit was exceeded. From version 3.0.0 onward, the package throws `FFMpegQueueMaxNumExceededException` instead.
+
+
+
+
+
 #### From 2.1.0 to 2.2.0
 
 Starting from version 2.2.0, we added functionality to the package to store the original file name in the database.

@@ -10,42 +10,30 @@ use Mostafaznv\Larupload\Enums\LaruploadFileType;
 
 trait AttachmentActions
 {
-    /**
-     * Attach files into entity
-     *
-     * @param mixed $file
-     * @param UploadedFile|null $cover
-     * @return bool
-     */
-    public function attach(mixed $file, ?UploadedFile $cover = null): bool
+    public function attach(UploadedFile|false $file, ?UploadedFile $cover = null): void
     {
-        $fileIsAttachable = (file_has_value($file) or $file == LARUPLOAD_NULL);
-        $coverIsAttachable = (file_has_value($cover) or $cover == null);
+        file_is_valid($file, $this->name, 'file');
+        file_is_valid($cover, $this->name, 'cover');
 
-        if ($fileIsAttachable and $coverIsAttachable) {
-            file_is_valid($file, $this->name, 'file');
-            file_is_valid($cover, $this->name, 'cover');
+        $this->file = $file;
+        $this->uploaded = false;
 
-            $this->file = $file;
-            $this->uploaded = false;
 
-            if ($file != LARUPLOAD_NULL) {
-                $this->cover = $cover;
-                $this->type = GuessLaruploadFileTypeAction::make($file)->calc();
-
-                if ($this->type === LaruploadFileType::IMAGE && $this->optimizeImage) {
-                    $this->file = OptimizeImageAction::make($file)->process();
-                }
-            }
-
-            return true;
+        if ($file === false) {
+            $this->cover = null;
         }
+        else {
+            $this->cover = $cover;
+            $this->type = GuessLaruploadFileTypeAction::make($file)->calc();
 
-        return false;
+            if ($this->type === LaruploadFileType::IMAGE && $this->optimizeImage) {
+                $this->file = OptimizeImageAction::make($file)->process();
+            }
+        }
     }
 
-    public function detach(): bool
+    public function detach(): void
     {
-        return $this->attach(LARUPLOAD_NULL);
+        $this->attach(false);
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Mostafaznv\Larupload\Models\LaruploadFFMpegQueue;
 
+
 trait LaruploadRelations
 {
     /**

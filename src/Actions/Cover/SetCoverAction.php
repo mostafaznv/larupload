@@ -6,13 +6,15 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\GuessLaruploadFileTypeAction;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
+use Mostafaznv\Larupload\DTOs\Style\Output;
 
-class SetCoverAction
+
+readonly class SetCoverAction
 {
     public function __construct(
-        private readonly ?UploadedFile   $file,
-        private readonly mixed           $cover,
-        private readonly CoverActionData $data
+        private ?UploadedFile   $file,
+        private mixed           $cover,
+        private CoverActionData $data
     ) {}
 
     public static function make(?UploadedFile $file, mixed $cover, CoverActionData $data): static
@@ -21,7 +23,7 @@ class SetCoverAction
     }
 
 
-    public function run(string $path): array
+    public function run(string $path): Output
     {
         Storage::disk($this->data->disk)->deleteDirectory($path);
 
@@ -42,7 +44,7 @@ class SetCoverAction
 
     private function shouldDeleteCover(): bool
     {
-        return isset($this->cover) and $this->cover == LARUPLOAD_NULL;
+        return isset($this->cover) and $this->cover === false;
     }
 
     private function shouldUploadCover(): bool

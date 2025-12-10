@@ -1,6 +1,6 @@
 # Add Original File Name to Existing Tables
 
-As the <mark style="color:red;">{$name}\_file\_original\_name</mark> column has been added to Larupload since <mark style="color:red;">v2.2.0</mark>, you may need to add this specific column to your <mark style="color:red;">**existing**</mark> tables.
+<mark style="color:red;">\[</mark><mark style="color:red;">**Deprecated**</mark><mark style="color:red;">]</mark> As the <mark style="color:red;">{$name}\_file\_original\_name</mark> column has been added to Larupload since <mark style="color:red;">v2.2.0</mark>, you may need to add this specific column to your <mark style="color:red;">**existing**</mark> tables.
 
 
 
@@ -29,6 +29,10 @@ The first argument of `laruploadAddOriginalName` should match the first argument
 
 {% hint style="info" %}
 This column is only used when you've created table columns in HEAVY mode before.
+{% endhint %}
+
+{% hint style="danger" %}
+This feature has been <mark style="color:red;">deprecated</mark> since version <mark style="color:red;">3.0.0</mark> and storing original file names is now enabled by default.
 {% endhint %}
 
 

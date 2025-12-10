@@ -1,11 +1,17 @@
 # SecureIds Method
 
-The `secureIdsMethod` function allows you to specify the method to be used for generating secure IDs for the file upload path. By default, Larupload uses the `NONE` (use real IDs) format, but you can also choose from `ULID`, `UUID` and `HASHID` formats.
+The `secureIdsMethod` function allows you to specify the method to be used for generating secure IDs for the file upload path. By default, Larupload uses the `NONE` (use real IDs) format, but you can also choose from `ULID`, `UUID`, `HASHID` and `SQID` formats.
 
 Using a secure ID format can be useful for security or privacy reasons, as it prevents the real IDs of model records from being easily discoverable.&#x20;
 
+
+
 {% hint style="info" %}
-If you choose the `HASHID` format, you must also install the `hashids` package.
+If you choose the `HASHID` format, you must also install the [`hashids`](https://github.com/vinkla/hashids) package.
+{% endhint %}
+
+{% hint style="info" %}
+If you choose the `SQID` format, you must also install the [`sqids`](https://github.com/sqids/sqids-php) package.
 {% endhint %}
 
 {% hint style="warning" %}

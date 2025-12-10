@@ -38,4 +38,4 @@ $user->attachment('avatar')->urls();
 ```
 {% endcode %}
 
-\
+<br>

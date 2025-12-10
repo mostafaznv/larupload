@@ -31,7 +31,6 @@ it('will hide larupload columns from toArray response', function(LaruploadHeavyT
 })->with('models');
 
 it('will hide file_original_name columns from toArray response', function() {
-    config()->set('larupload.store-original-file-name', true);
     config()->set('larupload.hide-table-columns', false);
 
     $model = LaruploadTestModels::HEAVY->instance();

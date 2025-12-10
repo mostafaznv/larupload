@@ -6,8 +6,8 @@ return [
     | Storage Disk
     |--------------------------------------------------------------------------
     |
-    | The default disk for handling file storage. Larupload will use available
-    | disks in config/filesystems.php
+    | The default filesystem disk used to store uploaded files
+    | Larupload will use any disk defined in `config/filesystems.php`.
     |
     */
 
@@ -15,13 +15,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Storage Local Disk
+    | Local Storage Disk
     |--------------------------------------------------------------------------
     |
-    | Larupload needs to know your local disk name. when your default disk uses
-    | external drivers like sftp, for some reasons larupload needs to use local
-    | disk too.
-    | notice: in most cases, your local disk and default one are the same
+    | The name of your local filesystem disk. When your default disk uses
+    | an external driver (for example, S3 or SFTP), Larupload may require a local
+    | disk for certain operations.
+    |
+    | Note: In most setups the local disk is the same as the default disk.
     |
     */
 
@@ -32,11 +33,9 @@ return [
     | Mode
     |--------------------------------------------------------------------------
     |
-    | Larupload work with two modes, light and heavy! in light mode the trait store
-    | file name in database and metadata in a json column named as meta.
-    | But in heavy mode, it stores more columns.
-    |
-    | Example: light, heavy
+    | Larupload supports two operating modes: light and heavy.
+    | - light: stores the file name in the database and metadata in a JSON column named `meta`.
+    | - heavy: stores additional, discrete columns for more detailed metadata.
     |
     */
 
@@ -44,30 +43,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | SecureIds
+    | Secure IDs
     |--------------------------------------------------------------------------
     |
-    | This option allows you to hide the real ID of model records by using a different ID format
-    | in the file upload path. This can be useful for security or privacy reasons, as it prevents the
-    | real IDs from being easily discoverable.
-    |
-    | The following ID formats are supported:
+    | Optionally mask model record IDs in file paths for privacy or security.
+    | Supported methods:
     | - ULID
     | - UUID
-    | - HASHID (to use this method, you must install the hashids/hashids package)
-    | - NONE (use real IDs)
+    | - SQID (requires the `sqids/sqids` package)
+    | - HASHID (requires the `hashids/hashids` package)
+    | - NONE (use actual numeric IDs)
+    |
     */
 
     'secure-ids' => Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod::NONE,
 
     /*
     |--------------------------------------------------------------------------
-    | With Meta
+    | Include Metadata in Responses
     |--------------------------------------------------------------------------
     |
-    | With set this value true, meta details will return whenever you retrieve urls
-    |
-    | Example: true, false
+    | When enabled, returned URLs will include associated metadata.
+    | Set to `true` to include metadata, `false` to exclude it.
     |
     */
 
@@ -78,9 +75,8 @@ return [
     | Camel Case Response
     |--------------------------------------------------------------------------
     |
-    | By default, larupload returns all meta keys in snake_case style. with enabling this option, we return them cameCase
-    |
-    | Example: true, false
+    | When enabled, metadata keys are returned in camelCase. When disabled,
+    | metadata keys are returned in snake_case.
     |
     */
 
@@ -88,14 +84,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Hide Table Columns
+    | Hide Internal Table Columns
     |--------------------------------------------------------------------------
     |
-    | Larupload creates multiple columns to work with them. these columns are
-    | useless in application-level and even api-level.
-    | by default, larupload will hide them from toArray and toJson.
-    |
-    | Example: true, false
+    | Larupload creates several internal columns to manage uploads. These
+    | columns are typically not relevant at the application or API layer.
+    | Enable this option to hide them from `toArray` and `toJson`.
     |
     */
 
@@ -112,6 +106,18 @@ return [
     | Note: Larupload appends an increment number to end of slug to prevent caching for different files with same name
     |
     */
+    /*
+    |--------------------------------------------------------------------------
+    | Naming Method
+    |--------------------------------------------------------------------------
+    |
+    | Strategy used to generate stored file names.
+    |
+    | Note: when using `slug`, Larupload appends an incrementing suffix to
+    | prevent collisions and client-side caching issues for files with the
+    | same original name.
+    |
+    */
 
     'naming-method' => Mostafaznv\Larupload\Enums\LaruploadNamingMethod::HASH_FILE,
     'lang'          => '',
@@ -121,10 +127,7 @@ return [
     | Image Processing Library
     |--------------------------------------------------------------------------
     |
-    | Larupload can resize or crop image files with power of imagine\imagine
-    | library.
-    |
-    | Example: Imagine\Gd\Imagine, Imagine\Imagick\Imagine, or Imagine\Gmagick\Imagine.
+    | Library used for image manipulation.
     |
     */
 
@@ -132,12 +135,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cover Flag
+    | Generate Cover Images
     |--------------------------------------------------------------------------
     |
-    | Larupload will generate a cover image from video/image if cover flag is true.
-    |
-    | Example: true, false
+    | When enabled, Larupload will generate a cover image (thumbnail) for
+    | supported image and video files.
     |
     */
 
@@ -148,10 +150,9 @@ return [
     | Cover Style
     |--------------------------------------------------------------------------
     |
-    | Larupload will generate a cover image from video/image if cover flag is true.
-    | Trait will store cover data in cover_file_name, cover_file_size and cover_file_content
-    |
-    | Note: cover only work in detailed mode
+    | Configuration for generated cover images. Covers are only produced
+    | when the `generate-cover` flag is true.
+    | The resulting cover data is stored in dedicated cover columns.
     |
     */
 
@@ -164,10 +165,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Dominant Color
+    | Dominant Color Extraction
     |--------------------------------------------------------------------------
     |
-    | You can get dominant color from images and videos with this option.
+    | When enabled, Larupload will attempt to extract the dominant color
+    | from images and videos.
     |
     */
 
@@ -178,11 +180,9 @@ return [
     | Dominant Color Quality
     |--------------------------------------------------------------------------
     |
-    | You can set quality to adjust the calculation accuracy of the dominant color.
-    | 1 is the highest quality settings, 10 is the default. But be aware that there is a trade-off between
-    | quality and speed/memory consumption!
-    | If the quality settings are too high (close to 1) relative to the image size (pixel counts), it may exceed
-    | the memory limit set in the PHP configuration (and computation will be slow).
+    | Controls the accuracy and performance of dominant color calculation.
+    | Lower values yield higher quality but require more memory and compute.
+    | Typical range: 1 (the highest quality) to 10 (default).
     |
     */
 
@@ -190,11 +190,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Keep Old Files Flag
+    | Keep Old Files
     |--------------------------------------------------------------------------
     |
-    | Set this to true in order to prevent older file uploads from being deleted
-    | from storage when a record is updated with a new upload.
+    | When true, previous uploads will not be deleted from storage when a
+    | record is updated with a new file. When false, old files are removed.
     |
     */
 
@@ -202,29 +202,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Preserve Files Flag
+    | Preserve Files After Deletion
     |--------------------------------------------------------------------------
     |
-    | Set this to true in order to prevent file uploads from being deleted
-    | from the file system when an attachment is destroyed.  Essentially this
-    | ensures the preservation of uploads event after their corresponding database
-    | records have been removed.
+    | When true, uploaded files are preserved on disk even after their
+    | corresponding database records are deleted. When false, files are removed.
     |
     */
 
     'preserve-files' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Store Original File Name
-    |--------------------------------------------------------------------------
-    |
-    | Set this to true in order to store the original file name in the database
-    |
-    | todo - remove it and store original file name by default in the next major version
-    */
-
-    'store-original-file-name' => false,
 
     'ffmpeg' => [
         /*
@@ -232,8 +218,8 @@ return [
         | FFMPEG Binaries
         |--------------------------------------------------------------------------
         |
-        | Larupload can detect your ffmpeg binary path from system environment. but you can set it manually
-        | pass from validation.
+        | Paths to the ffmpeg and ffprobe binaries. Larupload can detect these
+        | automatically from the environment, but you may set them explicitly.
         |
         | Example: [
         |    'ffmpeg.binaries'  => '/usr/local/bin/ffmpeg',
@@ -250,7 +236,7 @@ return [
         | FFMPEG Threads
         |--------------------------------------------------------------------------
         |
-        | Specify the number of threads that FFMpeg should use
+        | Number of threads FFMpeg should use for processing.
         |
         */
 
@@ -258,11 +244,11 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | FFMPEG Queue
+        | FFMPEG Queue Processing
         |--------------------------------------------------------------------------
         |
-        | Sometimes ffmpeg process is very heavy, so you have to queue process and do it in background
-        | For now, queue is available only for manipulate and stream videos.
+        | Enable queuing for heavy FFMpeg operations to run them asynchronously.
+        | Currently, queueing applies to video manipulation and streaming tasks.
         |
         */
 
@@ -270,12 +256,11 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | FFMPEG Max Queue Number
+        | Maximum FFMPEG Queue Size
         |--------------------------------------------------------------------------
         |
-        | Set maximum Larupload instances that currently are queued.
-        | Package Will redirect back an error response if maximum limitation exceeded.
-        | If you want to ignore this feature and queue uploaded files unlimited, just set 0 for ffmpeg-max-queue-num
+        | Maximum number of Larupload instances allowed in the queue concurrently.
+        | Set to `0` to disable the limit (unlimited queue).
         |
         */
 
@@ -286,10 +271,9 @@ return [
         | FFMPEG Capture Frame
         |--------------------------------------------------------------------------
         |
-        | Set Capture frame in second
-        |
-        | example: null, 0.1, 2
-        | When the value is null, larupload will capture a frame from center of video file.
+        | Time (in seconds) at which to capture a video frame for thumbnails.
+        | Use `null` to capture a frame from the middle of the video.
+        | Examples: null, 0.1, 2
         |
         */
 
@@ -300,8 +284,8 @@ return [
         | FFMPEG Timeout
         |--------------------------------------------------------------------------
         |
-        | Set timeout to control ffmpeg max execution time
-        | To disable the timeout, set this value to null
+        | Maximum execution time in seconds for FFMpeg processes. Set to `null`
+        | to disable the timeout.
         |
         */
 
@@ -312,7 +296,7 @@ return [
         | FFMPEG Log Channel
         |--------------------------------------------------------------------------
         |
-        | Set log channel for ffmpeg process
+        | The application log channel to use for ffmpeg-related logging.
         |
         */
 
@@ -336,11 +320,11 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | Image Optimizers
+        | Image Optimizer Configurations
         |--------------------------------------------------------------------------
         |
-        | When calling `optimize` the package will automatically determine which optimizers
-        | should run for the given image.
+        | Per-optimizer options. The package will choose appropriate optimizers
+        | based on the image format when optimization is requested.
         |
         */
 
@@ -384,7 +368,7 @@ return [
         | Image Optimizer Timeout
         |--------------------------------------------------------------------------
         |
-        | The maximum time in seconds each optimizer is allowed to run separately.
+        | Maximum time in seconds allowed for each optimizer to run.
         |
         */
 

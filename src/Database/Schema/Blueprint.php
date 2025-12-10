@@ -8,6 +8,7 @@ use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use PDO;
 
+
 class Blueprint
 {
     /**
@@ -24,10 +25,7 @@ class Blueprint
         if ($mode === LaruploadMode::HEAVY) {
             $table->string("{$name}_file_id", 36)->nullable();
 
-            if (config('larupload.store-original-file-name', false)) {
-                $table->string("{$name}_file_original_name", 255)->nullable()->index();
-            }
-
+            $table->string("{$name}_file_original_name", 255)->nullable()->index();
             $table->unsignedInteger("{$name}_file_size")->nullable()->index();
             $table->enum("{$name}_file_type", enum_to_names(LaruploadFileType::cases()))->nullable()->index();
             $table->string("{$name}_file_mime_type", 85)->nullable();
@@ -60,20 +58,14 @@ class Blueprint
         if ($mode === LaruploadMode::HEAVY) {
             $tableName = $table->getTable();
             $heavyColumns = [
-                "{$name}_file_id", "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type",
+                "{$name}_file_original_name", "{$name}_file_id", "{$name}_file_size", "{$name}_file_type", "{$name}_file_mime_type",
                 "{$name}_file_width", "{$name}_file_height", "{$name}_file_duration",
                 "{$name}_file_dominant_color", "{$name}_file_format", "{$name}_file_cover"
             ];
 
-            if (config('larupload.store-original-file-name', false)) {
-                $heavyColumns[] = "{$name}_file_original_name";
-
-                $table->dropIndex("{$tableName}_{$name}_file_original_name_index");
-            }
-
-
             $columns = array_merge($columns, $heavyColumns);
 
+            $table->dropIndex("{$tableName}_{$name}_file_original_name_index");
             $table->dropIndex("{$tableName}_{$name}_file_size_index");
             $table->dropIndex("{$tableName}_{$name}_file_type_index");
             $table->dropIndex("{$tableName}_{$name}_file_duration_index");
@@ -84,21 +76,6 @@ class Blueprint
 
 
         $table->dropColumn($columns);
-    }
-
-    /**
-     * Add upload file_original_name column to the table
-     *
-     * @param BlueprintIlluminate $table
-     * @param string $name
-     * @param LaruploadMode $mode
-     */
-    public static function addOriginalName(BlueprintIlluminate $table, string $name): void
-    {
-        $table->string("{$name}_file_original_name", 85)
-            ->nullable()
-            ->index()
-            ->after("{$name}_file_id");
     }
 
 

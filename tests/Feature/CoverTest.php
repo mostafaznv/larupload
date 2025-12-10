@@ -10,6 +10,7 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 use Illuminate\Support\Facades\DB;
 
+
 it('will upload file with cover', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, pdf(), jpg());
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
@@ -25,7 +26,7 @@ it('will upload file with cover', function (LaruploadHeavyTestModel|LaruploadLig
         ->toHaveProperty('cover', $details['name']['hash'])
         ->toHaveProperty('dominant_color', $details['color']);
 
-})->with('models');
+})->with('models with dominant color');
 
 it('will upload file with cover in standalone mode', function () {
     $upload = Larupload::init('uploader')
@@ -246,7 +247,7 @@ it('will clear dominant color after deleting cover for non-image files', functio
 
     expect($dominantColor)->toBeNull();
 
-})->with('models');
+})->with('models with dominant color');
 
 it('will delete cover in standalone mode', function () {
     $upload = Larupload::init('uploader')->upload(jpg());

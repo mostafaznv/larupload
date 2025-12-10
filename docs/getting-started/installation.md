@@ -2,8 +2,8 @@
 
 ### Requirements:
 
-* Laravel 10.\* or higher
-* PHP 8.1 or higher
+* Laravel 12.\* or higher
+* PHP 8.3 or higher
 * GD library
 * FFMPEG
 

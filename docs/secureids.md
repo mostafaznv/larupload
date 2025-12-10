@@ -7,6 +7,7 @@ The SecurIds feature supports several different ID formats, including:
 * ULID
 * UUID
 * HASHID (requires the [hashids](https://github.com/vinkla/hashids) package to be installed)
+* SQID (required the [sqids](https://github.com/sqids/sqids-php) package to be installed)
 * NONE (uses real IDs and is the default setting)
 
 This flexibility allows you to choose the format that best suits your needs, and easily switch between formats if necessary.

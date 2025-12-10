@@ -4,7 +4,7 @@ description: storeOriginalFileName
 
 # Store Original File Name
 
-The `storeOriginalFileName` function on the `Attachment` is used to enable or disable the storage of the original name of uploaded files in the database.
+<mark style="color:red;">\[Deprecated]</mark> The `storeOriginalFileName` function on the `Attachment` is used to enable or disable the storage of the original name of uploaded files in the database.
 
 Since files may be stored with custom file names based on your preferred <mark style="color:red;">naming method</mark>, storing the original file name in the database can be beneficial for displaying it in your application's UI or elsewhere.
 
@@ -34,6 +34,10 @@ class Media extends Model
 
 {% hint style="info" %}
 This feature has been available since version <mark style="color:red;">2.2.0</mark>
+{% endhint %}
+
+{% hint style="warning" %}
+This feature has been <mark style="color:red;">deprecated</mark> since version <mark style="color:red;">3.0.0</mark> and storing original file names is now enabled by default.
 {% endhint %}
 
 {% hint style="warning" %}

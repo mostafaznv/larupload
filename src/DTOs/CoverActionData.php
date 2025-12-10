@@ -3,9 +3,11 @@
 namespace Mostafaznv\Larupload\DTOs;
 
 use Mostafaznv\Larupload\DTOs\Style\ImageStyle;
+use Mostafaznv\Larupload\DTOs\Style\Output;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadNamingMethod;
+
 
 class CoverActionData
 {
@@ -19,10 +21,10 @@ class CoverActionData
         public readonly bool                  $withDominantColor,
         public readonly int                   $dominantColorQuality,
         public readonly LaruploadImageLibrary $imageProcessingLibrary,
-        public array                          $output
+        public Output                         $output
     ) {}
 
-    public static function make(string $disk, LaruploadNamingMethod $namingMethod, string $lang, ImageStyle $style, ?LaruploadFileType $type, bool $generateCover, bool $withDominantColor, int $dominantColorQuality, LaruploadImageLibrary $imageProcessingLibrary, array $output): static
+    public static function make(string $disk, LaruploadNamingMethod $namingMethod, string $lang, ImageStyle $style, ?LaruploadFileType $type, bool $generateCover, bool $withDominantColor, int $dominantColorQuality, LaruploadImageLibrary $imageProcessingLibrary, Output $output): static
     {
         return new static($disk, $namingMethod, $lang, $style, $type, $generateCover, $withDominantColor, $dominantColorQuality, $imageProcessingLibrary, $output);
     }

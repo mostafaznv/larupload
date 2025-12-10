@@ -7,13 +7,14 @@ use Illuminate\Support\Str;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 
-class GenerateFileIdAction
+
+readonly class GenerateFileIdAction
 {
     public function __construct(
-        private readonly ?Model                   $model,
-        private readonly LaruploadSecureIdsMethod $method,
-        private readonly LaruploadMode            $attachmentMode,
-        private readonly ?string                  $attachmentName
+        private ?Model                   $model,
+        private LaruploadSecureIdsMethod $method,
+        private LaruploadMode            $attachmentMode,
+        private ?string                  $attachmentName
     ) {}
 
     public static function make(?Model $model, LaruploadSecureIdsMethod $method, LaruploadMode $attachmentMode, string $attachmentName): self
@@ -31,6 +32,7 @@ class GenerateFileIdAction
         return match ($this->method) {
             LaruploadSecureIdsMethod::ULID   => Str::ulid()->toBase32(),
             LaruploadSecureIdsMethod::UUID   => Str::uuid()->toString(),
+            LaruploadSecureIdsMethod::SQID   => $this->sqid(),
             LaruploadSecureIdsMethod::HASHID => $this->hashid(),
             default                          => $this->model->id,
         };
@@ -42,7 +44,14 @@ class GenerateFileIdAction
             return $this->model->{"{$this->attachmentName}_file_id"} ?? null;
         }
 
-        return json_decode($this->model->{"{$this->attachmentName}_file_meta"})->id ?? null;
+        return json_decode($this->model->{"{$this->attachmentName}_file_meta"})?->id ?? null;
+    }
+
+    private function sqid(): string
+    {
+        $sqids = new \Sqids\Sqids(minLength: 20);
+
+        return $sqids->encode([$this->model->id]);
     }
 
     private function hashid(): string

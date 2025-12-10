@@ -58,8 +58,8 @@ it('will return meta properties camelCase', function(LaruploadHeavyTestModel|Lar
     expect($model->attachment('main_file')->meta())
         ->toBeObject()
         ->toHaveProperty('mimeType', $details['mime_type'])
-        ->toHaveProperty('dominantColor', $details['color'])
-        ->toHaveProperty('originalName', null);
+        ->toHaveProperty('dominantColor', null)
+        ->toHaveProperty('originalName', $details['name']['original']);
 
 })->with('models');
 
@@ -73,6 +73,7 @@ it('will return null if meta key doesnt exist', function(LaruploadHeavyTestModel
 
 it('will return meta properties camelCase in standalone mode', function() {
     config()->set('larupload.camel-case-response', true);
+    config()->set('larupload.dominant-color', false);
 
     $upload = Larupload::init('uploader')->upload(jpg());
 
@@ -82,8 +83,8 @@ it('will return meta properties camelCase in standalone mode', function() {
         ->toBeObject()
         ->toBeObject()
         ->toHaveProperty('mimeType', $details['mime_type'])
-        ->toHaveProperty('dominantColor', $details['color'])
-        ->toHaveProperty('originalName', null);
+        ->toHaveProperty('dominantColor', null)
+        ->toHaveProperty('originalName', $details['name']['original']);
 
 });
 
@@ -116,13 +117,13 @@ it('will return null for cover in urls method, if generateCover property is disa
 
 })->with('models');
 
-it('will return null url, if file is set and the value is LARUPLOAD_NULL', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
+it('will return null url, if file is set and the value is `false`', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) use ($properties) {
     $model = save($model, jpg());
 
     $url = $model->attachment('main_file')->url();
     expect($url)->toBeTruthy();
 
-    $model->main_file = LARUPLOAD_NULL;
+    $model->main_file = false;
     $url = $model->attachment('main_file')->url();
 
 

@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Helpers;
 
+
 /**
  * Slug Helper
  * some functions used from https://github.com/spatie/laravel-sluggable
@@ -21,7 +22,7 @@ class Slug
     }
 
     /**
-     * Make an instance of Slug class
+     * Make an instance of the Slug class
      *
      * @param string|null $lang
      * @return Slug
@@ -77,7 +78,7 @@ class Slug
 
     /**
      * Transliterate a UTF-8 value to ASCII
-     * Note: Adapted from laravel/framework with some customizations to support farsi and arabic.
+     * Note: Adapted from laravel/framework with some customizations to support Farsi and Arabic.
      *
      * @see https://github.com/laravel/framework/blob/5.6/README.md
      *
@@ -116,7 +117,7 @@ class Slug
     }
 
     /**
-     * Returns the language specific replacements for the ascii method
+     * Returns the language-specific replacements for the ascii method
      * Note: Adapted from Stringy\Stringy
      *
      * @see https://github.com/danielstjules/Stringy/blob/3.1.0/LICENSE.txt
@@ -146,7 +147,7 @@ class Slug
 
     /**
      * Returns the replacements for the ascii method
-     * Note: Adapted from Stringy\Stringy with some customizations to support farsi and arabic
+     * Note: Adapted from Stringy\Stringy with some customizations to support Farsi and Arabic
      *
      * @see https://github.com/danielstjules/Stringy/blob/3.1.0/LICENSE.txt
      *

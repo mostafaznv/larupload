@@ -12,19 +12,21 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
+use Mostafaznv\Larupload\Actions\Queue\HandleFFMpegQueueAction;
 use Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished;
 use Mostafaznv\Larupload\Larupload;
+use Mostafaznv\Larupload\Storage\Attachment;
 
 
 class ProcessFFMpeg implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected int       $queueId;
-    protected int       $id;
-    protected string    $name;
-    protected string    $model;
-    protected ?Larupload $standalone = null;
+    protected int         $queueId;
+    protected int         $id;
+    protected string      $name;
+    protected string      $model;
+    protected ?Attachment $standalone = null;
 
 
     public function __construct(int $queueId, int $id, string $name, string $model, ?string $standalone = null)
@@ -42,16 +44,14 @@ class ProcessFFMpeg implements ShouldQueue
     /**
      * @throws Exception
      */
-    public function handle()
+    public function handle(): void
     {
         $this->updateStatus(false, true);
 
-        // we need to handle ffmpeg queue after model saved event
-        sleep(1);
-
         try {
             if ($this->standalone) {
-                $this->standalone->handleFFMpegQueue(
+                resolve(HandleFFMpegQueueAction::class)->execute(
+                    attachment: $this->standalone,
                     isLastOne: $this->availableQueues() === 1,
                     standalone: true
                 );
@@ -59,28 +59,28 @@ class ProcessFFMpeg implements ShouldQueue
             else {
                 /** @var Model $class */
                 $class = class_exists($this->model) ? $this->model : Relation::getMorphedModel($this->model);
-                $modelNotSaved = true;
+                $model = $class::query()->where('id', $this->id)->first();
 
-                while ($modelNotSaved) {
-                    $model = $class::query()->where('id', $this->id)->first();
-
-                    if ($model->{$this->name}->meta('name')) {
-                        $modelNotSaved = false;
-
-                        $model->{$this->name}->handleFFMpegQueue($this->availableQueues() === 1);
-                    }
-
-                    sleep(1);
+                if ($model?->{$this->name}->meta('name')) {
+                    $model->{$this->name}->handleFFMpegQueue($this->availableQueues() === 1);
+                }
+                else {
+                    throw new FileNotFoundException('File/Model not found for FFMpeg processing.');
                 }
             }
 
             $this->updateStatus(true, false);
         }
-        catch (FileNotFoundException | Exception $e) {
+        catch (FileNotFoundException|Exception $e) {
             $this->updateStatus(false, false, $e->getMessage());
 
             throw new Exception($e->getMessage());
         }
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     /**

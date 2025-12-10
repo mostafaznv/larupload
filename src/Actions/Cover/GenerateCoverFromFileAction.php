@@ -5,15 +5,16 @@ namespace Mostafaznv\Larupload\Actions\Cover;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
+use Mostafaznv\Larupload\DTOs\Style\Output;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Storage\FFMpeg\FFMpeg;
 use Mostafaznv\Larupload\Storage\Image;
+
 
 class GenerateCoverFromFileAction
 {
     private readonly string $fileName;
     private readonly mixed  $ffmpegCaptureFrame;
-    private array           $output;
     private array           $availableStyles = [
         LaruploadFileType::VIDEO, LaruploadFileType::IMAGE
     ];
@@ -21,8 +22,7 @@ class GenerateCoverFromFileAction
 
     public function __construct(private readonly UploadedFile $file, private readonly CoverActionData $data)
     {
-        $this->fileName = pathinfo($this->data->output['name'], PATHINFO_FILENAME);
-        $this->output = $this->data->output;
+        $this->fileName = pathinfo($this->data->output->name, PATHINFO_FILENAME);
     }
 
     public static function make(UploadedFile $file, CoverActionData $data): static
@@ -31,10 +31,10 @@ class GenerateCoverFromFileAction
     }
 
 
-    public function run(string $path): array
+    public function run(string $path): Output
     {
         if (!in_array($this->data->type, $this->availableStyles)) {
-            return $this->output;
+            return $this->data->output;
         }
 
         Storage::disk($this->data->disk)->makeDirectory($path);
@@ -53,7 +53,7 @@ class GenerateCoverFromFileAction
                 break;
         }
 
-        return $this->output;
+        return $this->data->output;
     }
 
     private function generateCoverFromVideo(string $saveTo, string $name): void
@@ -62,8 +62,8 @@ class GenerateCoverFromFileAction
             $this->ffmpegCaptureFrame, $this->data->style, $saveTo, $this->data->withDominantColor
         );
 
-        $this->output['cover'] = $name;
-        $this->output['dominant_color'] = $color;
+        $this->data->output->cover = $name;
+        $this->data->output->dominantColor = $color;
     }
 
     private function generateCoverFromImage(string $saveTo, string $name): void
@@ -71,14 +71,14 @@ class GenerateCoverFromFileAction
         $result = $this->img()->resize($saveTo, $this->data->style);
 
         if ($result) {
-            $this->output['cover'] = $name;
+            $this->data->output->cover = $name;
         }
     }
 
     private function fileFormat(): string
     {
         if ($this->data->type == LaruploadFileType::IMAGE) {
-            $format = $this->data->output['format'];
+            $format = $this->data->output->format;
 
             return $format == 'svg' ? 'png' : $format;
         }

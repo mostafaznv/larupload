@@ -27,16 +27,6 @@ it('will throw exception when handleFFMpegQueue method cals on standalone larupl
 
 })->throws(Exception::class, $msg);
 
-it('will throw exception when saved method cals on standalone larupload facade', function () {
-    Larupload::init('uploader')->saved(LaruploadTestModels::HEAVY->instance());
-
-})->throws(Exception::class, $msg);
-
-it('will throw exception when deleted method cals on standalone larupload facade', function () {
-    Larupload::init('uploader')->deleted();
-
-})->throws(Exception::class, $msg);
-
 it('will throw exception when download method cals on standalone larupload facade', function () {
     Larupload::init('uploader')->download();
 

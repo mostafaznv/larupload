@@ -2,18 +2,18 @@
 
 namespace Mostafaznv\Larupload\Storage\FFMpeg;
 
-
 use FFMpeg\Format\Video\X264;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Mostafaznv\Larupload\DTOs\FFMpeg\FFMpegStreamRepresentation;
 use Mostafaznv\Larupload\DTOs\Style\StreamStyle;
 
+
 class HLS
 {
-    private const MASTER_FILE_NAME = 'master.m3u8';
-    private const PLAYLIST_START   = '#EXTM3U';
-    private const PLAYLIST_END     = '#EXT-X-ENDLIST';
+    private const string MASTER_FILE_NAME = 'master.m3u8';
+    private const string PLAYLIST_START   = '#EXTM3U';
+    private const string PLAYLIST_END     = '#EXT-X-ENDLIST';
 
     private bool  $driverIsLocal;
     private array $playlist;
