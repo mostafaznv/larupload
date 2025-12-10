@@ -11,15 +11,20 @@ The following ID formats are supported:
 * ULID
 * UUID
 * HASHID
+* SQID
 * NONE (use real IDs)
+
+
 
 {% hint style="info" %}
 To use HASHID method, you must install the [hashids](https://github.com/vinkla/hashids) package
 {% endhint %}
 
+{% hint style="info" %}
+To use SQID method, you must install the [sqids](https://github.com/sqids/sqids-php) package
+{% endhint %}
+
 {% hint style="warning" %}
 SecureIds is disabled in standalone mode
 {% endhint %}
-
-
 

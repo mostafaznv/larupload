@@ -4,7 +4,7 @@ description: 'Default: false'
 
 # Store Original File Name
 
-Enabling this option allows you to store the original file name of the uploaded file in the database. Since files may be stored with custom file names based on your preferred <mark style="color:red;">naming method</mark>, storing the original file name in the database can be beneficial for displaying it in your application's UI or elsewhere.
+<mark style="color:red;">\[Deprecated]</mark> Enabling this option allows you to store the original file name of the uploaded file in the database. Since files may be stored with custom file names based on your preferred <mark style="color:red;">naming method</mark>, storing the original file name in the database can be beneficial for displaying it in your application's UI or elsewhere.
 
 
 
@@ -12,6 +12,10 @@ Enabling this option allows you to store the original file name of the uploaded 
 
 {% hint style="info" %}
 This feature has been available since version <mark style="color:red;">2.2.0</mark>
+{% endhint %}
+
+{% hint style="warning" %}
+This feature has been <mark style="color:red;">deprecated</mark> since version <mark style="color:red;">3.0.0</mark> and storing original file names is now enabled by default.
 {% endhint %}
 
 {% hint style="warning" %}

@@ -48,8 +48,7 @@ If you provide a cover file when calling the `attach` function, the package will
 {% tab title="Create" %}
 In this method, you can create and upload a file in one line of code. All you need to do is to pass the file and any required information to the `create` method of your model.
 
-For example, if you have an `Upload` model that has an attachment named `file`, you can create and upload a file by writing the following code:\
-
+For example, if you have an `Upload` model that has an attachment named `file`, you can create and upload a file by writing the following code:<br>
 
 ```php
 $upload = Upload::create([
