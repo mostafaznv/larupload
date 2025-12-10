@@ -2,12 +2,11 @@
 
 namespace Mostafaznv\Larupload\Concerns\Storage\Attachment;
 
-
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Actions\Cover\SetCoverAction;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
-use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
+
 
 trait CoverAttachment
 {
@@ -15,10 +14,10 @@ trait CoverAttachment
     {
         file_is_valid($file, $this->name, 'cover');
 
-        if ($this->output['type']) {
+        if ($this->output->type) {
             $this->uploaded = false;
             $this->cover = $file;
-            $this->type = LaruploadFileType::from($this->output['type']);
+            $this->type = $this->output->type;
 
             return true;
         }
@@ -28,10 +27,10 @@ trait CoverAttachment
 
     public function detachCover(): bool
     {
-        if ($this->output['type']) {
+        if ($this->output->type) {
             $this->uploaded = false;
-            $this->cover = LARUPLOAD_NULL;
-            $this->type = LaruploadFileType::from($this->output['type']);
+            $this->cover = false;
+            $this->type = $this->output->type;
 
             return true;
         }
@@ -39,16 +38,9 @@ trait CoverAttachment
         return false;
     }
 
-
-    /**
-     * Set cover photo
-     * Generate cover photo automatically from photos and videos, if cover file was null
-     *
-     * @param $id
-     */
-    protected function setCover($id): void
+    public function setCover($id): void
     {
-        $path = $this->getBasePath($id, Larupload::COVER_FOLDER);
+        $path = larupload_relative_path($this, $id, Larupload::COVER_FOLDER);
         $data = CoverActionData::make(
             disk: $this->disk,
             namingMethod: $this->namingMethod,

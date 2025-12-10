@@ -2,12 +2,13 @@
 
 namespace Mostafaznv\Larupload\DTOs\FFMpeg;
 
-class FFMpegStreamRepresentation
+
+readonly class FFMpegStreamRepresentation
 {
     public function __construct(
-        public readonly string $name,
-        public readonly string $path,
-        public readonly string $listName,
+        public string $name,
+        public string $path,
+        public string $listName,
     ) {}
 
     public static function make(string $name, string $path, string $listName): self

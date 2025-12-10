@@ -8,14 +8,16 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Bus;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\Events\LaruploadFFMpegQueueFinished;
+use Mostafaznv\Larupload\Exceptions\FFMpegQueueMaxNumExceededException;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Models\LaruploadFFMpegQueue;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
+use Mostafaznv\Larupload\Test\Support\Models\LaruploadQueueTestModel;
 
-beforeEach(function() {
+
+beforeEach(function () {
     Bus::fake();
     Queue::fake();
     Event::fake(LaruploadFFMpegQueueFinished::class);
@@ -23,7 +25,8 @@ beforeEach(function() {
     config()->set('larupload.ffmpeg.queue', true);
 });
 
-it('will process ffmpeg through queue', function(UploadedFile $file) {
+
+it('will process ffmpeg through queue', function (UploadedFile $file) {
     Bus::assertNotDispatched(ProcessFFMpeg::class);
 
     save(LaruploadTestModels::QUEUE->instance(), $file);
@@ -31,11 +34,11 @@ it('will process ffmpeg through queue', function(UploadedFile $file) {
     Bus::assertDispatched(ProcessFFMpeg::class);
 
 })->with([
-    mp4(),
-    mp3()
+    'mp4' => fn() => mp4(),
+    'mp3' => fn() => mp3(),
 ]);
 
-it('will process ffmpeg through queue in standalone mode [video]', function() {
+it('will process ffmpeg through queue in standalone mode [video]', function () {
     Bus::assertNotDispatched(ProcessFFMpeg::class);
 
     Larupload::init('uploader')
@@ -45,7 +48,7 @@ it('will process ffmpeg through queue in standalone mode [video]', function() {
     Bus::assertDispatched(ProcessFFMpeg::class);
 });
 
-it('will process ffmpeg through queue in standalone mode [audio]', function() {
+it('will process ffmpeg through queue in standalone mode [audio]', function () {
     Bus::assertNotDispatched(ProcessFFMpeg::class);
 
     Larupload::init('uploader')
@@ -55,7 +58,7 @@ it('will process ffmpeg through queue in standalone mode [audio]', function() {
     Bus::assertDispatched(ProcessFFMpeg::class);
 });
 
-it('will create video styles through queue process', function() {
+it('will create video styles through queue process', function () {
     $model = LaruploadTestModels::QUEUE->instance();
     $model = save($model, mp4());
 
@@ -75,7 +78,7 @@ it('will create video styles through queue process', function() {
     expect($urls->landscape)->toBeExists();
 });
 
-it('will create audio styles through queue process', function() {
+it('will create audio styles through queue process', function () {
     $model = LaruploadTestModels::QUEUE->instance();
     $model = save($model, mp3());
 
@@ -95,7 +98,7 @@ it('will create audio styles through queue process', function() {
     expect($urls->audio_wav)->toBeExists();
 });
 
-it('will create video styles through queue process in standalone mode', function() {
+it('will create video styles through queue process in standalone mode', function () {
     $name = 'uploader';
     $standalone = Larupload::init($name)->video('landscape', 400);
     $uploader = $standalone->upload(mp4());
@@ -115,7 +118,7 @@ it('will create video styles through queue process in standalone mode', function
     expect($uploader->landscape)->toBeExists();
 });
 
-it('will create audio styles through queue process in standalone mode', function() {
+it('will create audio styles through queue process in standalone mode', function () {
     $name = 'uploader';
     $standalone = Larupload::init($name)->audio('audio_wav', new Wav);
     $uploader = $standalone->upload(mp3());
@@ -135,7 +138,7 @@ it('will create audio styles through queue process in standalone mode', function
     expect($uploader->audio_wav)->toBeExists();
 });
 
-it('will create streams through queue process', function() {
+it('will create streams through queue process', function () {
     $model = LaruploadTestModels::QUEUE->instance();
     $model = save($model, mp4());
     $queue = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->first();
@@ -156,7 +159,7 @@ it('will create streams through queue process', function() {
 
 });
 
-it('will create streams through queue process in standalone mode', function() {
+it('will create streams through queue process in standalone mode', function () {
     $name = 'uploader';
     $standalone = Larupload::init($name)->stream('480p', 640, 480, new X264);
     $uploader = $standalone->upload(mp4());
@@ -180,7 +183,7 @@ it('will create streams through queue process in standalone mode', function() {
 
 });
 
-it('can queue ffmpeg for remote disks and deletes local files after finishing the process', function(UploadedFile $file, int $expectedS3Files1, int $expectedS3Files2) {
+it('can queue ffmpeg for remote disks and deletes local files after finishing the process', function (UploadedFile $file, int $expectedS3Files1, int $expectedS3Files2) {
     # init
     $disk = 's3';
     $localDisk = config()->get('larupload.local-disk');
@@ -218,12 +221,13 @@ it('can queue ffmpeg for remote disks and deletes local files after finishing th
         ->toHaveCount($expectedS3Files2)
         ->and($localFiles)
         ->toHaveCount(0);
+
 })->with([
-    [mp4(), 2, 7],
-    [mp3(), 1, 2],
+    'mp4' => fn() => [mp4(), 2, 7],
+    'mp3' => fn() => [mp3(), 1, 2],
 ]);
 
-it('can queue ffmpeg for remote disks and deletes local files after finishing the process in standalone mode [video]', function() {
+it('can queue ffmpeg for remote disks and deletes local files after finishing the process in standalone mode [video]', function () {
     # init
     $name = 'uploader';
     $disk = 's3';
@@ -269,7 +273,7 @@ it('can queue ffmpeg for remote disks and deletes local files after finishing th
     Storage::disk($disk)->deleteDirectory('/');
 });
 
-it('can queue ffmpeg for remote disks and deletes local files after finishing the process in standalone mode [audio]', function() {
+it('can queue ffmpeg for remote disks and deletes local files after finishing the process in standalone mode [audio]', function () {
     # init
     $name = 'uploader';
     $disk = 's3';
@@ -316,7 +320,7 @@ it('can queue ffmpeg for remote disks and deletes local files after finishing th
     Storage::disk($disk)->deleteDirectory('/');
 });
 
-it('can queue ffmpeg when using secure-ids [video]', function() {
+it('can queue ffmpeg when using secure-ids [video]', function () {
     config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
 
     $model = LaruploadTestModels::QUEUE->instance();
@@ -338,7 +342,7 @@ it('can queue ffmpeg when using secure-ids [video]', function() {
     expect($urls->landscape)->toBeExists();
 });
 
-it('can queue ffmpeg when using secure-ids [audio]', function() {
+it('can queue ffmpeg when using secure-ids [audio]', function () {
     config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
 
     $model = LaruploadTestModels::QUEUE->instance();
@@ -360,7 +364,7 @@ it('can queue ffmpeg when using secure-ids [audio]', function() {
     expect($urls->audio_wav)->toBeExists();
 });
 
-it('can queue ffmpeg when using secure-ids in standalone mode [video]', function() {
+it('can queue ffmpeg when using secure-ids in standalone mode [video]', function () {
     config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
 
     $name = 'uploader';
@@ -382,11 +386,6 @@ it('can queue ffmpeg when using secure-ids in standalone mode [video]', function
     expect($uploader->landscape)->toBeExists();
 
 
-
-
-
-
-
     $model = LaruploadTestModels::QUEUE->instance();
     $model = save($model, mp4());
 
@@ -406,7 +405,7 @@ it('can queue ffmpeg when using secure-ids in standalone mode [video]', function
     expect($urls->landscape)->toBeExists();
 });
 
-it('can queue ffmpeg when using secure-ids in standalone mode [audio]', function() {
+it('can queue ffmpeg when using secure-ids in standalone mode [audio]', function () {
     config()->set('larupload.secure-ids', LaruploadSecureIdsMethod::ULID);
 
     $name = 'uploader';
@@ -428,11 +427,6 @@ it('can queue ffmpeg when using secure-ids in standalone mode [audio]', function
     expect($uploader->audio_wav)->toBeExists();
 
 
-
-
-
-
-
     $model = LaruploadTestModels::QUEUE->instance();
     $model = save($model, mp3());
 
@@ -452,7 +446,7 @@ it('can queue ffmpeg when using secure-ids in standalone mode [audio]', function
     expect($urls->audio_wav)->toBeExists();
 });
 
-it('will change queue status after processing queue', function(UploadedFile $file) {
+it('will change queue status after processing queue', function (UploadedFile $file) {
     $model = LaruploadTestModels::QUEUE->instance();
     $model = save($model, $file);
     $queue = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->first();
@@ -475,11 +469,11 @@ it('will change queue status after processing queue', function(UploadedFile $fil
         ->toBe(1);
 
 })->with([
-    mp4(),
-    mp3(),
+    'mp4' => fn() => mp4(),
+    'mp3' => fn() => mp3(),
 ]);
 
-it('will fire an event when process is finished', function(UploadedFile $file) {
+it('will fire an event when process is finished', function (UploadedFile $file) {
     $model = LaruploadTestModels::QUEUE->instance();
     $model = save($model, $file);
     $queue = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->first();
@@ -492,11 +486,11 @@ it('will fire an event when process is finished', function(UploadedFile $file) {
     Event::assertDispatched(LaruploadFFMpegQueueFinished::class);
 
 })->with([
-    mp4(),
-    mp3(),
+    'mp4' => fn() => mp4(),
+    'mp3' => fn() => mp3(),
 ]);
 
-it('will update queue record whit error message, when process failed', function(UploadedFile $file) {
+it('will update queue record with error message, when process failed', function (UploadedFile $file) {
     $model = LaruploadTestModels::QUEUE->instance();
     $model = save($model, $file);
     $queue = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->first();
@@ -513,11 +507,11 @@ it('will update queue record whit error message, when process failed', function(
     expect($queue->message)->toBeTruthy();
 
 })->throws(Exception::class)->with([
-    mp4(),
-    mp3(),
+    'mp4' => fn() => mp4(),
+    'mp3' => fn() => mp3(),
 ]);
 
-it('can load queue relationships of model', function() {
+it('can load queue relationships of model', function () {
     $model = LaruploadTestModels::QUEUE->instance();
     $model->load('laruploadQueue', 'laruploadQueues');
     $model = save($model, mp4());
@@ -534,7 +528,7 @@ it('can load queue relationships of model', function() {
         ->toBeInstanceOf(LaruploadFFMpegQueue::class);
 });
 
-it('will throw exception if max-queue-num exceeds', function() {
+it('will throw exception if max-queue-num exceeds', function () {
     config()->set('larupload.ffmpeg.max-queue-num', 1);
 
     $model = LaruploadTestModels::QUEUE->instance();
@@ -543,4 +537,20 @@ it('will throw exception if max-queue-num exceeds', function() {
     save($model, mp3());
     save($model, mp3());
 
-})->throws(HttpResponseException::class);
+})->throws(FFMpegQueueMaxNumExceededException::class, 'larupload queue limitation exceeded.');
+
+it('will throw an exception if model/file does not exist', function () {
+    $model = LaruploadTestModels::QUEUE->instance();
+    $model = save($model, mp3());
+
+
+    LaruploadQueueTestModel::where('id', $model->id)->delete();
+
+
+    $queue = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->first();
+    $process = new ProcessFFMpeg($queue->id, $model->id, 'main_file', $model::class);
+    $process->handle();
+
+    expect(true)->toBeFalse();
+
+})->throws(Exception::class, 'File/Model not found for FFMpeg processing.');

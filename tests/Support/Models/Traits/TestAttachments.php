@@ -73,6 +73,16 @@ trait TestAttachments
         );
     }
 
+    public function withDominantColor(bool $status = true, int $quality = 10): array
+    {
+        return $this->setAttachments(
+            TestAttachmentBuilder::make($this->mode)
+                ->calculateDominantColor($status)
+                ->dominantColorQuality($quality)
+                ->toArray()
+        );
+    }
+
     public function clearAttachments(): array
     {
         return $this->setAttachments(

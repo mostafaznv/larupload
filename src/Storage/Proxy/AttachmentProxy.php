@@ -3,23 +3,26 @@
 namespace Mostafaznv\Larupload\Storage\Proxy;
 
 use Illuminate\Http\UploadedFile;
+use Mostafaznv\Larupload\Actions\Queue\HandleFFMpegQueueAction;
 use Mostafaznv\Larupload\Larupload;
 use Illuminate\Http\RedirectResponse;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class AttachmentProxy
-{
-    public function __construct(private readonly Attachment $attachment) {}
 
-    public function attach(mixed $file, ?UploadedFile $cover = null): bool
+readonly class AttachmentProxy
+{
+    public function __construct(private Attachment $attachment) {}
+
+
+    public function attach(UploadedFile|false $file, ?UploadedFile $cover = null): void
     {
-        return $this->attachment->attach($file, $cover);
+        $this->attachment->attach($file, $cover);
     }
 
-    public function detach(): bool
+    public function detach(): void
     {
-        return $this->attachment->detach();
+        $this->attachment->detach();
     }
 
     public function cover(): AttachmentCover
@@ -49,6 +52,6 @@ class AttachmentProxy
 
     public function handleFFMpegQueue(bool $isLastOne = false): void
     {
-        $this->attachment->handleFFMpegQueue($isLastOne);
+        resolve(HandleFFMpegQueueAction::class)->execute($this->attachment, $isLastOne);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\Larupload\Enums;
 
+
 enum LaruploadFileType
 {
     case IMAGE;
@@ -10,6 +11,7 @@ enum LaruploadFileType
     case DOCUMENT;
     case COMPRESSED;
     case FILE;
+
 
     public static function from(string $type): LaruploadFileType
     {

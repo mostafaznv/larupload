@@ -84,7 +84,7 @@ it('wont delete files when model has soft-delete trait', function() {
     }
 });
 
-it('will delete files by setting LARUPLOAD_NULL to attribute', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will delete files by setting `false` to attribute', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, jpg());
 
     expect($model->attachment('main_file')->url())
@@ -92,7 +92,7 @@ it('will delete files by setting LARUPLOAD_NULL to attribute', function(Laruploa
         ->toBeString()
         ->toBeExists();
 
-    $model->main_file = LARUPLOAD_NULL;
+    $model->main_file = false;
     $model->save();
 
     expect($model->attachment('main_file')->url())

@@ -5,9 +5,10 @@ namespace Mostafaznv\Larupload\Actions;
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 
-class GuessLaruploadFileTypeAction
+
+readonly class GuessLaruploadFileTypeAction
 {
-    public function __construct(private readonly UploadedFile $file) {}
+    public function __construct(private UploadedFile $file) {}
 
     public static function make(UploadedFile $file): self
     {
@@ -33,13 +34,13 @@ class GuessLaruploadFileTypeAction
 
     private function mimeToType(?string $mime = null): LaruploadFileType
     {
-        if (str_contains($mime, 'image/')) {
+        if (str_starts_with($mime, 'image/')) {
             return LaruploadFileType::IMAGE;
         }
-        else if (str_contains($mime, 'video/')) {
+        else if (str_starts_with($mime, 'video/')) {
             return LaruploadFileType::VIDEO;
         }
-        else if (str_contains($mime, 'audio/')) {
+        else if (str_starts_with($mime, 'audio/')) {
             return LaruploadFileType::AUDIO;
         }
         else if ($this->isDocument($mime)) {

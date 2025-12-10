@@ -10,6 +10,7 @@ use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
 use Mostafaznv\Larupload\UploadEntities;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+
 trait StandaloneLaruploadNotCallables
 {
     /**
@@ -22,21 +23,6 @@ trait StandaloneLaruploadNotCallables
         $self->internalException();
     }
 
-    /**
-     * @internal
-     */
-    public function saved(Model $model): Model
-    {
-        $this->internalException();
-    }
-
-    /**
-     * @internal
-     */
-    public function deleted(): void
-    {
-        $this->internalException();
-    }
 
     /**
      * @internal
@@ -54,15 +40,24 @@ trait StandaloneLaruploadNotCallables
         $this->internalException();
     }
 
+    /**
+     * @internal
+     */
     public function secureIdsMethod(LaruploadSecureIdsMethod $method): self
+    {
+        $this->internalException();
+    }
+
+    /**
+     * @internal
+     */
+    public function handleFFMpegQueue(bool $isLastOne = false, bool $standalone = false): void
     {
         $this->internalException();
     }
 
     private function internalException()
     {
-        throw new Exception(
-            'This function is flagged as @internal and is not available on the standalone uploader.'
-        );
+        throw new Exception('This function is flagged as @internal and is not available on the standalone uploader.');
     }
 }

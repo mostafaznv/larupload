@@ -54,6 +54,7 @@ return [
     | The following ID formats are supported:
     | - ULID
     | - UUID
+    | - SQID (to use this method, you must install the sqids/sqids package)
     | - HASHID (to use this method, you must install the hashids/hashids package)
     | - NONE (use real IDs)
     */
@@ -213,18 +214,6 @@ return [
     */
 
     'preserve-files' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Store Original File Name
-    |--------------------------------------------------------------------------
-    |
-    | Set this to true in order to store the original file name in the database
-    |
-    | todo - remove it and store original file name by default in the next major version
-    */
-
-    'store-original-file-name' => false,
 
     'ffmpeg' => [
         /*

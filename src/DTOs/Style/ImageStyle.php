@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\DTOs\Style;
 use Exception;
 use Mostafaznv\Larupload\Enums\LaruploadMediaStyle;
 
+
 class ImageStyle extends Style
 {
     public readonly LaruploadMediaStyle $mode;

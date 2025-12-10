@@ -6,18 +6,19 @@ use Illuminate\Support\Str;
 use Mostafaznv\Larupload\DTOs\Style\Style;
 use Mostafaznv\Larupload\Larupload;
 
+
 /**
- * In some special cases we should use other file names instead of the original one.
+ * In some cases, we should use different file names instead of the original.
  *
- * Example: when user uploads a svg image, we should change the converted format to jpg!
- * so we have to manipulate file name
+ * Example: when a user uploads an SVG image, and it is converted to JPG,
+ * the file name must be adjusted accordingly.
  */
-class FixExceptionNamesAction
+readonly class FixExceptionNamesAction
 {
     public function __construct(
-        private readonly string $name,
-        private readonly string $styleName,
-        private readonly ?Style $style = null,
+        private string $name,
+        private string $styleName,
+        private ?Style $style = null,
     ) {}
 
     public static function make(string $name, string $styleName, ?Style $style = null): self
