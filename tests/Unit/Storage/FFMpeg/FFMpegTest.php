@@ -254,20 +254,20 @@ it('can manipulate audios', function (AudioStyle $style, string $fileName, int $
 })->with([
     'mp3'  => fn() => [
         'style'     => AudioStyle::make('mp3', (new Mp3())->setAudioKiloBitrate(32)),
-        'file_name' => 'audio.mp3',
-        'bit_rate'  => 32000,
+        'fileName' => 'audio.mp3',
+        'bitrate'  => 32000,
         'codec'     => 'mp3'
     ],
     'wav'  => fn() => [
         'style'     => AudioStyle::make('wav', new Wav()),
-        'file_name' => 'audio.wav',
-        'bit_rate'  => 705600,
+        'fileName' => 'audio.wav',
+        'bitrate'  => 705600,
         'codec'     => 'pcm_s16le'
     ],
     'flac' => fn() => [
         'style'     => AudioStyle::make('flac', new Flac()),
-        'file_name' => 'audio.flac',
-        'bit_rate'  => 0,
+        'fileName' => 'audio.flac',
+        'bitrate'  => 0,
         'codec'     => 'flac'
     ],
 ]);
@@ -288,15 +288,15 @@ it('can guess correct file extension based on audio-style', function (AudioStyle
 })->with([
     'mp3'  => fn() => [
         'style'     => AudioStyle::make('mp3', new Mp3()),
-        'file_name' => 'audio.mp3',
+        'fileName' => 'audio.mp3',
     ],
     'wav'  => fn() => [
         'style'     => AudioStyle::make('wav', new Wav()),
-        'file_name' => 'audio.wav',
+        'fileName' => 'audio.wav',
     ],
     'flac' => fn() => [
         'style'     => AudioStyle::make('flac', new Flac()),
-        'file_name' => 'audio.flac',
+        'fileName' => 'audio.flac',
     ],
 ]);
 
