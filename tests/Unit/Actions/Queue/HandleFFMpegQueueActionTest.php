@@ -279,7 +279,6 @@ it('deletes local directory when disk is not local [not-unified attachment ids]'
     'ulid-last'  => fn() => [
         'method' => LaruploadSecureIdsMethod::ULID,
         'last'   => true,
-        'result' => true,
     ],
     'ulid-first' => fn() => [
         'method' => LaruploadSecureIdsMethod::ULID,
