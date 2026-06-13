@@ -79,6 +79,7 @@
     * [Generate URL for particular style](download/generate-download-link/generate-url-for-particular-style.md)
     * [Generate URL for all styles](download/generate-download-link/generate-url-for-all-styles.md)
   * [Generate Download Response](download/generate-download-response.md)
+* [Path](path.md)
 * [Meta](meta.md)
 * [Get Attachments](get-attachments.md)
 * [API Resources](api-resources.md)
