@@ -89,10 +89,6 @@ trait RetrieveAttachment
         $path = $this->prepareStylePath($style);
 
         if ($path) {
-            dd(
-                $path,
-                Storage::disk($this->disk)->path($path),
-            );
             return Storage::disk($this->disk)->path($path);
         }
 
