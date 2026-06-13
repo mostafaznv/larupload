@@ -45,6 +45,11 @@ readonly class AttachmentProxy
         return $this->attachment->url($style);
     }
 
+    public function path(string $style = Larupload::ORIGINAL_FOLDER): ?string
+    {
+        return $this->attachment->path($style);
+    }
+
     public function download(string $style = Larupload::ORIGINAL_FOLDER): StreamedResponse|RedirectResponse|null
     {
         return $this->attachment->download($style);

@@ -80,6 +80,25 @@ trait RetrieveAttachment
         return null;
     }
 
+    public function path(string $style = Larupload::ORIGINAL_FOLDER): ?string
+    {
+        if (isset($this->file) and $this->file === false) {
+            return null;
+        }
+
+        $path = $this->prepareStylePath($style);
+
+        if ($path) {
+            dd(
+                $path,
+                Storage::disk($this->disk)->path($path),
+            );
+            return Storage::disk($this->disk)->path($path);
+        }
+
+        return null;
+    }
+
     public function download(string $style = Larupload::ORIGINAL_FOLDER): StreamedResponse|RedirectResponse|null
     {
         if (isset($this->file) and $this->file === false) {
