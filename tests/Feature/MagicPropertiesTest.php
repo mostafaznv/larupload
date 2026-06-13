@@ -27,6 +27,7 @@ it('will return attachment on retrieving attachment property', function(Laruploa
             'meta',
             'urls',
             'url',
+            'path',
             'download',
             'handleFFMpegQueue',
         ]);
