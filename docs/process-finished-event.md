@@ -9,16 +9,14 @@ Use this event to execute follow-up actions, such as:
 * Synchronizing data with external services
 * Updating related records
 
-
-
 ### Event Payload
 
 The event exposes the following properties:
 
-| Property | Type   |
-| -------- | ------ |
-| id       | int    |
-| model    | string |
+| Property | Type        |
+| -------- | ----------- |
+| id       | int\|string |
+| model    | string      |
 
 ### Create a Listener
 
