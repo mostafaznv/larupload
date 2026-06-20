@@ -9,7 +9,7 @@ class LaruploadProcessFinished
 {
     use SerializesModels;
 
-    public int    $id;
+    public string    $id;
     public string $model;
 
 
