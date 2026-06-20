@@ -22,7 +22,7 @@ The event exposes the following properties:
 
 ### Create a Listener
 
-```sh
+```bash
 php artisan make:listener LaruploadProcessFinishedListener
 ```
 
@@ -54,7 +54,7 @@ Laravel will automatically discover and register the listener as long as it is p
 
 If you have disabled event discovery, you may register the listener manually in your <mark style="color:red;">`AppServiceProvider`</mark>:
 
-```
+```php
 <?php
 
 namespace App\Providers;
