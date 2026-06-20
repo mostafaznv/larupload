@@ -13,7 +13,7 @@ class LaruploadProcessFinished
     public string $model;
 
 
-    public function __construct(int $id, string $model)
+    public function __construct(int|string $id, string $model)
     {
         $this->id = $id;
         $this->model = $model;
