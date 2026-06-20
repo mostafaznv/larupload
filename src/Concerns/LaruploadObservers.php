@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\Attachment\SaveAttachmentAction;
 use Mostafaznv\Larupload\Actions\HandleModelStylesAction;
+use Mostafaznv\Larupload\Events\LaruploadProcessFinished;
 
 
 trait LaruploadObservers
@@ -30,6 +31,13 @@ trait LaruploadObservers
 
                 resolve(HandleModelStylesAction::class)($model, $model->attachments);
             }
+
+            event(
+                new LaruploadProcessFinished(
+                    id: $model->getKey(),
+                    model: $model->getMorphClass(),
+                )
+            );
         });
 
         static::deleted(function ($model) {

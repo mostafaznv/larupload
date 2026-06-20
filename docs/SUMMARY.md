@@ -85,6 +85,7 @@
 * [API Resources](api-resources.md)
 * [Image Optimization](image-optimization.md)
 * [SecureIds](secureids.md)
+* [Process Finished Event](process-finished-event.md)
 * [Queue FFMpeg Processes](queue-ffmpeg-processes/README.md)
   * [Job Completion Event](queue-ffmpeg-processes/job-completion-event.md)
   * [FFMpeg Queue Relationships](queue-ffmpeg-processes/ffmpeg-queue-relationships.md)

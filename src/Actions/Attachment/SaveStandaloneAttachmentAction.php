@@ -3,6 +3,7 @@
 namespace Mostafaznv\Larupload\Actions\Attachment;
 
 use Mostafaznv\Larupload\Actions\HandleStylesAction;
+use Mostafaznv\Larupload\Events\LaruploadProcessFinished;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Traits\WorksStandalone;
 
@@ -22,6 +23,13 @@ class SaveStandaloneAttachmentAction extends StoreAttachmentAction
         $urls = $this->updateMeta($this->attachment);
 
         HandleStylesAction::make($this->attachment)->run($this->attachment->id, Larupload::class, true);
+
+        event(
+            new LaruploadProcessFinished(
+                id: $this->attachment->id,
+                model: Larupload::class,
+            )
+        );
 
         return $urls;
     }
