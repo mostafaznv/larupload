@@ -30,14 +30,14 @@ trait LaruploadObservers
                 $model->save();
 
                 resolve(HandleModelStylesAction::class)($model, $model->attachments);
-            }
 
-            event(
-                new LaruploadProcessFinished(
-                    id: $model->getKey(),
-                    model: $model->getMorphClass(),
-                )
-            );
+                event(
+                    new LaruploadProcessFinished(
+                        id: $model->getKey(),
+                        model: $model::class,
+                    )
+                );
+            }
         });
 
         static::deleted(function ($model) {
