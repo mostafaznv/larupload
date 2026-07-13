@@ -240,27 +240,41 @@ if (!function_exists('local_copy')) {
      * Create a local copy of the attachment file for remote disks.
      *
      * @param \Mostafaznv\Larupload\Storage\Attachment $attachment
-     * @return ?string
+     * @return bool
      */
-    function local_copy(\Mostafaznv\Larupload\Storage\Attachment $attachment): ?string
+    function local_copy(\Mostafaznv\Larupload\Storage\Attachment $attachment): bool
     {
         if (disk_driver_is_local($attachment->disk)) {
-            return null;
+            return false;
         }
 
 
         $storage = \Illuminate\Support\Facades\Storage::disk($attachment->localDisk);
         $path = larupload_relative_path($attachment, $attachment->id, \Mostafaznv\Larupload\Larupload::ORIGINAL_FOLDER);
         $fullPath = "$path/{$attachment->output->name}";
-        $md5 = md5_file($attachment->file->getRealPath());
 
-        if ($storage->exists($fullPath)) {
-            return $md5;
-        }
+        $md5 = md5("$attachment->localDisk/$fullPath");
+        $cacheKey = "larupload:$md5";
+        $lockKey = "lock:$cacheKey";
 
 
-        $res = $storage->putFileAs($path, $attachment->file, $attachment->output->name);
 
-        return $res ? $md5 : null;
+        return \Illuminate\Support\Facades\Cache::lock($lockKey, 60)->block(5, function () use ($storage, $path, $fullPath, $attachment, $cacheKey) {
+            if ($storage->exists($fullPath)) {
+                \Illuminate\Support\Facades\Cache::increment($cacheKey);
+
+                return true;
+            }
+
+            $res = $storage->putFileAs($path, $attachment->file, $attachment->output->name);
+
+            if ($res) {
+                \Illuminate\Support\Facades\Cache::increment($cacheKey);
+
+                return true;
+            }
+
+            return false;
+        });
     }
 }

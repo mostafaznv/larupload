@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\DTOs\Style\Output;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
@@ -307,7 +308,7 @@ it('trims slashes from folder and path with folder', function () {
 
 
 # local copy
-it('does not create a local copy when the disk is local', function () {
+it('returns false when the disk is local', function () {
     Storage::fake('local');
 
     $attachment = Attachment::make('example_file');
@@ -322,12 +323,12 @@ it('does not create a local copy when the disk is local', function () {
     $result = local_copy($attachment);
 
     expect($result)
-        ->toBeNull()
+        ->toBeFalse()
         ->and(Storage::disk('local')->allFiles())
         ->toBeEmpty();
 });
 
-it('creates a local copy for remote disks and returns the file hash', function () {
+it('creates a local copy for remote disks and returns true', function () {
     Storage::fake('local');
     Storage::fake('s3');
 
@@ -340,20 +341,19 @@ it('creates a local copy for remote disks and returns the file hash', function (
     $attachment->file = pdf();
     $attachment->output = Output::make(name: 'file.pdf');
 
-    $expectedHash = md5_file($attachment->file->getRealPath());
     $path = larupload_relative_path($attachment, $attachment->id, Larupload::ORIGINAL_FOLDER);
 
     $result = local_copy($attachment);
 
     expect($result)
-        ->toBe($expectedHash)
+        ->toBeTrue()
         ->and(Storage::disk('local')->exists("$path/file.pdf"))
         ->toBeTrue()
         ->and(Storage::disk('local')->get("$path/file.pdf"))
         ->toBe(file_get_contents($attachment->file->getRealPath()));
 });
 
-it('does not overwrite an existing local copy and still returns the file hash', function () {
+it('returns true when a local copy already exists', function () {
     Storage::fake('local');
     Storage::fake('s3');
 
@@ -366,17 +366,49 @@ it('does not overwrite an existing local copy and still returns the file hash', 
     $attachment->file = pdf();
     $attachment->output = Output::make(name: 'file.pdf');
 
-    $expectedHash = md5_file($attachment->file->getRealPath());
     $path = larupload_relative_path($attachment, $attachment->id, Larupload::ORIGINAL_FOLDER);
     Storage::disk('local')->put("$path/file.pdf", 'existing-content');
 
     $result = local_copy($attachment);
 
     expect($result)
-        ->toBe($expectedHash)
+        ->toBeTrue()
         ->and(Storage::disk('local')->get("$path/file.pdf"))
-        ->toBe('existing-content')
-        ->and(Storage::disk('local')->allFiles())
-        ->toBe(["$path/file.pdf"]);
+        ->toBe('existing-content');
 });
 
+it('returns false when `putFileAs` fails', function () {
+    $attachment = Attachment::make('example_file');
+    $attachment->disk = 's3';
+    $attachment->localDisk = 'local';
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+    $attachment->id = '123';
+    $attachment->file = pdf();
+    $attachment->output = Output::make(name: 'file.pdf');
+
+    $storage = Mockery::mock();
+    $storage->shouldReceive('exists')->once()->andReturnFalse();
+    $storage->shouldReceive('putFileAs')->once()->andReturnFalse();
+
+    $lock = Mockery::mock();
+    $lock->shouldReceive('block')
+        ->once()
+        ->with(5, Mockery::type(Closure::class))
+        ->andReturnUsing(function (int $seconds, Closure $callback) {
+            return $callback();
+        });
+
+    Storage::shouldReceive('disk')
+        ->once()
+        ->with('local')
+        ->andReturn($storage);
+
+    Cache::shouldReceive('lock')
+        ->once()
+        ->andReturn($lock);
+
+    $result = local_copy($attachment);
+
+    expect($result)->toBeFalse();
+});
