@@ -412,3 +412,85 @@ it('returns false when `putFileAs` fails', function () {
 
     expect($result)->toBeFalse();
 });
+
+
+# delete local copy
+it('returns false when the disk is local for delete_local_copy', function () {
+    Storage::fake('local');
+
+    $attachment = Attachment::make('example_file');
+    $attachment->disk = 'local';
+    $attachment->localDisk = 'local';
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+    $attachment->id = '123';
+    $attachment->file = pdf();
+    $attachment->output = Output::make(name: 'file.pdf');
+
+    $result = delete_local_copy($attachment);
+
+    expect($result)->toBeFalse();
+});
+
+it('returns false when cache key is missing in delete_local_copy', function () {
+    $attachment = Attachment::make('example_file');
+    $attachment->disk = 's3';
+    $attachment->localDisk = 'local';
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+    $attachment->id = '123';
+    $attachment->file = pdf();
+    $attachment->output = Output::make(name: 'file.pdf');
+
+    $result = delete_local_copy($attachment);
+
+    expect($result)->toBeFalse();
+});
+
+it('forgets cache and deletes directory when cache value is <= 1', function () {
+    $attachment = Attachment::make('example_file');
+    $attachment->disk = 's3';
+    $attachment->localDisk = 'local';
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+    $attachment->id = '123';
+    $attachment->file = pdf();
+    $attachment->output = Output::make(name: 'file.pdf');
+
+    $path = larupload_relative_path($attachment, $attachment->id, Larupload::ORIGINAL_FOLDER);
+    $fullPath = "$path/{$attachment->output->name}";
+    $md5 = md5("$attachment->localDisk/$fullPath");
+    $cacheKey = "larupload:$md5";
+
+    Cache::increment($cacheKey);
+
+    $result = delete_local_copy($attachment);
+
+    expect($result)->toBeTrue();
+});
+
+it('decrements cache and returns false when cache value is greater than 1', function () {
+    $attachment = Attachment::make('example_file');
+    $attachment->disk = 's3';
+    $attachment->localDisk = 'local';
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+    $attachment->id = '123';
+    $attachment->file = pdf();
+    $attachment->output = Output::make(name: 'file.pdf');
+
+    $path = larupload_relative_path($attachment, $attachment->id, Larupload::ORIGINAL_FOLDER);
+    $fullPath = "$path/{$attachment->output->name}";
+    $md5 = md5("$attachment->localDisk/$fullPath");
+    $cacheKey = "larupload:$md5";
+
+    Cache::increment($cacheKey, 5);
+
+    $result = delete_local_copy($attachment);
+    expect($result)->toBeFalse();
+
+
+    $value = Cache::get($cacheKey);
+    expect($value)->toBe(4);
+});
+

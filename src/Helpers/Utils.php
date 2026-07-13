@@ -258,7 +258,6 @@ if (!function_exists('local_copy')) {
         $lockKey = "lock:$cacheKey";
 
 
-
         return \Illuminate\Support\Facades\Cache::lock($lockKey, 60)->block(5, function () use ($storage, $path, $fullPath, $attachment, $cacheKey) {
             if ($storage->exists($fullPath)) {
                 \Illuminate\Support\Facades\Cache::increment($cacheKey);
@@ -273,6 +272,54 @@ if (!function_exists('local_copy')) {
 
                 return true;
             }
+
+            return false;
+        });
+    }
+}
+
+if (!function_exists('delete_local_copy')) {
+    /**
+     * Delete the local cached copy of an attachment for remote disks when it is no longer needed.
+     *
+     * @param \Mostafaznv\Larupload\Storage\Attachment $attachment
+     * @param bool $standalone
+     * @return bool
+     */
+    function delete_local_copy(\Mostafaznv\Larupload\Storage\Attachment $attachment, bool $standalone = false): bool
+    {
+        if (disk_driver_is_local($attachment->disk)) {
+            return false;
+        }
+
+
+        $path = larupload_relative_path($attachment, $attachment->id, \Mostafaznv\Larupload\Larupload::ORIGINAL_FOLDER);
+        $fullPath = "$path/{$attachment->output->name}";
+
+        $md5 = md5("$attachment->localDisk/$fullPath");
+        $cacheKey = "larupload:$md5";
+        $lockKey = "lock:$cacheKey";
+
+
+        return \Illuminate\Support\Facades\Cache::lock($lockKey, 60)->block(5, function () use ($attachment, $standalone, $cacheKey): bool {
+            $value = \Illuminate\Support\Facades\Cache::get($cacheKey);
+
+            if ($value === null) {
+                return false;
+            }
+
+            if ($value <= 1) {
+                \Illuminate\Support\Facades\Cache::forget($cacheKey);
+
+                \Illuminate\Support\Facades\Storage::disk($attachment->localDisk)->deleteDirectory(
+                    $standalone ? "$attachment->folder/$attachment->nameKebab" : "$attachment->folder/$attachment->id"
+                );
+
+                return true;
+            }
+
+
+            \Illuminate\Support\Facades\Cache::decrement($cacheKey);
 
             return false;
         });
