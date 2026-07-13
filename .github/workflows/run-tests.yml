@@ -69,10 +69,10 @@ jobs:
 
       - name: Install ImageMagick
         run: |
-          curl -o /tmp/ImageMagick.tar.xz -sL https://imagemagick.org/archive/releases/ImageMagick-${{ matrix.imagemagick }}.tar.xz
+          curl -o /tmp/ImageMagick.tar.xz -sL https://github.com/ImageMagick/ImageMagick/archive/refs/tags/${{ matrix.imagemagick }}.tar.gz
           (
             cd /tmp || exit 1
-            tar xf ImageMagick.tar.xz
+            tar xf ImageMagick.tar.gz
             cd ImageMagick-${{ matrix.imagemagick }}
             sudo ./configure --prefix=/home/runner/im/imagemagick-${{ matrix.imagemagick }}
             sudo make -j$(nproc)
