@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Mostafaznv\Larupload\DTOs\Style\Output;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
+use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Storage\Attachment;
 use function Spatie\PestPluginTestTime\testTime;
 
@@ -302,3 +304,79 @@ it('trims slashes from folder and path with folder', function () {
 
     expect($result)->toBe('uploads/123/example-file/folder');
 });
+
+
+# local copy
+it('does not create a local copy when the disk is local', function () {
+    Storage::fake('local');
+
+    $attachment = Attachment::make('example_file');
+    $attachment->disk = 'local';
+    $attachment->localDisk = 'local';
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+    $attachment->id = '123';
+    $attachment->file = pdf();
+    $attachment->output = Output::make(name: 'file.pdf');
+
+    $result = local_copy($attachment);
+
+    expect($result)
+        ->toBeNull()
+        ->and(Storage::disk('local')->allFiles())
+        ->toBeEmpty();
+});
+
+it('creates a local copy for remote disks and returns the file hash', function () {
+    Storage::fake('local');
+    Storage::fake('s3');
+
+    $attachment = Attachment::make('example_file');
+    $attachment->disk = 's3';
+    $attachment->localDisk = 'local';
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+    $attachment->id = '123';
+    $attachment->file = pdf();
+    $attachment->output = Output::make(name: 'file.pdf');
+
+    $expectedHash = md5_file($attachment->file->getRealPath());
+    $path = larupload_relative_path($attachment, $attachment->id, Larupload::ORIGINAL_FOLDER);
+
+    $result = local_copy($attachment);
+
+    expect($result)
+        ->toBe($expectedHash)
+        ->and(Storage::disk('local')->exists("$path/file.pdf"))
+        ->toBeTrue()
+        ->and(Storage::disk('local')->get("$path/file.pdf"))
+        ->toBe(file_get_contents($attachment->file->getRealPath()));
+});
+
+it('does not overwrite an existing local copy and still returns the file hash', function () {
+    Storage::fake('local');
+    Storage::fake('s3');
+
+    $attachment = Attachment::make('example_file');
+    $attachment->disk = 's3';
+    $attachment->localDisk = 'local';
+    $attachment->folder = 'uploads';
+    $attachment->nameKebab = 'example-file';
+    $attachment->id = '123';
+    $attachment->file = pdf();
+    $attachment->output = Output::make(name: 'file.pdf');
+
+    $expectedHash = md5_file($attachment->file->getRealPath());
+    $path = larupload_relative_path($attachment, $attachment->id, Larupload::ORIGINAL_FOLDER);
+    Storage::disk('local')->put("$path/file.pdf", 'existing-content');
+
+    $result = local_copy($attachment);
+
+    expect($result)
+        ->toBe($expectedHash)
+        ->and(Storage::disk('local')->get("$path/file.pdf"))
+        ->toBe('existing-content')
+        ->and(Storage::disk('local')->allFiles())
+        ->toBe(["$path/file.pdf"]);
+});
+

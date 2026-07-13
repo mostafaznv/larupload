@@ -235,4 +235,32 @@ if (!function_exists('larupload_relative_path')) {
     }
 }
 
+if (!function_exists('local_copy')) {
+    /**
+     * Create a local copy of the attachment file for remote disks.
+     *
+     * @param \Mostafaznv\Larupload\Storage\Attachment $attachment
+     * @return ?string
+     */
+    function local_copy(\Mostafaznv\Larupload\Storage\Attachment $attachment): ?string
+    {
+        if (disk_driver_is_local($attachment->disk)) {
+            return null;
+        }
 
+
+        $storage = \Illuminate\Support\Facades\Storage::disk($attachment->localDisk);
+        $path = larupload_relative_path($attachment, $attachment->id, \Mostafaznv\Larupload\Larupload::ORIGINAL_FOLDER);
+        $fullPath = "$path/{$attachment->output->name}";
+        $md5 = md5_file($attachment->file->getRealPath());
+
+        if ($storage->exists($fullPath)) {
+            return $md5;
+        }
+
+
+        $res = $storage->putFileAs($path, $attachment->file, $attachment->output->name);
+
+        return $res ? $md5 : null;
+    }
+}
