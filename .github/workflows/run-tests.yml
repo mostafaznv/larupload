@@ -69,7 +69,7 @@ jobs:
 
       - name: Install ImageMagick
         run: |
-          curl -o /tmp/ImageMagick.tar.xz -sL https://github.com/ImageMagick/ImageMagick/archive/refs/tags/${{ matrix.imagemagick }}.tar.gz
+          curl -o /tmp/ImageMagick.tar.gz -sL https://github.com/ImageMagick/ImageMagick/archive/refs/tags/${{ matrix.imagemagick }}.tar.gz
           (
             cd /tmp || exit 1
             tar xf ImageMagick.tar.gz
