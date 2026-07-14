@@ -3,7 +3,6 @@
 namespace Mostafaznv\Larupload\Actions\Queue;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Exceptions\FFMpegQueueMaxNumExceededException;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
 use Mostafaznv\Larupload\Larupload;
