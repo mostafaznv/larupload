@@ -30,6 +30,7 @@ it('will return attachment on retrieving attachment property', function(Laruploa
             'path',
             'download',
             'handleFFMpegQueue',
+            'handleMediaDetailsQueue',
         ]);
 
 })->with('models');

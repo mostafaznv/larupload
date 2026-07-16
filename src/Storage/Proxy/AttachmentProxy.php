@@ -2,8 +2,10 @@
 
 namespace Mostafaznv\Larupload\Storage\Proxy;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Mostafaznv\Larupload\Actions\Queue\HandleFFMpegQueueAction;
+use Mostafaznv\Larupload\Actions\Queue\HandleMediaDetailsQueueAction;
 use Mostafaznv\Larupload\Larupload;
 use Illuminate\Http\RedirectResponse;
 use Mostafaznv\Larupload\Storage\Attachment;
@@ -55,8 +57,19 @@ readonly class AttachmentProxy
         return $this->attachment->download($style);
     }
 
+    /**
+     * @internal
+     */
     public function handleFFMpegQueue(bool $isLastOne = false): void
     {
         resolve(HandleFFMpegQueueAction::class)->execute($this->attachment, $isLastOne);
+    }
+
+    /**
+     * @internal
+     */
+    public function handleMediaDetailsQueue(Model $model): void
+    {
+        resolve(HandleMediaDetailsQueueAction::class)->execute($model, $this->attachment);
     }
 }
