@@ -212,6 +212,19 @@ return [
 
     'preserve-files' => false,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Fetch Media Details on Queue
+    |--------------------------------------------------------------------------
+    |
+    | When true, Larupload will fetch media details (like duration, resolution, etc.)
+    | asynchronously via a queue.
+    | When false, details are fetched synchronously during the request.
+    |
+    */
+
+    'fetch-media-details-on-queue' => env('LARUPLOAD_FETCH_MEDIA_DETAILS_ON_QUEUE', false),
+
     'ffmpeg' => [
         /*
         |--------------------------------------------------------------------------

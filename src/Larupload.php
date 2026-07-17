@@ -16,8 +16,9 @@ class Larupload extends Attachment
     public const string COVER_FOLDER    = 'cover';
     public const string STREAM_FOLDER   = 'stream';
 
-    public const string LOCAL_DRIVER       = 'local';
-    public const string FFMPEG_QUEUE_TABLE = 'larupload_ffmpeg_queue';
+    public const string LOCAL_DRIVER        = 'local';
+    public const string FFMPEG_QUEUE_TABLE  = 'larupload_ffmpeg_queue';
+    public const string DETAILS_QUEUE_TABLE = 'larupload_details_queue';
 
 
     use BootStandaloneLarupload;

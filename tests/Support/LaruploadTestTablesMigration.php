@@ -71,5 +71,20 @@ class LaruploadTestTablesMigration extends Migration
                 $table->timestamp('started_at')->nullable();
                 $table->timestamp('finished_at')->nullable();
             });
+
+
+        $this->app['db']->connection()
+            ->getSchemaBuilder()
+            ->create(Larupload::DETAILS_QUEUE_TABLE, function(Blueprint $table) {
+                $table->id();
+                $table->unsignedInteger('record_id');
+                $table->string('record_class', 50);
+                $table->boolean('status')->default(0);
+                $table->text('message')->nullable();
+
+                $table->timestamp('created_at')->nullable();
+                $table->timestamp('started_at')->nullable();
+                $table->timestamp('finished_at')->nullable();
+            });
     }
 }

@@ -5,6 +5,7 @@ namespace Mostafaznv\Larupload\Concerns;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\Attachment\SaveAttachmentAction;
+use Mostafaznv\Larupload\Actions\DispatchModelMediaDetailsExtractionAction;
 use Mostafaznv\Larupload\Actions\HandleModelStylesAction;
 use Mostafaznv\Larupload\Events\LaruploadProcessFinished;
 
@@ -29,6 +30,7 @@ trait LaruploadObservers
             if ($shouldSave) {
                 $model->save();
 
+                resolve(DispatchModelMediaDetailsExtractionAction::class)($model, $model->attachments);
                 resolve(HandleModelStylesAction::class)($model, $model->attachments);
 
                 event(

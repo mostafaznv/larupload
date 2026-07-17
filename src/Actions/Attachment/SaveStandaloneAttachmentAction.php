@@ -16,7 +16,7 @@ class SaveStandaloneAttachmentAction extends StoreAttachmentAction
     {
         $this->clean();
         $this->basic();
-        $this->media();
+        $this->media(null);
         $this->uploadOriginalFile($this->attachment->id);
         $this->setCover($this->attachment->id);
 
