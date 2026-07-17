@@ -51,7 +51,7 @@ class ProcessMediaDetails implements ShouldQueue
             $model = $class::query()->where('id', $this->id)->first();
 
             /** @var AttachmentProxy|null $attachment */
-            $attachment = $model?->{$this->name} ?? null;
+            $attachment = $model?->attachment($this->name) ?? null;
 
             if ($attachment) {
                 $attachment->handleMediaDetailsQueue($model);
