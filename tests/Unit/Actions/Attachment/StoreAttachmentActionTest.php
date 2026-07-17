@@ -148,7 +148,7 @@ it('extracts audio metadata correctly', function () {
         ->toBe(LaruploadTestConsts::AUDIO_DETAILS['duration']);
 });
 
-it('will extract image/audio/video metadata on queue when on ORM mode', function (UploadedFile $file, LaruploadFileType $type) {
+it('wont extract image/audio/video metadata on queue when on ORM mode and postpones it to to after save events', function (UploadedFile $file, LaruploadFileType $type) {
     # prepare
     Bus::fake(ProcessMediaDetails::class);
     config()->set('larupload.fetch-media-details-on-queue', true);
@@ -177,6 +177,13 @@ it('will extract image/audio/video metadata on queue when on ORM mode', function
 
     # test
     Bus::assertDispatched(ProcessMediaDetails::class);
+
+    $output = $this->attachment->output;
+
+    expect($output->width)
+        ->toBeNull()
+        ->and($output->height)
+        ->toBeNull();
 
 })->with([
     fn() => [jpg(), LaruploadFileType::IMAGE],
@@ -210,6 +217,26 @@ it('wont extract image/audio/video metadata on queue when not on ORM mode', func
 
     # test
     Bus::assertNotDispatched(ProcessMediaDetails::class);
+
+    $output = $this->attachment->output;
+
+    if ($type === LaruploadFileType::AUDIO) {
+        expect($output->duration)->toBe(LaruploadTestConsts::AUDIO_DETAILS['duration']);
+    }
+    else if ($type === LaruploadFileType::VIDEO) {
+        expect($output->width)
+            ->toBe(LaruploadTestConsts::VIDEO_DETAILS['width'])
+            ->and($output->height)
+            ->toBe(LaruploadTestConsts::VIDEO_DETAILS['height'])
+            ->and($output->duration)
+            ->toBe(LaruploadTestConsts::VIDEO_DETAILS['duration']);
+    }
+    else {
+        expect($output->width)
+            ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['width'])
+            ->and($output->height)
+            ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['height']);
+    }
 
 })->with([
     fn() => [jpg(), LaruploadFileType::IMAGE],

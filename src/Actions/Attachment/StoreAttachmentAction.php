@@ -5,8 +5,8 @@ namespace Mostafaznv\Larupload\Actions\Attachment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\Cover\SetCoverAction;
-use Mostafaznv\Larupload\Actions\Queue\InitializeMediaDetailsQueueAction;
 use Mostafaznv\Larupload\Actions\SetFileNameAction;
+use Mostafaznv\Larupload\Concerns\LaruploadObservers;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
@@ -46,34 +46,37 @@ abstract class StoreAttachmentAction
         $fetchOnQueue = config('larupload.fetch-media-details-on-queue', false);
 
         if ($fetchOnQueue and $model) {
-            resolve(InitializeMediaDetailsQueueAction::class)(
-                $this->attachment, $model->id, $model->getMorphClass()
-            );
+            /**
+             * Do nothing, it will be processed after saving the model
+             * @see LaruploadObservers
+             * @see DispatchModelMediaDetailsExtractionAction
+             */
+
+            return;
         }
-        else {
-            switch ($this->attachment->type) {
-                case LaruploadFileType::VIDEO:
-                case LaruploadFileType::AUDIO:
-                    $meta = $this->ffmpeg()->getMeta();
 
-                    $this->attachment->output->width = $meta->width;
-                    $this->attachment->output->height = $meta->height;
-                    $this->attachment->output->duration = $meta->duration;
+        switch ($this->attachment->type) {
+            case LaruploadFileType::VIDEO:
+            case LaruploadFileType::AUDIO:
+                $meta = $this->ffmpeg()->getMeta();
 
-                    break;
+                $this->attachment->output->width = $meta->width;
+                $this->attachment->output->height = $meta->height;
+                $this->attachment->output->duration = $meta->duration;
 
-                case LaruploadFileType::IMAGE:
-                    $img = $this->img($this->attachment->file);
-                    $meta = $img->getMeta();
+                break;
 
-                    $this->attachment->output->width = $meta->width;
-                    $this->attachment->output->height = $meta->height;
-                    $this->attachment->output->dominantColor = $this->attachment->dominantColor
-                        ? $img->getDominantColor()
-                        : null;
+            case LaruploadFileType::IMAGE:
+                $img = $this->img($this->attachment->file);
+                $meta = $img->getMeta();
 
-                    break;
-            }
+                $this->attachment->output->width = $meta->width;
+                $this->attachment->output->height = $meta->height;
+                $this->attachment->output->dominantColor = $this->attachment->dominantColor
+                    ? $img->getDominantColor()
+                    : null;
+
+                break;
         }
     }
 
