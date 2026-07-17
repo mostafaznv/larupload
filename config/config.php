@@ -214,16 +214,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Fetch Media Details on Queue
+    | Extract Media Details on Queue
     |--------------------------------------------------------------------------
     |
-    | When true, Larupload will fetch media details (like duration, resolution, etc.)
+    | When true, Larupload will extract media details (like duration, resolution, etc.)
     | asynchronously via a queue.
-    | When false, details are fetched synchronously during the request.
+    | When false, details are extracted synchronously during the request.
     |
     */
 
-    'fetch-media-details-on-queue' => env('LARUPLOAD_FETCH_MEDIA_DETAILS_ON_QUEUE', false),
+    'extract-media-details-on-queue' => env('LARUPLOAD_EXTRACT_MEDIA_DETAILS_ON_QUEUE', false),
 
     'ffmpeg' => [
         /*

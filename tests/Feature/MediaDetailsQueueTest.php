@@ -31,7 +31,7 @@ beforeEach(function () {
 
     Event::fake(LaruploadMediaDetailsQueueFinished::class);
 
-    config()->set('larupload.fetch-media-details-on-queue', true);
+    config()->set('larupload.extract-media-details-on-queue', true);
 });
 
 

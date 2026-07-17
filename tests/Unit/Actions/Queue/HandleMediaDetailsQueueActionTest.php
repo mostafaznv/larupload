@@ -30,7 +30,7 @@ beforeEach(function () {
     };
 
 
-    config()->set('larupload.fetch-media-details-on-queue', true);
+    config()->set('larupload.extract-media-details-on-queue', true);
 
     $this->action = resolve(HandleMediaDetailsQueueAction::class);
 });

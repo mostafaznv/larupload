@@ -24,7 +24,7 @@ beforeEach(function () {
     Storage::fake('public');
     Storage::fake('s3');
 
-    config()->set('larupload.fetch-media-details-on-queue', true);
+    config()->set('larupload.extract-media-details-on-queue', true);
 });
 
 

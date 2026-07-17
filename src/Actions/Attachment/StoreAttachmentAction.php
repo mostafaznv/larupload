@@ -43,9 +43,9 @@ abstract class StoreAttachmentAction
 
     protected function media(?Model $model): void
     {
-        $fetchOnQueue = config('larupload.fetch-media-details-on-queue', false);
+        $extractOnQueue = config('larupload.extract-media-details-on-queue', false);
 
-        if ($fetchOnQueue and $model) {
+        if ($extractOnQueue and $model) {
             /**
              * Do nothing, it will be processed after saving the model
              * @see LaruploadObservers

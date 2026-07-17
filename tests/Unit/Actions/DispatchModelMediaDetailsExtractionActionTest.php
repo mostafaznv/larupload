@@ -35,7 +35,7 @@ beforeEach(function () {
     $this->model->id = 52;
 
 
-    config()->set('larupload.fetch-media-details-on-queue', true);
+    config()->set('larupload.extract-media-details-on-queue', true);
 
     app()->instance(
         InitializeMediaDetailsQueueAction::class,
@@ -81,9 +81,9 @@ it('extract media details for attachments that require extracting on queue', fun
     ]);
 });
 
-it('does not extract media details when `larupload.fetch-media-details-on-queue` is false', function () {
+it('does not extract media details when `larupload.extract-media-details-on-queue` is false', function () {
     # prepare
-    config()->set('larupload.fetch-media-details-on-queue', false);
+    config()->set('larupload.extract-media-details-on-queue', false);
 
 
     # action
@@ -95,7 +95,7 @@ it('does not extract media details when `larupload.fetch-media-details-on-queue`
     expect($attachments)->toBeEmpty();
 
 
-    config()->set('larupload.fetch-media-details-on-queue', true);
+    config()->set('larupload.extract-media-details-on-queue', true);
     ($this->action)($this->model, [$this->attachment]);
 
 

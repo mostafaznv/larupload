@@ -151,7 +151,7 @@ it('extracts audio metadata correctly', function () {
 it('wont extract image/audio/video metadata on queue when on ORM mode and postpones it to to after save events', function (UploadedFile $file, LaruploadFileType $type) {
     # prepare
     Bus::fake(ProcessMediaDetails::class);
-    config()->set('larupload.fetch-media-details-on-queue', true);
+    config()->set('larupload.extract-media-details-on-queue', true);
 
     $this->attachment->file = $file;
     $this->attachment->type = $type;
@@ -194,7 +194,7 @@ it('wont extract image/audio/video metadata on queue when on ORM mode and postpo
 it('wont extract image/audio/video metadata on queue when not on ORM mode', function (UploadedFile $file, LaruploadFileType $type) {
     # prepare
     Bus::fake(ProcessMediaDetails::class);
-    config()->set('larupload.fetch-media-details-on-queue', true);
+    config()->set('larupload.extract-media-details-on-queue', true);
 
     $this->attachment->file = $file;
     $this->attachment->type = $type;

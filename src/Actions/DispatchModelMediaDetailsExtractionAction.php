@@ -15,9 +15,9 @@ class DispatchModelMediaDetailsExtractionAction
      */
     public function __invoke(Model $model, array $attachments): void
     {
-        $fetchOnQueue = config('larupload.fetch-media-details-on-queue', false);
+        $extractOnQueue = config('larupload.extract-media-details-on-queue', false);
 
-        if ($fetchOnQueue === false) {
+        if ($extractOnQueue === false) {
             return;
         }
 
