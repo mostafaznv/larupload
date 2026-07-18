@@ -69,11 +69,6 @@ class ProcessMediaDetails implements ShouldQueue
         }
     }
 
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
     /**
      * Update DETAILS_QUEUE_TABLE table
      *
