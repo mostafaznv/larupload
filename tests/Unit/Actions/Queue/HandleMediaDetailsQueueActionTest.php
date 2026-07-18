@@ -391,3 +391,48 @@ it('saves video metadata to model [light]', function () {
         ->and($meta->height)
         ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['height']);
 });
+
+it('throws an error when the local file does not exist', function () {
+    # prepare
+    $model = new LaruploadLightTestModel;
+    $model->attachment('main_file')->attach(jpg());
+    $model->save();
+
+    $attachment = ($this->getAttachment)($model);
+
+    Storage::disk('local')->deleteDirectory('/');
+
+
+    # action
+    try {
+        $this->action->execute($model, $attachment);
+
+        expect(true)->toBeFalse();
+    }
+    catch (Exception $e) {
+        # test 1
+        expect($e)
+            ->toBeInstanceOf(RuntimeException::class)
+            ->and($e->getMessage())
+            ->toStartWith('File not found on disk: local, path: upload-light/');
+
+
+        # test 2
+        $meta = $attachment->meta();
+        expect($meta)
+            ->toHaveProperty('width', null)
+            ->toHaveProperty('height', null)
+            ->toHaveProperty('duration', null)
+            ->toHaveProperty('dominant_color', null);
+
+        # test 3
+        $model->refresh();
+        $meta = $model->attachment('main_file')->meta();
+
+        expect($meta)
+            ->toHaveProperty('width', null)
+            ->toHaveProperty('height', null)
+            ->toHaveProperty('duration', null)
+            ->toHaveProperty('dominant_color', null);
+    }
+});

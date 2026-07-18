@@ -10,6 +10,7 @@ use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Storage\FFMpeg\FFMpeg;
 use Mostafaznv\Larupload\Storage\Image;
+use RuntimeException;
 
 
 class HandleMediaDetailsQueueAction
@@ -63,9 +64,15 @@ class HandleMediaDetailsQueueAction
         $path = $basePath . '/' . $attachment->output->name;
         $disk = disk_driver_is_local($attachment->disk) ? $attachment->disk : $attachment->localDisk;
 
-        $path = Storage::disk($disk)->path($path);
+        $exists = Storage::disk($disk)->exists($path);
 
-        return new UploadedFile($path, $attachment->output->name, null, null, true);
+        if ($exists) {
+            $path = Storage::disk($disk)->path($path);
+
+            return new UploadedFile($path, $attachment->output->name, null, null, true);
+        }
+
+        throw new RuntimeException("File not found on disk: $disk, path: $path");
     }
 
     private function ffmpeg(Attachment $attachment): FFMpeg

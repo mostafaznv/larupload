@@ -167,6 +167,7 @@ it('wont extract image/audio/video metadata on queue when it is on ORM mode. it 
         public function run(): void
         {
             $model = LaruploadTestModels::HEAVY->instance();
+            $model->attachment('main_file')->attach($this->attachment->file);
             $model->save();
 
             $this->media($model);

@@ -28,6 +28,7 @@ class DispatchModelMediaDetailsExtractionAction
     private function shouldExtractMediaDetailsOnQueue(Attachment $attachment): bool
     {
         return $attachment->extractMediaDetailsOnQueue
+            and isset($attachment->file)
             and $attachment->file instanceof UploadedFile;
     }
 }
