@@ -238,9 +238,7 @@ it('will update queue record with error message, when process failed', function 
     catch (Exception $e) {
         $message = $e->getMessage();
 
-        expect($message)
-            ->toStartWith('The file')
-            ->toEndWith('does not exist');
+        expect($message)->toStartWith('File not found on disk: local, path: upload-heavy');
 
         $queue = DB::table(Larupload::DETAILS_QUEUE_TABLE)->first();
         expect($queue->message)->toBe($message);
