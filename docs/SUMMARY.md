@@ -34,6 +34,7 @@
   * [Dominant Color Quality](advanced-usage/configuration/dominant-color-quality.md)
   * [Keep Old Files](advanced-usage/configuration/keep-old-files.md)
   * [Preserve Files](advanced-usage/configuration/preserve-files.md)
+  * [Extract Media Details On Queue](advanced-usage/configuration/extract-media-details-on-queue.md)
   * [Store Original File Name](advanced-usage/configuration/store-original-file-name.md)
   * [Optimize Image](advanced-usage/configuration/optimize-image.md)
   * [FFMpeg](advanced-usage/configuration/ffmpeg/README.md)
@@ -56,6 +57,7 @@
   * [Dominant Color Quality](advanced-usage/attachment/dominant-color-quality.md)
   * [Keep Old Files](advanced-usage/attachment/keep-old-files.md)
   * [Preserve Files](advanced-usage/attachment/preserve-files.md)
+  * [Extract Media Details On Queue](advanced-usage/attachment/extract-media-details-on-queue.md)
   * [Store Original File Name](advanced-usage/attachment/store-original-file-name.md)
   * [SecureIds Method](advanced-usage/attachment/secureids-method.md)
   * [Optimize Image](advanced-usage/attachment/optimize-image.md)
@@ -89,6 +91,9 @@
 * [Queue FFMpeg Processes](queue-ffmpeg-processes/README.md)
   * [Job Completion Event](queue-ffmpeg-processes/job-completion-event.md)
   * [FFMpeg Queue Relationships](queue-ffmpeg-processes/ffmpeg-queue-relationships.md)
+* [Queue Media Details Extraction](queue-ffmpeg-processes-1/README.md)
+  * [Job Completion Event](queue-ffmpeg-processes-1/job-completion-event.md)
+  * [Media Details Extraction Queue Relationships](queue-ffmpeg-processes-1/ffmpeg-queue-relationships.md)
 
 ## 🧱 Standalone Uploader
 
