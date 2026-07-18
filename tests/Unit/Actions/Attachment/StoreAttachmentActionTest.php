@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\Attachment\StoreAttachmentAction;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Enums\LaruploadMode;
+use Mostafaznv\Larupload\Jobs\ProcessMediaDetails;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
@@ -64,9 +66,12 @@ it('saves basic attachment attributes correctly', function () {
 # media
 it('extracts image metadata correctly', function () {
     $action = new class($this->attachment) extends StoreAttachmentAction {
+        private Model $model;
+
+
         public function run(): void
         {
-            $this->media();
+            $this->media(null);
         }
 
         public function attachment(): Attachment
@@ -94,7 +99,7 @@ it('extracts video metadata correctly', function () {
     $action = new class($this->attachment) extends StoreAttachmentAction {
         public function run(): void
         {
-            $this->media();
+            $this->media(null);
         }
 
         public function attachment(): Attachment
@@ -122,7 +127,7 @@ it('extracts audio metadata correctly', function () {
     $action = new class($this->attachment) extends StoreAttachmentAction {
         public function run(): void
         {
-            $this->media();
+            $this->media(null);
         }
 
         public function attachment(): Attachment
@@ -143,16 +148,118 @@ it('extracts audio metadata correctly', function () {
         ->toBe(LaruploadTestConsts::AUDIO_DETAILS['duration']);
 });
 
+it('wont extract image/audio/video metadata on queue when it is on ORM mode. it postpones it to the after save events', function (UploadedFile $file, LaruploadFileType $type) {
+    # prepare
+    Bus::fake(ProcessMediaDetails::class);
+    config()->set('larupload.extract-media-details-on-queue', true);
+
+    $this->attachment->extractMediaDetailsOnQueue = true;
+    $this->attachment->file = $file;
+    $this->attachment->type = $type;
+
+
+    # test
+    Bus::assertNotDispatched(ProcessMediaDetails::class);
+
+
+    # action
+    $action = new class($this->attachment) extends StoreAttachmentAction {
+        public function run(): void
+        {
+            $model = LaruploadTestModels::HEAVY->instance();
+            $model->save();
+
+            $this->media($model);
+        }
+    };
+
+    $action->run();
+
+
+    # test
+    Bus::assertDispatched(ProcessMediaDetails::class);
+
+    $output = $this->attachment->output;
+
+    expect($output->width)
+        ->toBeNull()
+        ->and($output->height)
+        ->toBeNull()
+        ->and($output->duration)
+        ->toBeNull();
+
+})->with([
+    fn() => [jpg(), LaruploadFileType::IMAGE],
+    fn() => [mp3(), LaruploadFileType::AUDIO],
+    fn() => [mp4(), LaruploadFileType::VIDEO],
+]);
+
+it('wont extract image/audio/video metadata on queue when not on ORM mode', function (UploadedFile $file, LaruploadFileType $type) {
+    # prepare
+    Bus::fake(ProcessMediaDetails::class);
+    config()->set('larupload.extract-media-details-on-queue', true);
+
+    $this->attachment->file = $file;
+    $this->attachment->type = $type;
+
+
+    # test
+    Bus::assertNotDispatched(ProcessMediaDetails::class);
+
+
+    # action
+    $action = new class($this->attachment) extends StoreAttachmentAction {
+        public function run(): void
+        {
+            $this->media(null);
+        }
+    };
+
+    $action->run();
+
+
+    # test
+    Bus::assertNotDispatched(ProcessMediaDetails::class);
+
+    $output = $this->attachment->output;
+
+    if ($type === LaruploadFileType::AUDIO) {
+        expect($output->duration)->toBe(LaruploadTestConsts::AUDIO_DETAILS['duration']);
+    }
+    else if ($type === LaruploadFileType::VIDEO) {
+        expect($output->width)
+            ->toBe(LaruploadTestConsts::VIDEO_DETAILS['width'])
+            ->and($output->height)
+            ->toBe(LaruploadTestConsts::VIDEO_DETAILS['height'])
+            ->and($output->duration)
+            ->toBe(LaruploadTestConsts::VIDEO_DETAILS['duration']);
+    }
+    else {
+        expect($output->width)
+            ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['width'])
+            ->and($output->height)
+            ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['height']);
+    }
+
+})->with([
+    fn() => [jpg(), LaruploadFileType::IMAGE],
+    fn() => [mp3(), LaruploadFileType::AUDIO],
+    fn() => [mp4(), LaruploadFileType::VIDEO],
+]);
+
 
 # set-attributes
 it('stores attributes', function () {
     $this->attachment->cover = jpg();
 
     $action = new class($this->attachment) extends StoreAttachmentAction {
+        private ?Model $model = null;
+
+
         public function run(): self
         {
             $this->basic();
-            $this->media();
+            $this->media($this->model);
             $this->setCover($this->attachment->id);
 
             return $this;
@@ -160,6 +267,7 @@ it('stores attributes', function () {
 
         public function set(Model $model, LaruploadMode $mode): Model
         {
+            $this->model = $model;
             $this->attachment->mode = $mode;
 
             return $this->setAttributes($model);

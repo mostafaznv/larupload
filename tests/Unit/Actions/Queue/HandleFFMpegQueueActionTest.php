@@ -31,6 +31,14 @@ beforeEach(function () {
         $this->attachment->output = Output::make(
             name: $name,
         );
+
+        $path = larupload_relative_path($this->attachment, $this->attachment->id, Larupload::ORIGINAL_FOLDER);
+        $fullPath = "$path/{$this->attachment->output->name}";
+
+        $md5 = md5("{$this->attachment->localDisk}/$fullPath");
+        $cacheKey = "larupload:$md5";
+
+        Cache::increment($cacheKey);
     };
 
 
@@ -217,6 +225,13 @@ it('deletes local directory when disk is not local [not-unified attachment ids]'
     $attachment1->output = Output::make(name: 'audio.mp3');
     $attachment1->audio('audio_wav', new Wav);
 
+    $path1 = larupload_relative_path($attachment1, $attachment1->id, Larupload::ORIGINAL_FOLDER);
+    $fullPath1 = "$path1/{$attachment1->output->name}";
+
+    $md5 = md5("$attachment1->localDisk/$fullPath1");
+    $cacheKey1 = "larupload:$md5";
+
+
     $attachment2 = Attachment::make('test_name2');
     $attachment2->id = 'test-id';
     $attachment2->folder = 'test-folder2';
@@ -226,6 +241,13 @@ it('deletes local directory when disk is not local [not-unified attachment ids]'
     $attachment2->secureIdsMethod = $method;
     $attachment2->output = Output::make(name: 'audio.mp3');
     $attachment2->audio('audio_wav', new Wav);
+
+    $path2 = larupload_relative_path($attachment2, $attachment2->id, Larupload::ORIGINAL_FOLDER);
+    $fullPath2 = "$path2/{$attachment2->output->name}";
+
+    $md5 = md5("$attachment2->localDisk/$fullPath2");
+    $cacheKey2 = "larupload:$md5";
+
 
     $path1 = larupload_relative_path($attachment1, $attachment1->id);
     $path2 = larupload_relative_path($attachment2, $attachment2->id);
@@ -238,6 +260,8 @@ it('deletes local directory when disk is not local [not-unified attachment ids]'
     $localStorage->putFileAs($original1, mp3(), 'audio.mp3');
     $localStorage->putFileAs($original2, mp3(), 'audio.mp3');
 
+    Cache::increment($cacheKey1);
+    Cache::increment($cacheKey2);
 
     # before
     $localFiles = $localStorage->allFiles();

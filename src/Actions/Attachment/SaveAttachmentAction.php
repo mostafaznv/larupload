@@ -25,7 +25,7 @@ class SaveAttachmentAction extends StoreAttachmentAction
                 }
 
                 $this->basic();
-                $this->media();
+                $this->media($model);
                 $this->uploadOriginalFile($this->attachment->id);
                 $this->setCover($this->attachment->id);
             }

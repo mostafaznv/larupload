@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Actions\Cover\SetCoverAction;
 use Mostafaznv\Larupload\Actions\SetFileNameAction;
+use Mostafaznv\Larupload\Concerns\LaruploadObservers;
 use Mostafaznv\Larupload\DTOs\CoverActionData;
 use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
@@ -40,8 +41,20 @@ abstract class StoreAttachmentAction
         $this->attachment->output->mimeType = $this->attachment->file->getMimeType();
     }
 
-    protected function media(): void
+    protected function media(?Model $model): void
     {
+        $extractOnQueue = $this->attachment->extractMediaDetailsOnQueue;
+
+        if ($extractOnQueue and $model) {
+            /**
+             * Do nothing, it will be processed after saving the model
+             * @see LaruploadObservers
+             * @see DispatchModelMediaDetailsExtractionAction
+             */
+
+            return;
+        }
+
         switch ($this->attachment->type) {
             case LaruploadFileType::VIDEO:
             case LaruploadFileType::AUDIO:

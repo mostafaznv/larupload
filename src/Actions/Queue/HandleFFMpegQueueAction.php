@@ -29,9 +29,7 @@ class HandleFFMpegQueueAction
 
 
         if ($this->shouldDeleteLocalDirectory($attachment, $isLastOne)) {
-            Storage::disk($attachment->localDisk)->deleteDirectory(
-                $standalone ? "$attachment->folder/$attachment->nameKebab" : "$attachment->folder/$attachment->id"
-            );
+            delete_local_copy($attachment, $standalone);
         }
     }
 

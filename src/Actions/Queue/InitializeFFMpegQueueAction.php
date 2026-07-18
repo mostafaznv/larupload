@@ -3,7 +3,6 @@
 namespace Mostafaznv\Larupload\Actions\Queue;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Mostafaznv\Larupload\Exceptions\FFMpegQueueMaxNumExceededException;
 use Mostafaznv\Larupload\Jobs\ProcessFFMpeg;
 use Mostafaznv\Larupload\Larupload;
@@ -34,11 +33,7 @@ class InitializeFFMpegQueueAction
 
         if ($flag) {
             // save a copy of the original file to use it on process ffmpeg queue, then delete it
-            if (!disk_driver_is_local($attachment->disk)) {
-                $path = larupload_relative_path($attachment, $attachment->id, Larupload::ORIGINAL_FOLDER);
-
-                Storage::disk($attachment->localDisk)->putFileAs($path, $attachment->file, $attachment->output->name);
-            }
+            local_copy($attachment);
 
             $queueId = DB::table(Larupload::FFMPEG_QUEUE_TABLE)->insertGetId([
                 'record_id'    => $id,

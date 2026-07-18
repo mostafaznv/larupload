@@ -69,6 +69,7 @@ class UploadEntities
 
     public bool $keepOldFiles;
     public bool $preserveFiles;
+    public bool $extractMediaDetailsOnQueue;
 
     public array $imageStyles = [];
     public array $videoStyles = [];
@@ -115,6 +116,7 @@ class UploadEntities
         $this->dominantColorQuality = $config['dominant-color-quality'];
         $this->keepOldFiles = $config['keep-old-files'];
         $this->preserveFiles = $config['preserve-files'];
+        $this->extractMediaDetailsOnQueue = $config['extract-media-details-on-queue'];
         $this->optimizeImage = $config['optimize-image']['enable'] ?? false;
         $this->ffmpegQueue = $config['ffmpeg']['queue'];
         $this->ffmpegMaxQueueNum = $config['ffmpeg']['max-queue-num'];
@@ -225,6 +227,13 @@ class UploadEntities
     public function preserveFiles(bool $status): self
     {
         $this->preserveFiles = $status;
+
+        return $this;
+    }
+
+    public function extractMediaDetailsOnQueue(bool $status): self
+    {
+        $this->extractMediaDetailsOnQueue = $status;
 
         return $this;
     }
