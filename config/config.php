@@ -221,6 +221,9 @@ return [
     | asynchronously via a queue.
     | When false, details are extracted synchronously during the request.
     |
+    | Note: this feature only works in ORM mode. Media details for standalone uploads
+    | will be extracted synchronously during the request.
+    |
     */
 
     'extract-media-details-on-queue' => env('LARUPLOAD_EXTRACT_MEDIA_DETAILS_ON_QUEUE', false),
