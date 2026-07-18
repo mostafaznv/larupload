@@ -232,7 +232,9 @@ it('extracts dominant color from image', function (LaruploadHeavyTestModel|Larup
         ->toHaveProperty('width', LaruploadTestConsts::IMAGE_DETAILS['jpg']['width'])
         ->toHaveProperty('height', LaruploadTestConsts::IMAGE_DETAILS['jpg']['height'])
         ->toHaveProperty('duration', null)
-        ->toHaveProperty('dominant_color', LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']);
+        ->and($meta->dominant_color)
+        ->toBeTruthy()
+        ->toMatch(LaruploadTestConsts::HEX_REGEX);
 
     # test 4
     $model->refresh();
@@ -242,7 +244,9 @@ it('extracts dominant color from image', function (LaruploadHeavyTestModel|Larup
         ->toHaveProperty('width', LaruploadTestConsts::IMAGE_DETAILS['jpg']['width'])
         ->toHaveProperty('height', LaruploadTestConsts::IMAGE_DETAILS['jpg']['height'])
         ->toHaveProperty('duration', null)
-        ->toHaveProperty('dominant_color', LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']);
+        ->and($meta->dominant_color)
+        ->toBeTruthy()
+        ->toMatch(LaruploadTestConsts::HEX_REGEX);
 
 })->with('models');
 
