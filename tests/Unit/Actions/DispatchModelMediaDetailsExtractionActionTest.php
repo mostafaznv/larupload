@@ -128,3 +128,23 @@ it('respects extract-media-details-on-queue based on each attachment object', fu
         'other-test-id',
     ]);
 });
+
+it('wont dispatch `DispatchModelMediaDetailsExtractionAction` when there is not file attached to the attachment', function () {
+    # prepare
+    $otherAttachment = clone $this->attachment;
+    $otherAttachment->id = 'other-test-id';
+
+    $this->attachment->file = false;
+
+
+    # action
+    ($this->action)($this->model, [$this->attachment, $otherAttachment]);
+
+
+    # test
+    $attachments = resolve(InitializeMediaDetailsQueueAction::class)->getAttachments();
+
+    expect($attachments)->toBe([
+        'other-test-id',
+    ]);
+});
