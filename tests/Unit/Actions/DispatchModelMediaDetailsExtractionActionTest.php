@@ -8,10 +8,13 @@ use Mostafaznv\Larupload\Enums\LaruploadFileType;
 use Mostafaznv\Larupload\Larupload;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
+use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 
 
 beforeEach(function () {
     $this->disk = 'public';
+
+    config()->set('larupload.extract-media-details-on-queue', true);
 
     $this->attachment = Attachment::make('main_file');
     $this->attachment->disk = $this->disk;
@@ -35,7 +38,6 @@ beforeEach(function () {
     $this->model->id = 52;
 
 
-    config()->set('larupload.extract-media-details-on-queue', true);
 
     app()->instance(
         InitializeMediaDetailsQueueAction::class,
@@ -83,7 +85,7 @@ it('extract media details for attachments that require extracting on queue', fun
 
 it('does not extract media details when `larupload.extract-media-details-on-queue` is false', function () {
     # prepare
-    config()->set('larupload.extract-media-details-on-queue', false);
+    $this->attachment = $this->attachment->extractMediaDetailsOnQueue(false);
 
 
     # action
@@ -95,7 +97,7 @@ it('does not extract media details when `larupload.extract-media-details-on-queu
     expect($attachments)->toBeEmpty();
 
 
-    config()->set('larupload.extract-media-details-on-queue', true);
+    $this->attachment = $this->attachment->extractMediaDetailsOnQueue(true);
     ($this->action)($this->model, [$this->attachment]);
 
 
@@ -103,5 +105,26 @@ it('does not extract media details when `larupload.extract-media-details-on-queu
     $attachments = resolve(InitializeMediaDetailsQueueAction::class)->getAttachments();
     expect($attachments)->toBe([
         'test-id'
+    ]);
+});
+
+it('respects extract-media-details-on-queue based on each attachment object', function () {
+    # prepare
+    $otherAttachment = clone $this->attachment;
+    $otherAttachment->id = 'other-test-id';
+    $otherAttachment = $otherAttachment->extractMediaDetailsOnQueue(true);
+
+    $this->attachment = $this->attachment->extractMediaDetailsOnQueue(false);
+
+
+    # action
+    ($this->action)($this->model, [$this->attachment, $otherAttachment]);
+
+
+    # test
+    $attachments = resolve(InitializeMediaDetailsQueueAction::class)->getAttachments();
+
+    expect($attachments)->toBe([
+        'other-test-id',
     ]);
 });

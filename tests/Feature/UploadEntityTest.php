@@ -4,6 +4,7 @@ use FFMpeg\Format\Audio\Aac;
 use FFMpeg\Format\Audio\Wav;
 use Mostafaznv\Larupload\Enums\LaruploadImageLibrary;
 use Mostafaznv\Larupload\Enums\LaruploadSecureIdsMethod;
+use Mostafaznv\Larupload\Jobs\ProcessMediaDetails;
 use Mostafaznv\Larupload\Storage\Attachment;
 use Mostafaznv\Larupload\Test\Support\Enums\LaruploadTestModels;
 use Mostafaznv\Larupload\Test\Support\LaruploadTestConsts;
@@ -156,6 +157,28 @@ it('can change preserve-file property', function () {
     foreach ($paths as $path) {
         expect(file_exists($path))->toBeTrue();
     }
+});
+
+it('can change extract-media-details-on-queue property', function () {
+    # prepare
+    Bus::fake();
+    Queue::fake();
+
+    $this->model->setAttachments([
+        $this->attachment->extractMediaDetailsOnQueue(true)
+    ]);
+
+
+    # test 1
+    Bus::assertNotDispatched(ProcessMediaDetails::class);
+
+
+    # action
+    save($this->model, jpg());
+
+
+    # test 2
+    Bus::assertDispatched(ProcessMediaDetails::class);
 });
 
 it('can change optimize image status', function () {

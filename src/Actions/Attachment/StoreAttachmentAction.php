@@ -43,7 +43,7 @@ abstract class StoreAttachmentAction
 
     protected function media(?Model $model): void
     {
-        $extractOnQueue = config('larupload.extract-media-details-on-queue', false);
+        $extractOnQueue = $this->attachment->extractMediaDetailsOnQueue;
 
         if ($extractOnQueue and $model) {
             /**

@@ -148,11 +148,12 @@ it('extracts audio metadata correctly', function () {
         ->toBe(LaruploadTestConsts::AUDIO_DETAILS['duration']);
 });
 
-it('wont extract image/audio/video metadata on queue when on ORM mode and postpones it to to after save events', function (UploadedFile $file, LaruploadFileType $type) {
+it('wont extract image/audio/video metadata on queue when it is on ORM mode. it postpones it to the after save events', function (UploadedFile $file, LaruploadFileType $type) {
     # prepare
     Bus::fake(ProcessMediaDetails::class);
     config()->set('larupload.extract-media-details-on-queue', true);
 
+    $this->attachment->extractMediaDetailsOnQueue = true;
     $this->attachment->file = $file;
     $this->attachment->type = $type;
 
@@ -183,6 +184,8 @@ it('wont extract image/audio/video metadata on queue when on ORM mode and postpo
     expect($output->width)
         ->toBeNull()
         ->and($output->height)
+        ->toBeNull()
+        ->and($output->duration)
         ->toBeNull();
 
 })->with([
