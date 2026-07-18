@@ -31,6 +31,7 @@ beforeEach(function () {
 
 
     config()->set('larupload.extract-media-details-on-queue', true);
+    config()->set('larupload.dominant-color', true);
 
     $this->action = resolve(HandleMediaDetailsQueueAction::class);
 });
@@ -189,6 +190,59 @@ it('extracts image metadata', function (LaruploadHeavyTestModel|LaruploadLightTe
         ->toHaveProperty('height', LaruploadTestConsts::IMAGE_DETAILS['jpg']['height'])
         ->toHaveProperty('duration', null)
         ->toHaveProperty('dominant_color', null);
+
+})->with('models');
+
+it('extracts dominant color from image', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+    # prepare
+    $model->withDominantColor(true, 1);
+    $model->attachment('main_file')->attach(jpg());
+    $model->save();
+
+    $attachment = ($this->getAttachment)($model);
+    $meta = $attachment->meta();
+
+
+    # test 1
+    expect($meta)
+        ->toHaveProperty('width', null)
+        ->toHaveProperty('height', null)
+        ->toHaveProperty('duration', null)
+        ->toHaveProperty('dominant_color', null);
+
+    # test 2
+    $model->refresh();
+    $meta = $model->attachment('main_file')->meta();
+
+    expect($meta)
+        ->toHaveProperty('width', null)
+        ->toHaveProperty('height', null)
+        ->toHaveProperty('duration', null)
+        ->toHaveProperty('dominant_color', null);
+
+
+    # action
+    $this->action->execute($model, $attachment);
+
+
+    # test 3
+    $meta = $attachment->meta();
+
+    expect($meta)
+        ->toHaveProperty('width', LaruploadTestConsts::IMAGE_DETAILS['jpg']['width'])
+        ->toHaveProperty('height', LaruploadTestConsts::IMAGE_DETAILS['jpg']['height'])
+        ->toHaveProperty('duration', null)
+        ->toHaveProperty('dominant_color', LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']);
+
+    # test 4
+    $model->refresh();
+    $meta = $model->attachment('main_file')->meta();
+
+    expect($meta)
+        ->toHaveProperty('width', LaruploadTestConsts::IMAGE_DETAILS['jpg']['width'])
+        ->toHaveProperty('height', LaruploadTestConsts::IMAGE_DETAILS['jpg']['height'])
+        ->toHaveProperty('duration', null)
+        ->toHaveProperty('dominant_color', LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']);
 
 })->with('models');
 
