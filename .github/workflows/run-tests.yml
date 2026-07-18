@@ -61,13 +61,8 @@ jobs:
           key: ${{ runner.os }}-ImageMagick-${{ matrix.imagemagick }}-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-ImageMagick-${{ matrix.imagemagick }}-
 
-      - name: Check ImageMagick cache exists
-        uses: andstor/file-existence-action@v3
-        id: cache-imagemagick-exists
-        with:
-          files: /home/runner/im/imagemagick-${{ matrix.imagemagick }}
-
       - name: Install ImageMagick
+        if: steps.cache-imagemagick.outputs.cache-hit != 'true'
         run: |
           curl -o /tmp/ImageMagick.tar.gz -sL https://github.com/ImageMagick/ImageMagick/archive/refs/tags/${{ matrix.imagemagick }}.tar.gz
           (
@@ -79,20 +74,33 @@ jobs:
             sudo make install
           )
 
-      - name: Install PHP ImageMagick extension
+      - name: Cache Imagick PHP extension
+        uses: actions/cache@v4
+        id: cache-imagick-ext
+        with:
+          path: /home/runner/imagick-ext/imagick-${{ matrix.imagick }}-php${{ matrix.php }}
+          key: ${{ runner.os }}-imagick-ext-${{ matrix.imagick }}-php${{ matrix.php }}-${{ matrix.imagemagick }}
+
+      - name: Build Imagick PHP extension
+        if: steps.cache-imagick-ext.outputs.cache-hit != 'true'
         run: |
           curl -o /tmp/imagick.tgz -sL http://pecl.php.net/get/imagick-${{ matrix.imagick }}.tgz
+          mkdir -p /home/runner/imagick-ext/imagick-${{ matrix.imagick }}-php${{ matrix.php }}
           (
             cd /tmp || exit 1
             tar -xzf imagick.tgz
             cd imagick-${{ matrix.imagick }}
             phpize
-            sudo ./configure --with-imagick=/home/runner/im/imagemagick-${{ matrix.imagemagick }}
-            sudo make -j$(nproc)
-            sudo make install
+            ./configure --with-imagick=/home/runner/im/imagemagick-${{ matrix.imagemagick }}
+            make -j$(nproc)
+            cp modules/imagick.so /home/runner/imagick-ext/imagick-${{ matrix.imagick }}-php${{ matrix.php }}/imagick.so
           )
+
+      - name: Enable Imagick PHP extension
+        run: |
+          sudo cp /home/runner/imagick-ext/imagick-${{ matrix.imagick }}-php${{ matrix.php }}/imagick.so "$(php -r 'echo ini_get("extension_dir");')/imagick.so"
           sudo bash -c 'echo "extension=imagick.so" >> /etc/php/${{ matrix.php }}/cli/php.ini'
-          php --ri imagick;
+          php --ri imagick
 
       - name: Cache dependencies
         uses: actions/cache@v4
