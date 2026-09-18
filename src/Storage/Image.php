@@ -108,11 +108,8 @@ readonly class Image
             }
 
             if ($path) {
-                $color = ColorThief::getColor(
-                    sourceImage: $path,
-                    quality: $this->dominantColorQuality,
-                    outputFormat: 'hex'
-                );
+                $colorThief = new ColorThief($this->dominantColorQuality);
+                $color = $colorThief->getColor($path)->toHex('#');
 
                 if ($color) {
                     return $color;

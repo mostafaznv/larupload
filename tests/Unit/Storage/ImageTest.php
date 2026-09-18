@@ -38,12 +38,17 @@ function resize(UploadedFile $file, LaruploadImageLibrary $library, int $width =
         ->toHaveProperty('height', $height);
 }
 
-function dominant(UploadedFile $file, LaruploadImageLibrary $library, string $expected): void
+function dominant(UploadedFile $file, LaruploadImageLibrary $library, string|array $expected): void
 {
     $image = new Image($file, 'local', $library, 10);
     $color = $image->getDominantColor();
 
-    expect($color)->toBe($expected);
+    if (is_array($expected)) {
+        expect($color)->toBeIn($expected);
+    }
+    else {
+        expect($color)->toBe($expected);
+    }
 }
 
 
@@ -219,7 +224,7 @@ it('can get dominant color of given file', function() {
     $color = $this->image->getDominantColor(png());
     $expected = LaruploadTestConsts::IMAGE_DETAILS['png']['color'];
 
-    expect($color)->toBe($expected);
+    expect($color)->toBeIn($expected);
 });
 
 it('can get dominant color of given file path', function() {
@@ -227,7 +232,7 @@ it('can get dominant color of given file path', function() {
     $color = $this->image->getDominantColor($path);
     $expected = LaruploadTestConsts::IMAGE_DETAILS['png']['color'];
 
-    expect($color)->toBe($expected);
+    expect($color)->toBeIn($expected);
 });
 
 it('cant guess dominant color, if quality is not valid', function() {

@@ -9,19 +9,20 @@ use Mostafaznv\Larupload\Test\Support\Models\LaruploadHeavyTestModel;
 use Mostafaznv\Larupload\Test\Support\Models\LaruploadLightTestModel;
 
 
-it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload image successfully [jpg]', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model->withAllImages();
     $model->withDominantColor();
     $model = save($model, jpg());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
     $attachment = $model->attachment('main_file');
+    $meta = $attachment->meta();
 
     expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($attachment->meta())
+        ->and($meta)
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
@@ -31,24 +32,26 @@ it('will upload image successfully [jpg]', function(LaruploadHeavyTestModel|Laru
         ->toHaveProperty('format', 'jpg')
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->toHaveProperty('dominant_color', $details['color'])
-        ->toHaveProperty('duration', null);
+        ->toHaveProperty('duration', null)
+        ->toHaveProperty('dominant_color')
+        ->and($meta->dominant_color)->toBeIn($details['color']);
 
 })->with('models');
 
-it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload image successfully [webp]', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model->withAllImages();
     $model->withDominantColor();
     $model = save($model, webp());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['webp'];
     $attachment = $model->attachment('main_file');
+    $meta = $attachment->meta();
 
     expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($attachment->meta())
+        ->and($meta)
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
@@ -58,18 +61,20 @@ it('will upload image successfully [webp]', function(LaruploadHeavyTestModel|Lar
         ->toHaveProperty('format', 'webp')
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->toHaveProperty('dominant_color', $details['color'])
-        ->toHaveProperty('duration', null);
+        ->toHaveProperty('duration', null)
+        ->toHaveProperty('dominant_color')
+        ->and($meta->dominant_color)->toBeIn($details['color']);
 
 })->with('models');
 
-it('will upload image successfully [png]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload image successfully [png]', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model->withAllImages();
     $model->withDominantColor();
     $model = save($model, png());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['png'];
     $attachment = $model->attachment('main_file');
+    $meta = $attachment->meta();
 
     expect($attachment->url())
         ->toBeString()
@@ -85,12 +90,13 @@ it('will upload image successfully [png]', function(LaruploadHeavyTestModel|Laru
         ->toHaveProperty('format', 'png')
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->toHaveProperty('dominant_color', $details['color'])
-        ->toHaveProperty('duration', null);
+        ->toHaveProperty('duration', null)
+        ->toHaveProperty('dominant_color')
+        ->and($meta->dominant_color)->toBeIn($details['color']);
 
 })->with('models');
 
-it('will upload image successfully [svg]', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload image successfully [svg]', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $this->app['config']->set('larupload.image-processing-library', LaruploadImageLibrary::IMAGICK);
 
     $model = new ($model::class);
@@ -118,7 +124,7 @@ it('will upload image successfully [svg]', function(LaruploadHeavyTestModel|Laru
 
 })->with('models');
 
-it('will upload audio successfully', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload audio successfully', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = save($model, mp3());
 
     $details = LaruploadTestConsts::AUDIO_DETAILS;
@@ -140,19 +146,20 @@ it('will upload audio successfully', function(LaruploadHeavyTestModel|LaruploadL
 
 })->with('models');
 
-it('will upload video successfully', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload video successfully', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model->withAllVideos();
     $model->withDominantColor();
     $model = save($model, mp4());
 
     $details = LaruploadTestConsts::VIDEO_DETAILS;
     $attachment = $model->attachment('main_file');
+    $meta = $attachment->meta();
 
     expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($attachment->meta())
+        ->and($meta)
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name'])
@@ -162,12 +169,13 @@ it('will upload video successfully', function(LaruploadHeavyTestModel|LaruploadL
         ->toHaveProperty('format', 'mp4')
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->toHaveProperty('dominant_color', $details['color'])
-        ->toHaveProperty('duration', $details['duration']);
+        ->toHaveProperty('duration', $details['duration'])
+        ->toHaveProperty('dominant_color')
+        ->and($meta->dominant_color)->toBeIn($details['color']);
 
 })->with('models');
 
-it('will upload with attach function', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload with attach function', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     $model = $model->newModelInstance();
     $model->withDominantColor();
 
@@ -176,12 +184,13 @@ it('will upload with attach function', function(LaruploadHeavyTestModel|Laruploa
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
     $attachment = $model->attachment('main_file');
+    $meta = $attachment->meta();
 
     expect($attachment->url())
         ->toBeString()
         ->toBeTruthy()
         ->toBeExists()
-        ->and($attachment->meta())
+        ->and($meta)
         ->toBeObject()
         ->toHaveKeys($this->metaKeys)
         ->toHaveProperty('name', $details['name']['hash'])
@@ -191,12 +200,13 @@ it('will upload with attach function', function(LaruploadHeavyTestModel|Laruploa
         ->toHaveProperty('format', 'jpg')
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->toHaveProperty('dominant_color', $details['color'])
-        ->toHaveProperty('duration', null);
+        ->toHaveProperty('duration', null)
+        ->toHaveProperty('dominant_color')
+        ->and($meta->dominant_color)->toBeIn($details['color']);
 
 })->with('models');
 
-it('will upload image in standalone mode', function() {
+it('will upload image in standalone mode', function () {
     $upload = Larupload::init('uploader')->upload(jpg());
 
     $details = LaruploadTestConsts::IMAGE_DETAILS['jpg'];
@@ -215,13 +225,14 @@ it('will upload image in standalone mode', function() {
         ->toHaveProperty('format', 'jpg')
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->toHaveProperty('dominant_color', $details['color'])
         ->toHaveProperty('duration', null)
+        ->toHaveProperty('dominant_color')
+        ->and($upload->meta->dominant_color)->toBeIn($details['color'])
         ->and($upload->meta->name)
         ->toContain($details['name']['hash']);
 });
 
-it('will upload audio in standalone mode', function() {
+it('will upload audio in standalone mode', function () {
     $upload = Larupload::init('uploader')
         ->namingMethod(LaruploadNamingMethod::HASH_FILE)
         ->upload(mp3());
@@ -244,7 +255,7 @@ it('will upload audio in standalone mode', function() {
 
 });
 
-it('will upload video in standalone mode', function() {
+it('will upload video in standalone mode', function () {
     $upload = Larupload::init('uploader')
         ->namingMethod(LaruploadNamingMethod::HASH_FILE)
         ->upload(mp4());
@@ -265,12 +276,13 @@ it('will upload video in standalone mode', function() {
         ->toHaveProperty('format', 'mp4')
         ->toHaveProperty('width', $details['width'])
         ->toHaveProperty('height', $details['height'])
-        ->toHaveProperty('dominant_color', $details['color'])
-        ->toHaveProperty('duration', $details['duration']);
+        ->toHaveProperty('duration', $details['duration'])
+        ->toHaveProperty('dominant_color')
+        ->and($upload->meta->dominant_color)->toBeIn($details['color']);
 
 });
 
-it('will upload using create method of model', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('will upload using create method of model', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     /** @var LaruploadHeavyTestModel|LaruploadLightTestModel $model */
     $model = $model::class;
     $model = $model::create([
@@ -300,12 +312,12 @@ it('will upload using create method of model', function(LaruploadHeavyTestModel|
 
 })->with('models');
 
-it('wont upload file if file has an error', function(LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
+it('wont upload file if file has an error', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
     save($model, png(2));
 
 })->with('models')->throws(RuntimeException::class, 'The [main_file-file] field has an error');
 
-it('wont upload file if file has an error in standalone mode', function() {
+it('wont upload file if file has an error in standalone mode', function () {
     Larupload::init('uploader')->upload(png(2));
 
 })->throws(RuntimeException::class, 'The [uploader-file] field has an error');

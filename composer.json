@@ -41,7 +41,7 @@
         "ext-pdo": "*",
         "imagine/imagine": "^1.3",
         "intervention/image": "^3.1.0",
-        "ksubileau/color-thief-php": "^2.0",
+        "ksubileau/color-thief-php": "^3.0",
         "laravel/framework": "^12.0|^13.0",
         "php-ffmpeg/php-ffmpeg": "^1.1",
         "spatie/image-optimizer": "^1.6"
@@ -70,6 +70,7 @@
     },
     "scripts": {
         "test": "vendor/bin/pest",
+        "test:cov": "vendor/bin/pest --coverage",
         "test:ci": "vendor/bin/pest --coverage --coverage-text --coverage-clover=coverage.xml"
     },
     "config": {

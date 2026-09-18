@@ -106,7 +106,7 @@ it('can change dominant-color-quality property', function () {
     $model = save($this->model, jpg());
     $color = $model->attachment('main_file')->meta('dominant_color');
 
-    expect($color)->toBe('#262f48');
+    expect($color)->toBeIn(['#262f48', '#29355c']);
 });
 
 it('can change keep-old-files property', function () {
