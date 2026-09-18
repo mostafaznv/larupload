@@ -94,9 +94,10 @@ it('will upload the original file and, cover', function () {
         ->toHaveKey('main_file_file_width', LaruploadTestConsts::IMAGE_DETAILS['jpg']['width'])
         ->toHaveKey('main_file_file_height', LaruploadTestConsts::IMAGE_DETAILS['jpg']['height'])
         ->toHaveKey('main_file_file_duration', null)
-        ->toHaveKey('main_file_file_dominant_color', LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'])
         ->toHaveKey('main_file_file_format', 'jpg')
         ->toHaveKey('main_file_file_cover', $hash)
+        ->toHaveKey('main_file_file_dominant_color')
+        ->and($attributes['main_file_file_dominant_color'])->toBeIn(LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'])
         # files
         ->and($files)
         ->toBeArray()

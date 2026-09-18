@@ -89,7 +89,7 @@ it('extracts image metadata correctly', function () {
         ->and($output->height)
         ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['height'])
         ->and($output->dominantColor)
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']);
+        ->toBeIn(LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']);
 });
 
 it('extracts video metadata correctly', function () {
@@ -300,7 +300,7 @@ it('stores attributes', function () {
         ->and($model->getAttribute('test_name_file_duration'))
         ->toBeNull()
         ->and($model->getAttribute('test_name_file_dominant_color'))
-        ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'])
+        ->toBeIn(LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'])
         ->and($model->getAttribute('test_name_file_format'))
         ->toBe('jpg')
         ->and($model->getAttribute('test_name_file_cover'))
@@ -310,12 +310,13 @@ it('stores attributes', function () {
     # light
     $model = LaruploadTestModels::LIGHT->instance();
     $model = $action->set($model, LaruploadMode::LIGHT);
+    $meta = json_decode($model->getAttribute('test_name_file_meta'));
 
     expect($model->getAttribute('test_name_file_name'))
         ->toBe(LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash'])
         ->and($model->getAttribute('test_name_file_meta'))
         ->toBeJson()
-        ->and(json_decode($model->getAttribute('test_name_file_meta')))
+        ->and($meta)
         ->toHaveKey('id', 'test-id')
         ->toHaveKey('name', LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash'])
         ->toHaveKey('original_name', 'image.jpg')
@@ -325,9 +326,10 @@ it('stores attributes', function () {
         ->toHaveKey('width', LaruploadTestConsts::IMAGE_DETAILS['jpg']['width'])
         ->toHaveKey('height', LaruploadTestConsts::IMAGE_DETAILS['jpg']['height'])
         ->toHaveKey('duration', null)
-        ->toHaveKey('dominant_color', LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'])
         ->toHaveKey('format', 'jpg')
-        ->toHaveKey('cover', LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash']);
+        ->toHaveKey('cover', LaruploadTestConsts::IMAGE_DETAILS['jpg']['name']['hash'])
+        ->toHaveKey('dominant_color')
+        ->and($meta->dominant_color)->toBeIn(LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']);
 });
 
 

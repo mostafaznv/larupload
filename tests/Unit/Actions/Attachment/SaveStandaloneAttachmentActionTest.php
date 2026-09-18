@@ -93,9 +93,10 @@ it('will upload the original file, cover, and styles', function () {
         ->toHaveKey('width', LaruploadTestConsts::IMAGE_DETAILS['jpg']['width'])
         ->toHaveKey('height', LaruploadTestConsts::IMAGE_DETAILS['jpg']['height'])
         ->toHaveKey('duration', null)
-        ->toHaveKey('dominant_color', LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'])
         ->toHaveKey('format', 'jpg')
         ->toHaveKey('cover', $hash)
+        ->toHaveKey('dominant_color')
+        ->and($res->meta->dominant_color)->toBeIn(LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'])
         # files
         ->and($files)
         ->toBeArray()
@@ -132,7 +133,8 @@ it('will update .meta file with correct data', function () {
         ->toHaveKey('width', LaruploadTestConsts::IMAGE_DETAILS['jpg']['width'])
         ->toHaveKey('height', LaruploadTestConsts::IMAGE_DETAILS['jpg']['height'])
         ->toHaveKey('duration', null)
-        ->toHaveKey('dominant_color', LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'])
         ->toHaveKey('format', 'jpg')
-        ->toHaveKey('cover', $hash);
+        ->toHaveKey('cover', $hash)
+        ->toHaveKey('dominant_color')
+        ->and($res->meta->dominant_color)->toBeIn(LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']);
 });

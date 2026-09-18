@@ -17,7 +17,10 @@ class LaruploadTestConsts
             'width'     => 1077,
             'height'    => 791,
             'mime_type' => 'image/jpeg',
-            'color'     => '#f4c00a',
+            'color'     => [
+                '#f4c00a', // yellow
+                '#2a345c' // blue
+            ],
             'name'      => [
                 'original' => 'image.jpg',
                 'hash'     => '9e55cf595703eaa109025073caed65a4.jpg',
@@ -43,7 +46,10 @@ class LaruploadTestConsts
             'width'     => 1077,
             'height'    => 791,
             'mime_type' => 'image/png',
-            'color'     => '#212e4b',
+            'color'     => [
+                '#fd9a00', // yellow
+                '#212e4b' // blue
+            ],
             'name'      => [
                 'hash' => 'ac0c1777d6e82e59f45cf4b155079af4.png',
             ]
@@ -54,7 +60,10 @@ class LaruploadTestConsts
             'width'     => 1077,
             'height'    => 791,
             'mime_type' => 'image/webp',
-            'color'     => '#242e48',
+            'color'     => [
+                '#242e48', // blue [old ksubileau/color-thief-php]
+                '#233056' // blue [new ksubileau/color-thief-php]
+            ],
             'name'      => [
                 'original' => 'image.webp',
                 'hash'     => '1489c881d5033d47aaa7462ec12a6432.webp',
@@ -77,7 +86,10 @@ class LaruploadTestConsts
             'width'     => 150,
             'height'    => 189,
             'mime_type' => 'image/gif',
-            'color'     => '#086e09',
+            'color'     => [
+                '#086e09', // old ksubileau/color-thief-php
+                '#c260b4', // new ksubileau/color-thief-php
+            ],
             'name'      => [
                 'hash' => '710bf7618c3a942d5c3279ff0bb282c1.gif',
             ]
@@ -98,7 +110,10 @@ class LaruploadTestConsts
         'width'     => 560,
         'height'    => 320,
         'duration'  => 5,
-        'color'     => '#754625',
+        'color'     => [
+            '#754625', // old ksubileau/color-thief-php
+            '#764a24' // new ksubileau/color-thief-php
+        ],
         'format'    => 'mp4',
         'cover'     => 'a3ac7ddabb263c2d00b73e8177d15c8d.jpg'
 

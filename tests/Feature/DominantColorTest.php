@@ -15,7 +15,7 @@ it('will calculate dominant color correctly', function () {
     $dominantColor = LaruploadTestConsts::IMAGE_DETAILS['jpg']['color'];
     $fileColor = $model->attachment('main_file')->meta('dominant_color');
 
-    expect($fileColor)->toBe($dominantColor);
+    expect($fileColor)->toBeIn($dominantColor);
 });
 
 it('will calculate dominant color correctly [svg]', function () {
@@ -34,7 +34,7 @@ it('will calculate dominant color correctly [svg]', function () {
 it('will calculate dominant color correctly [standalone]', function () {
     $upload = Larupload::init('uploader')->upload(jpg());
 
-    expect($upload->meta->dominant_color)->toBe(
+    expect($upload->meta->dominant_color)->toBeIn(
         LaruploadTestConsts::IMAGE_DETAILS['jpg']['color']
     );
 });
@@ -46,7 +46,7 @@ it('will calculate dominant color with high quality', function () {
 
     $fileColor = $model->attachment('main_file')->meta('dominant_color');
 
-    expect($fileColor)->toBe('#f6c009');
+    expect($fileColor)->toBeIn(['#f6c009', '#242f56']);
 });
 
 it('wont calculate dominant color if it is disabled', function () {

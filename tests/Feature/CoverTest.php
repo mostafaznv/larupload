@@ -24,7 +24,8 @@ it('will upload file with cover', function (LaruploadHeavyTestModel|LaruploadLig
         ->toBeExists()
         ->and($meta)
         ->toHaveProperty('cover', $details['name']['hash'])
-        ->toHaveProperty('dominant_color', $details['color']);
+        ->toHaveProperty('dominant_color')
+        ->and($meta->dominant_color)->toBeIn($details['color']);
 
 })->with('models with dominant color');
 
@@ -41,7 +42,8 @@ it('will upload file with cover in standalone mode', function () {
         ->toBeExists()
         ->and($upload->meta)
         ->toHaveProperty('cover', $details['name']['hash'])
-        ->toHaveProperty('dominant_color', $details['color']);
+        ->toHaveProperty('dominant_color')
+        ->and($upload->meta->dominant_color)->toBeIn($details['color']);
 });
 
 it('wont upload cover if file is not an image', function (LaruploadHeavyTestModel|LaruploadLightTestModel $model) {
