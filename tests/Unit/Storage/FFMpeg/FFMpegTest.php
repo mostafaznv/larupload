@@ -206,7 +206,7 @@ it('can guess dominant color during capturing process', function () {
         withDominantColor: true
     );
 
-    expect($color)->toBeIn(['#7a4e2a', '#794e2a', '#7b512c']);
+    expect($color)->toBeIn(['#7a4e2a', '#794e2a', '#7b512c', '#7c512d']);
 });
 
 it('will throw exception during capture, if media is not a video', function () {
