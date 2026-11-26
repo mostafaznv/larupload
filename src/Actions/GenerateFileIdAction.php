@@ -44,9 +44,9 @@ readonly class GenerateFileIdAction
             return $this->model->{"{$this->attachmentName}_file_id"} ?? null;
         }
 
-        $meta = $this->model?->{"{$this->attachmentName}_file_meta"} ?? null;
+        $meta = $this->model?->{"{$this->attachmentName}_file_meta"} ?? '';
 
-        return is_string($meta)
+        return json_validate($meta)
             ? (json_decode($meta)?->id ?? null)
             : null;
     }
