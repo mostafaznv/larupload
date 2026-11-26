@@ -44,7 +44,11 @@ readonly class GenerateFileIdAction
             return $this->model->{"{$this->attachmentName}_file_id"} ?? null;
         }
 
-        return json_decode($this->model->{"{$this->attachmentName}_file_meta"})?->id ?? null;
+        $meta = $this->model?->{"{$this->attachmentName}_file_meta"} ?? '';
+
+        return json_validate($meta)
+            ? (json_decode($meta)?->id ?? null)
+            : null;
     }
 
     private function sqid(): string

@@ -36,7 +36,8 @@ class Output
             $property = fn(string $key) => $model->{"{$name}_file_$key"} ?? null;
         }
         else {
-            $meta = json_decode($model->{"{$name}_file_meta"}, true);
+            $rawMeta = $model->{"{$name}_file_meta"} ?? '';
+            $meta = json_validate($rawMeta) ? json_decode($rawMeta, true) : [];
 
             $property = fn(string $key) => $meta[$key] ?? null;
         }
