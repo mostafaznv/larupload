@@ -15,7 +15,7 @@ class RetrieveStandaloneMetaFileAction
 
         if (Storage::disk($attachment->disk)->exists($metaPath)) {
             $meta = Storage::disk($attachment->disk)->get($metaPath);
-            $meta = json_decode($meta);
+            $meta = is_string($meta) ? json_decode($meta) : null;
 
             if (property_exists($meta, 'meta')) {
                 $output = $attachment->output;
