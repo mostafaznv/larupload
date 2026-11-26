@@ -18,8 +18,7 @@ jobs:
         os: [ubuntu-latest]
         php: [8.3, 8.4, 8.5]
         laravel: ['12.*', '13.*']
-        imagemagick: [7.1.2-8]
-        imagick: [3.8.1]
+        imagemagick: [im-7.1.2-36_aom-3.13.3_heif-1.23.7_jxl-0.13.0] # IMEI release tag
         coverage: [none]
         dependency-version: [prefer-stable]
         include:
@@ -38,8 +37,9 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, sqlite3, pdo_sqlite, bcmath, fileinfo, gd, xdebug
-          tools: composer:v2
+          # ":imagick" disables any preinstalled imagick, so PIE's build is the one used
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, sqlite3, pdo_sqlite, bcmath, fileinfo, gd, xdebug, :imagick
+          tools: composer:v2, pie
           ini-values: xdebug.mode="coverage"
           coverage: xdebug
 
@@ -48,60 +48,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
-      - name: Prepare environment for Imagemagick
+      - name: Install ImageMagick (prebuilt packages from IMEI)
         run: |
-          sudo apt-get -y remove imagemagick imagemagick-6-common libmagic-dev
-          sudo apt-get update --fix-missing
-          sudo apt-get install -y libjpeg-dev libgif-dev libtiff-dev libpng-dev libwebp-dev libavif-dev libheif-dev
-          sudo apt-get install -y libmagickwand-dev
+          git clone --depth 1 https://github.com/SoftCreatR/imei "$RUNNER_TEMP/imei"
+          cd "$RUNNER_TEMP/imei"
+          sudo ./imei.sh --prebuilt-only --release-tag "${{ matrix.imagemagick }}"
+          magick -version
 
-      - name: Cache ImageMagick
-        uses: actions/cache@v4
-        id: cache-imagemagick
-        with:
-          path: /home/runner/im/imagemagick-${{ matrix.imagemagick }}
-          key: ${{ runner.os }}-ImageMagick-${{ matrix.imagemagick }}-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-ImageMagick-${{ matrix.imagemagick }}-
-
-      - name: Install ImageMagick
-        if: steps.cache-imagemagick.outputs.cache-hit != 'true'
+      - name: Install Imagick PHP extension with PIE
         run: |
-          curl -o /tmp/ImageMagick.tar.gz -sL https://github.com/ImageMagick/ImageMagick/archive/refs/tags/${{ matrix.imagemagick }}.tar.gz
-          (
-            cd /tmp || exit 1
-            tar xf ImageMagick.tar.gz
-            cd ImageMagick-${{ matrix.imagemagick }}
-            sudo ./configure --prefix=/home/runner/im/imagemagick-${{ matrix.imagemagick }}
-            sudo make -j$(nproc)
-            sudo make install
-          )
-
-      - name: Cache Imagick PHP extension
-        uses: actions/cache@v4
-        id: cache-imagick-ext
-        with:
-          path: /home/runner/imagick-ext/imagick-${{ matrix.imagick }}-php${{ matrix.php }}
-          key: ${{ runner.os }}-imagick-ext-${{ matrix.imagick }}-php${{ matrix.php }}-${{ matrix.imagemagick }}
-
-      - name: Build Imagick PHP extension
-        if: steps.cache-imagick-ext.outputs.cache-hit != 'true'
-        run: |
-          curl -o /tmp/imagick.tgz -sL http://pecl.php.net/get/imagick-${{ matrix.imagick }}.tgz
-          mkdir -p /home/runner/imagick-ext/imagick-${{ matrix.imagick }}-php${{ matrix.php }}
-          (
-            cd /tmp || exit 1
-            tar -xzf imagick.tgz
-            cd imagick-${{ matrix.imagick }}
-            phpize
-            ./configure --with-imagick=/home/runner/im/imagemagick-${{ matrix.imagemagick }}
-            make -j$(nproc)
-            cp modules/imagick.so /home/runner/imagick-ext/imagick-${{ matrix.imagick }}-php${{ matrix.php }}/imagick.so
-          )
-
-      - name: Enable Imagick PHP extension
-        run: |
-          sudo cp /home/runner/imagick-ext/imagick-${{ matrix.imagick }}-php${{ matrix.php }}/imagick.so "$(php -r 'echo ini_get("extension_dir");')/imagick.so"
-          sudo bash -c 'echo "extension=imagick.so" >> /etc/php/${{ matrix.php }}/cli/php.ini'
+          sudo pie install imagick/imagick \
+            --with-php-config="$(command -v php-config)" \
+            --with-imagick=/opt/imei
           php --ri imagick
 
       - name: Cache dependencies
